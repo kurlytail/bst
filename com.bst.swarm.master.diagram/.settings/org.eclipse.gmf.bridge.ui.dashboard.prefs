@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+gmf_dashboard/domainGenerationModel=platform\:/resource/com.bst.swarm.master/model/master.genmodel
+gmf_dashboard/domainModel=platform\:/resource/com.bst.swarm.master/model/master.ecore
+gmf_dashboard/generationModel=platform\:/resource/com.bst.swarm.master.diagram/model/master.gmfgen
+gmf_dashboard/graphicalDefinitionModel=platform\:/resource/com.bst.swarm.master.diagram/model/master.gmfgraph
+gmf_dashboard/mappingModel=platform\:/resource/com.bst.swarm.master.diagram/model/master.gmfmap
+gmf_dashboard/toolingDefinitionModel=platform\:/resource/com.bst.swarm.master.diagram/model/master.gmftool

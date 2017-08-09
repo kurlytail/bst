@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ (c) Copyright 2011, BrainSpeed Technologies
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/struct"
+            class="com.brainspeedtech.struct.StructPackage"
+            genModel="model/struct.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="struct"
+            class="com.brainspeedtech.struct.util.StructResourceFactoryImpl"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="org.eclipse.emf.compare.ui.contenttype.ModelContentType"
+            file-extensions="struct"
+            file-names="*">
+      </file-association>
+   </extension>
+   
+   
+         
+    <extension
+         point="org.eclipse.emf.validation.constraintProviders">
+      <constraintProvider
+            cache="true"
+            mode="Batch">
+         <package namespaceUri="http://www.brainspeedtech.com/struct"/>
+         <constraints categories="com.brainspeedtech.swarm.project.validation">
+            <constraint
+                  class="com.brainspeedtech.struct.validation.NonZeroMemberCountConstraint"
+                  id="com.brainspeedtech.swarm.project.struct.validation.NonZeroStructMemberCount"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Non Zero Struct Member count"
+                  severity="ERROR"
+                  statusCode="1">
+               <description>
+                  All members in a structure must have non zero count.
+               </description>
+               <message>
+                  Expected a non zero count for structure member {0}
+               </message>
+            </constraint>
+            <constraint
+                  class="com.brainspeedtech.struct.validation.NonEmptyEnumDefinitionConstraint"
+                  id="com.brainspeedtech.swarm.project.struct.validation.NonEmptyEnumTerm"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Non Empty Enum Term"
+                  severity="ERROR"
+                  statusCode="1">
+               <description>
+                  Enumeration Term values must not be empty.
+               </description>
+               <message>
+                  Expected a non empty value for enumeration
+               </message>
+            </constraint>
+            
+         </constraints>
+      </constraintProvider>
+   </extension>
+   
+
+</plugin>

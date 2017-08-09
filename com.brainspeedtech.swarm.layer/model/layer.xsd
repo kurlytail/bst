@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:flow="http://www.brainspeedtech.com/swarm/flow"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/layer"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/layer"
+	xmlns:inst="http://www.brainspeedtech.com/swarm/inst"
+	xmlns:master="http://www.brainspeedtech.com/swarm/master"
+	xmlns:sm="http://www.brainspeedtech.com/swarm/sm">
+
+	<import namespace="http://www.brainspeedtech.com/swarm/flow"
+		schemaLocation="../../com.brainspeedtech.swarm.flow/model/flow.xsd" />
+
+
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/master">
+	</import>
+	<import schemaLocation="../../com.brainspeedtech.swarm.sm/model/sm.xsd" namespace="http://www.brainspeedtech.com/swarm/sm"></import>
+	
+	<complexType abstract="true" name="ConstraintBase">
+		<sequence>
+			<element name="except_for" type="tns:NatureBase" maxOccurs="unbounded" minOccurs="0"></element>
+		</sequence>
+		<attribute name="blurb" type="string" default="Add Description" />
+		<attribute default="true" name="pinned" type="boolean" />
+		<attribute name="process" type="string"
+			default="Manually Added" />
+		<attribute name="reason" type="string"
+			default="User Interaction" />
+		<attribute name="disabled" type="boolean" default="false"></attribute>
+		<attribute name="apply_to_all_natures" type="boolean" default="true"></attribute>
+	</complexType>
+
+	<complexType name="ModelReference">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0"
+						name="object" type="anyURI" ecore:reference="anyType" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="CrossReference">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0"
+						name="object" type="anyURI" ecore:reference="anyType" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+
+
+	<complexType name="Layer">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0"
+				name="constraint" type="tns:ConstraintBase">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+	</complexType>
+
+	<complexType name="ProjectPrefixString">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<attribute name="prefix" type="string" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="Trigger">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element ecore:reference="flow:Cell" maxOccurs="1"
+						minOccurs="1" name="from" type="anyURI" />
+					<element ecore:reference="flow:Cell" maxOccurs="1"
+						minOccurs="1" name="to" type="anyURI" />
+				</sequence>
+				<attribute name="name" type="string" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<complexType name="CustomTube">
+        <annotation>
+        	<appinfo source="http://www.brainspeedtech.com">com.bst.gen.swarmMasterNature</appinfo>
+        	<documentation>The CustomTube is a base Swarm layer constraint. This constraint specifies that generators should not implement this Tube. The usage methods will still be used with sufficient infrastructure so that users can modify the operation of this tube.</documentation>
+        </annotation>
+        <complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="CellInstanceCount">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="cell" ecore:reference="master:MasterCell" type="anyURI" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+				<attribute name="count">
+					<simpleType>
+						<restriction base="int">
+							<minInclusive value="1"></minInclusive>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="TubeInstanceCount">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+				</sequence>
+				<attribute name="count">
+					<simpleType>
+						<restriction base="int">
+							<minInclusive value="1"></minInclusive>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Parameter">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0"
+						name="object" type="anyURI" ecore:reference="anyType" />
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+				<attribute name="value" type="string" default="int"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ExternalCell">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="masterCell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterCell">
+					</element>
+					<element name="instanceCell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="inst:CellInstance">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="IgnoreTube">
+        <annotation>
+        	<appinfo source="http://www.brainspeedtech.com">com.bst.gen.swarmMasterNature</appinfo>
+        	<documentation>Tube will be absent from the instance design</documentation>
+        </annotation>
+        <complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="IgnoreCell">
+	    <annotation>
+        	<appinfo source="http://www.brainspeedtech.com">com.bst.gen.swarmMasterNature</appinfo>
+        	<documentation>Cell will be absent from the instance design</documentation>
+        </annotation>
+	
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="masterCell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterCell">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+
+
+	<complexType name="Association">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+				<attribute name="type" default="One To One" type="tns:AssociationType">
+
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="AssociationType">
+						<restriction base="string">
+							<enumeration value="One To One"></enumeration>
+							<enumeration value="One To Many"></enumeration>
+							<enumeration value="Many to One"></enumeration>
+							<enumeration value="Many to Many"></enumeration>
+						</restriction>
+	</simpleType>
+	
+	<complexType name="ConvertMasterToSM">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="stateMachine" type="anyURI"
+						maxOccurs="1" minOccurs="1" ecore:reference="sm:StateMachine">
+					</element>
+				</sequence>
+				<attribute name="project" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="IgnoreFlow">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="flow" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="flow:Flow"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="QueueDepth">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+				</sequence>
+				<attribute name="depth" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Counter">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+				</sequence>
+				<attribute name="name" type="string"
+					default="Set Name">
+				</attribute>
+				<attribute name="width">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="16bit"></enumeration>
+							<enumeration value="32bit"></enumeration>
+							<enumeration value="64bit"></enumeration>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Tap">
+		<complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube">
+					</element>
+					<element name="cell" type="anyURI" maxOccurs="1" minOccurs="1" ecore:reference="master:MasterCell"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="NatureBase" abstract="true">
+	</complexType>
+
+
+    <complexType name="FlowAnalysisAndMerge">
+    	<complexContent>
+    		<extension base="tns:NatureBase"></extension>
+    	</complexContent>
+    </complexType>
+    
+    <complexType name="InstanceTransform">
+        <complexContent>
+            <extension base="tns:NatureBase"></extension>
+        </complexContent>
+    </complexType>
+      
+
+    <complexType name="TubeReceiveCounter">
+    	<complexContent>
+    		<extension base="tns:Counter">
+    			<sequence>
+    				<element name="tube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+    <complexType name="TubeTransmitCounter">
+        <complexContent>
+            <extension base="tns:Counter">
+                <sequence>
+                    <element name="tube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <complexType name="CellCounter">
+        <complexContent>
+            <extension base="tns:Counter">
+                <sequence>
+                    <element name="cell" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterCell"></element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="TubeDescriptorLog">
+    	<complexContent>
+    		<extension base="tns:ConstraintBase">
+    			<sequence>
+    				<element name="tube" type="anyURI"
+    					maxOccurs="unbounded" minOccurs="0"
+    					ecore:reference="master:MasterTube">
+    				</element>
+    			</sequence>
+    			<attribute name="count" type="int" default="32"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="FileReference">
+    	<complexContent>
+    		<extension base="tns:ConstraintBase">
+    			<sequence>
+    				<element name="files" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+    <complexType name="StreamingTube">
+        <annotation>
+        	<appinfo source="http://www.brainspeedtech.com">com.bst.gen.swarmMasterNature</appinfo>
+        	<documentation>Tube will be absent from the instance design</documentation>
+        </annotation>
+        <complexContent>
+			<extension base="tns:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+    
+
+    <complexType name="MatchingFlows">
+    	<complexContent>
+    		<extension base="tns:ConstraintBase">
+    			<sequence>
+    				<element name="flows" type="anyURI"
+    					maxOccurs="unbounded" minOccurs="0"
+    					ecore:reference="flow:Flow">
+    				</element>
+    			</sequence>
+    			<attribute name="name" type="string"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+
+    <complexType name="Custom">
+    	<complexContent>
+    		<extension base="tns:ConstraintBase">
+    			<sequence>
+    				<element name="properties" type="tns:Property" maxOccurs="unbounded" minOccurs="0"></element>
+    			</sequence>
+    			<attribute name="clazz" type="string"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="Property">
+    	<choice ecore:name="value">
+    		<element name="string_value" type="string" minOccurs="0" maxOccurs="unbounded" ></element>
+			<element maxOccurs="unbounded" minOccurs="0"
+    					name="object_value" type="anyURI" ecore:reference="anyType" />
+    	</choice>
+    	<attribute name="name" type="string"></attribute>
+    </complexType>
+
+    <complexType name="Template">
+    	<complexContent>
+    		<extension base="tns:ConstraintBase">
+    			<sequence>
+    				<element name="code" type="string"></element>
+    				<element name="tube" type="anyURI"
+    					maxOccurs="unbounded" minOccurs="0"
+    					ecore:reference="master:MasterTube">
+    				</element>
+    				<element name="file" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+					<element maxOccurs="unbounded" minOccurs="0"
+						name="object" type="anyURI" ecore:reference="anyType" />
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+</schema>

@@ -1,0 +1,42 @@
+<%for(SharedVariable svar: sharedVariables) {
+	if(cell == svar.getMasterCell().get(0)) {
+%>
+void <%=svar.getMasterCell().get(0).getName()%>_<%=svar.getName()%>_mem_init() 
+{
+	memset(&shared_<%=svar.getName()%>, 0, sizeof(shared_<%=svar.getName()%>));
+}
+<%	}
+}%>
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {
+	if(cell.getOutput().contains(svar.getTube().get(0))) {
+%>
+void <%=cell.getName()%>_<%=svar.getName()%>_mem_init()
+{
+<%
+	Collection<MasterTube> tubes = new HashSet<MasterTube>(cell.getInput());
+	Collection<MasterTube> sharedTubes = new HashSet<MasterTube>(svar.getTube());
+	tubes.addAll(cell.getOutput());
+	sharedTubes.retainAll(tubes);
+	
+	CellInstance ci = ProjectUtil.getReferringInstance(cell, CellInstance.class);
+	
+	Collection<TubeInstance> instTubes = new LinkedList<TubeInstance>(ci.getOutput());
+	instTubes.addAll(ci.getInput());
+
+	Set<Integer> instanceUsed = new HashSet<Integer>();	
+	for(TubeInstance ti: instTubes) {
+		if(!sharedTubes.contains(ti.getTube())) continue;
+		if(instanceUsed.contains(ti.getInstance())) continue;
+%>
+#ifdef shared_<%=svar.getName()%>_<%=instanceUsed.size()%>
+	memset(&shared_<%=svar.getName()%>_<%=instanceUsed.size()%>, 0, 
+	sizeof(shared_<%=svar.getName()%>_<%=instanceUsed.size()%>));
+#endif
+<%		instanceUsed.add(ti.getInstance());
+ 	}
+%>
+
+}
+<%	}
+}%>

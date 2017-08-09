@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated gwt -->
+      <package
+            uri="http://www.brainspeedtech.com/constraint/web/gwt"
+            class="com.brainspeedtech.constraint.web.gwt.GWTPackage"
+            genModel="model/gwt.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated gwt -->
+      <parser
+            type="gwt"
+            class="com.brainspeedtech.constraint.web.gwt.util.GWTResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

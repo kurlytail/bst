@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <factory
+            uri="http://www.brainspeedtech.com/swarm/layer"
+            class="com.brainspeedtech.swarm.layer.provider.LayerItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.ITableItemLabelProvider
+               org.eclipse.emf.edit.provider.ITableItemColorProvider
+               org.eclipse.emf.edit.provider.ITableItemFontProvider
+               org.eclipse.emf.edit.provider.IItemColorProvider
+               org.eclipse.emf.edit.provider.IItemFontProvider"/>
+   </extension>
+   <extension
+         point="org.eclipse.gmf.runtime.diagram.ui.decoratorProviders">
+      <decoratorProvider
+            class="com.brainspeedtech.swarm.layer.edit.LayerDecoratorProvider">
+         <Priority
+               name="Lowest">
+         </Priority>
+         <object
+               class="com.brainspeedtech.swarm.master.MasterCell"
+               id="com.brainspeedtech.swarm.layer.edit.object2">
+         </object>
+      </decoratorProvider>
+   </extension>
+ 
+</plugin>

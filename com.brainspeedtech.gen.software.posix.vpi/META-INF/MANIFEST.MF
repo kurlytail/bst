@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vpi
+Bundle-SymbolicName: com.brainspeedtech.gen.software.posix.vpi; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.brainspeedtech.gen.software.posix.vpi.Activator
+Bundle-Vendor: BRAINSPEEDTECH
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ com.brainspeedtech.gen.software.posix;visibility:=reexport,
+ org.eclipse.debug.ui,
+ com.brainspeedtech.swarm.project,
+ org.eclipse.core.variables,
+ com.bst.struct,
+ org.eclipse.gmf,
+ org.eclipse.gmf.runtime.notation,
+ com.brainspeedtech.swarm.inst,
+ com.bst.gen,
+ com.brainspeedtech.swarm.layer,
+ com.brainspeedtech.constraint.software,
+ com.brainspeedtech.constraint.software.posix,
+ com.brainspeedtech.constraint.software.posix.vpi;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

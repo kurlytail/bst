@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/com.brainspeedtech.constraint.web.gwt/src" modelPluginID="com.brainspeedtech.constraint.web.gwt"
+    modelName="GWT" importerID="org.eclipse.xsd.ecore.importer" copyrightFields="false"
+    providerRootExtendsClass="com.brainspeedtech.swarm.project.validation.ProblemDecoratorItemProvider"
+    tableProviders="true" usedGenPackages="platform:/plugin/com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow platform:/plugin/com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst platform:/plugin/com.brainspeedtech.swarm.layer/model/layer.genmodel#//layer platform:/plugin/com.bst.swarm.master/model/master.genmodel#//master platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm platform:/plugin/com.bst.struct/model/struct.genmodel#//struct">
+  <foreignModel>gwt.xsd</foreignModel>
+  <genPackages prefix="GWT" basePackage="com.brainspeedtech.constraint.web" resource="XML"
+      disposableProviderFactory="true" extensibleProviderFactory="true" childCreationExtenders="true"
+      ecorePackage="gwt.ecore#/">
+    <genClasses ecoreClass="gwt.ecore#//GWTGeneration"/>
+  </genPackages>
+</genmodel:GenModel>

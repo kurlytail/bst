@@ -1,0 +1,12 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="CCopyRight" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.project.util.*;"
+%>
+<%
+ 	String[] copyrightMessage = LayerUtil.getCopyrightMessage((EObject)argument);
+%>
+<%for(String message: copyrightMessage) {%>
+// <%=message%>
+
+<%}%>

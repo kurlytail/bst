@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright @2011-2013 BrainSpeed Technologies - All rights reserved"
+    modelDirectory="/com.brainspeedtech.constraint.boost/src" modelPluginID="com.brainspeedtech.constraint.boost"
+    modelName="Boost" importerID="org.eclipse.xsd.ecore.importer" complianceLevel="6.0"
+    usedGenPackages="../../com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow ../../com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst ../../com.brainspeedtech.swarm.layer/model/layer.genmodel#//layer ../../com.bst.swarm.master/model/master.genmodel#//master ../../com.bst.struct/model/struct.genmodel#//struct platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm">
+  <foreignModel>boost.xsd</foreignModel>
+  <genPackages prefix="Boost" basePackage="com.brainspeedtech.constraint" resource="XML"
+      disposableProviderFactory="true" childCreationExtenders="true" ecorePackage="boost.ecore#/">
+    <genClasses ecoreClass="boost.ecore#//BoostNature"/>
+    <genClasses ecoreClass="boost.ecore#//NativeType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference boost.ecore#//NativeType/object"/>
+    </genClasses>
+    <genClasses ecoreClass="boost.ecore#//TCPSocketTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference boost.ecore#//TCPSocketTube/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute boost.ecore#//TCPSocketTube/clientReceiver"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute boost.ecore#//TCPSocketTube/serverIP"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute boost.ecore#//TCPSocketTube/serverPort"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

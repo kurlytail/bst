@@ -1,0 +1,71 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="DescriptorFile" 
+	imports ="java.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.struct.util.StructResourceImpl
+	org.eclipse.emf.ecore.resource.Resource
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	com.brainspeedtech.struct.Enum
+	org.eclipse.emf.ecore.util.*;"
+%>
+<% Resource resource = (Resource) argument;  	
+	Document doc = (Document) EcoreUtil.getObjectByType(
+	resource.getContents(), StructPackage.eINSTANCE.getDocument());
+	if (doc == null)
+		return "";
+	Collection<Struct> structs = EcoreUtil.getObjectsByType(
+			doc.getStruct(), StructPackage.eINSTANCE.getStruct());
+	Collection<Enum> enumerations = EcoreUtil.getObjectsByType(
+			doc.getStruct(), StructPackage.eINSTANCE.getEnum());
+	if (structs.isEmpty() && enumerations.isEmpty())
+		return "";
+	String[] copyrightMessage = LayerUtil.getCopyrightMessage(doc);	
+%>
+<%for(String message: copyrightMessage) {%>
+// <%=message%>
+<%}%>
+
+<%for(Enum enumeration:enumerations) {%>
+// Format for enumeration <%=enumeration.getName()%>
+// <%=GenUtil.sanitize(enumeration.getBlurb())%>
+<%	for(EnumTerm term: enumeration.getTerm()) {%>
+// <%=GenUtil.sanitize(term.getBlurb())%>
+`define <%=term.getName().toUpperCase()%> <%=term.getValue()%>
+<% 	}%>
+<%}%>
+
+<%for(Struct struct: structs) {
+	long currentLocation = 0;
+	long iterateLocation = 0;
+%>
+// Format for <%=struct.getName()%>
+// <%=GenUtil.sanitize(struct.getBlurb())%>
+<%	for(Field field: struct.getField()) {
+	currentLocation = iterateLocation;
+	long nextLocation = currentLocation + StructUtil.getFieldCount(field) * 
+			StructUtil.getAtomSize(field.getAtom()) - 1;
+	iterateLocation = nextLocation + 1;
+%>
+
+<%if((currentLocation/256) != (nextLocation/256)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_256	<%=(currentLocation/256)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_256		<%=(nextLocation%256)%>:<%=(currentLocation%256)%>
+<%if((currentLocation/128) != (nextLocation/128)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_128	<%=(currentLocation/128)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_128		<%=(nextLocation%128)%>:<%=(currentLocation%128)%>
+<%if((currentLocation/64) != (nextLocation/64)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_64	<%=(currentLocation/64)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_64		<%=(nextLocation%64)%>:<%=(currentLocation%64)%>
+<%if((currentLocation/32) != (nextLocation/32)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_32	<%=(currentLocation/32)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_32		<%=(nextLocation%32)%>:<%=(currentLocation%32)%>
+<%if((currentLocation/16) != (nextLocation/16)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_16 	<%=(currentLocation/16)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_16		<%=(nextLocation%16)%>:<%=(currentLocation%16)%>
+<%if((currentLocation/8) != (nextLocation/8)) continue; %>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_OFFSET_8		<%=(currentLocation/8)%>
+`define <%=struct.getName().toUpperCase()%>_<%=field.getName().toUpperCase()%>_LOC_8		<%=(nextLocation%8)%>:<%=(currentLocation%8)%>
+<%}%>
+<%}%>
+

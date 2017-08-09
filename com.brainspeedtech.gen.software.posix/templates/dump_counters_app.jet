@@ -1,0 +1,100 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+    class="DumpCountersAppFile" 
+    imports ="java.util.*
+        org.eclipse.emf.ecore.* 
+        com.brainspeedtech.swarm.project.util.* 
+        com.brainspeedtech.struct.util.StructResourceImpl 
+        org.eclipse.emf.ecore.resource.Resource 
+        com.brainspeedtech.struct.* 
+        com.brainspeedtech.swarm.master.* 
+        com.brainspeedtech.swarm.master.util.* 
+        com.brainspeedtech.swarm.inst.* 
+        com.brainspeedtech.swarm.layer.*
+        com.brainspeedtech.swarm.flow.*;"
+%>
+<%Instance instance = (Instance) argument;%>    
+<%@ include file="ccopyright.jet"%>
+
+#define _XOPEN_SOURCE 500
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
+#include <time.h>
+#include <ftw.h>
+#include <semaphore.h>
+#include "gen_<%=instance.getName()%>.h"
+#include "gen_<%=instance.getName()%>_counters.h"
+#include "gen_<%=instance.getName()%>_print_counters.h"
+
+<%for(CellInstance ci: instance.getCell()) {%>
+<%
+    Collection<Counter> counters = ProjectUtil.getReferringInstances(ci.getCell(), Counter.class);
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), TubeReceiveCounter.class));
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), TubeTransmitCounter.class));
+    if(counters.size() != 0) {
+    %>
+<%=ci.getCell().getName()%>_counters_t* counter_file_<%=ci.getName()%> = NULL;
+<%=ci.getCell().getName()%>_counters_t counter_file_<%=ci.getName()%>_init = { 0 };
+    <%}
+}%>
+
+char *program_instance_name = "<%=instance.getName()%>_logs";
+int mem_file;
+
+int main(int argc, char* argv[])
+{
+
+	int work_dir_fd;
+
+	if (argc > 1) {
+		program_instance_name = argv[1];
+	}
+
+	work_dir_fd = open(program_instance_name, 0);
+	if (work_dir_fd < 0) {
+		perror("Error opening work directory");
+		exit(-1);
+	}
+	
+<%int index = 0;%>
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) { ++index; %>
+<%
+    Collection<Counter> counters = ProjectUtil.getReferringInstances(ci.getCell(), Counter.class);
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), TubeReceiveCounter.class));
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), TubeTransmitCounter.class));
+    if(counters.size() != 0) {
+    %>
+    mem_file = openat(work_dir_fd, "counter__<%=ci.getName()%>", O_RDONLY);
+    if (mem_file < 0) {
+        perror("Error oepning stats file counter__<%=ci.getName()%>");
+        exit(-1);
+    }
+    
+    counter_file_<%=ci.getName()%> = (<%=ci.getCell().getName()%>_counters_t*)mmap(NULL, 
+        sizeof(<%=ci.getCell().getName()%>_counters_t), PROT_READ,
+        MAP_SHARED, mem_file, 0);
+    if (counter_file_<%=ci.getName()%>  == NULL) {
+        perror("Error mapping stats file counter__<%=ci.getName()%>");
+        exit(-1);
+    }
+    
+    print_<%=ci.getCell().getName()%>_counters("<%=ci.getName()%>", counter_file_<%=ci.getName()%>);
+    close(mem_file);
+    <%}
+	}
+}%>
+
+
+	return 0;
+
+}
+
+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ (c) Copyright 2011, BrainSpeed Technologies
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.struct.presentation.StructModelWizard"
+            finalPerspective="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            icon="icons/full/obj16/StructModelFile.gif"
+            id="com.brainspeedtech.struct.presentation.StructModelWizardID"
+            name="%_UI_StructModelWizard_label"
+            preferredPerspectives="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective">
+         <description>%_UI_StructModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+
+      <editor
+            id="com.brainspeedtech.struct.presentation.StructEditorID"
+            name="%_UI_StructEditor_label"
+            icon="icons/full/obj16/StructModelFile.gif"
+            extensions="struct"
+            class="com.brainspeedtech.struct.presentation.StructEditor"
+            contributorClass="com.brainspeedtech.struct.presentation.StructActionBarContributor">
+      </editor>
+
+<!--
+      <editor
+            class="com.brainspeedtech.struct.presentation.StructEditorPart"
+            extensions="struct"
+            id="com.brainspeedtech.struct.presentation.StructEditorPart"
+            name="Structure Editor">
+      </editor> -->
+   </extension>
+
+</plugin>

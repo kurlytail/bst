@@ -1,0 +1,23 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix.vpi"
+	class="ModulePlanFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.layer.*
+	java.util.*
+	com.brainspeedtech.swarm.layer.util.*
+	com.brainspeedtech.swarm.project.util.*;"
+%>
+
+<%CellInstance instance = (CellInstance) argument;
+  Instance designInstance = (Instance)instance.eContainer();
+  
+%>
+
+module <%=instance.getName()%>();
+
+// Put this into the appropriate always block with the correct clocks and other port instantiations
+	initial
+		begin
+			$<%=instance.getName()%>_vpi("logs");
+		end
+endmodule // <%=instance.getName()%>

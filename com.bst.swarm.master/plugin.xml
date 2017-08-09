@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+  (c) Copyright 2011, BrainSpeed Technologies
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/swarm/master"
+            class="com.brainspeedtech.swarm.master.MasterPackage"
+            genModel="model/master.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="master"
+            class="com.brainspeedtech.swarm.master.util.MasterResourceFactoryImpl"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="org.eclipse.emf.compare.ui.contenttype.ModelContentType"
+            file-extensions="master"
+            file-names="*">
+      </file-association>
+   </extension>
+
+</plugin>

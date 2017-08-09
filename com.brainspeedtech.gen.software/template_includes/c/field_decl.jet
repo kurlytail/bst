@@ -1,0 +1,33 @@
+
+
+typedef enum _FIELD_TYPE {
+    FIELD_TYPE_EOL,
+    FIELD_TYPE_BIT,
+    FIELD_TYPE_U16,
+    FIELD_TYPE_U32,
+    FIELD_TYPE_U64,
+    FIELD_TYPE_CHILD
+} FIELD_TYPE;
+
+struct _field_layout;
+
+typedef struct _struct_layout {
+	const char* name;
+	int field_count;
+	int byte_size;
+	struct _field_layout *fields;
+} struct_layout_t;
+
+typedef struct _field_layout {
+    const char *name;
+	int bit_offset;
+	FIELD_TYPE type;
+	int count;
+	struct_layout_t* child;
+} field_layout_t;
+
+typedef struct _struct_list {
+	const char *name;
+	struct_layout_t *layout;
+} struct_list_t;
+

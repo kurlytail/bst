@@ -1,0 +1,26 @@
+<%for(Tube tube: mt.getDesignTubes()) {
+	if(tube.eContainer() == flow) {
+%>
+	Originating Cell <%=tube.getFrom().getName()%> for flow <%=flow.getName()%>
+		Potential Targets in flow 
+<%		for(Tube targetTube: tube.getTo().getOutput()) {%>
+				Tube <%=targetTube.getName()%> to Cell <%=targetTube.getTo().getName()%>
+<%		}%>
+
+		Potential flows to trigger
+<%		for(Cell designCell: cell.getDesignCells()) {
+			if(designCell.getInput().isEmpty() && !designCell.getOutput().isEmpty()) {
+				for(Tube targetTube: designCell.getOutput()) {
+%>
+				Flow <%=((Flow)designCell.eContainer()).getName()%> Tube <%=targetTube.getName()%> to Cell <%=targetTube.getTo().getName()%>
+<%				}
+			}
+		}%>
+
+		Potential targets across flows
+<%		for(MasterTube targetTube: cell.getOutput()) {%>
+				Flow <%=((Flow)targetTube.getDesignTubes().get(0).eContainer()).getName()%> Tube <%=targetTube.getName()%> to Cell <%=targetTube.getTo().getName()%>
+<%		}%>
+<%
+	}
+}%>

@@ -1,0 +1,42 @@
+
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Swarm Uscore Debug</title>
+<script src='js/lib/underscore.js'></script>
+<script src='js/lib/jquery.js'></script>
+<script src='js/model/<%=design.MasterDesign.name%>.js'></script>
+<script src='js/swarmlib.js'></script>
+<%_.each(sitePath, function(path) {%>
+<script src='js/<%=path%>/swarmlib.js'></script>
+<%});%>
+</head>
+<body>
+
+<%_.each(sources, function(source, source_key) {%>
+<script id='<%=source_key%>' type='text/underscore'>
+//<![CDATA[
+<%=source.replace(/\]\]>/g, "\]\]\]\]><!\[CDATA\[>")%>
+//]]>
+</script>
+<%});%>
+
+<script id="map_template" type='text/underscore'>
+//<![CDATA[
+<%=map_template%>
+//]]>
+</script>
+
+<%_.each(generator, function(source, source_key){%>
+<li><a onclick='
+	alert("<%=source.template%>");
+'><%=source_key%></a></li>
+<%});%>
+
+<script>
+</script>
+
+</body>
+</html>
+

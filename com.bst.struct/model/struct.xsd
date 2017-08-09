@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:tns="http://www.brainspeedtech.com/struct" elementFormDefault="qualified" targetNamespace="http://www.brainspeedtech.com/struct">
+
+    <complexType mixed="false" name="Struct">
+    	<complexContent>
+    		<extension base="tns:Atom">
+    			<sequence>
+    				<element maxOccurs="unbounded" minOccurs="1" name="field" type="tns:Field"/>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType mixed="false" name="Field">
+    	<attribute name="name" type="string"/>
+    	<attribute name="blurb" type="string"/>
+    	<attribute ecore:reference="tns:Atom" name="atom" type="anyURI"/>
+    	<attribute name="count" type="long">
+    	</attribute>
+    </complexType>
+
+    <complexType mixed="false" name="Atom">
+    	<attribute name="name" type="string"/>
+    	<attribute name="blurb" type="string"/>
+    	<attribute ecore:reference="tns:Atom" name="atom" type="anyURI"/>
+    	<attribute name="count" type="long">
+    	</attribute>
+    </complexType>
+
+
+    <complexType mixed="false" name="Enum">
+    	<complexContent>
+    		<extension base="tns:Atom">
+    			<sequence>
+    				<element maxOccurs="unbounded" minOccurs="1" name="term" type="tns:EnumTerm">
+    				</element>
+    			</sequence>
+
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType mixed="false" name="EnumTerm">
+    	<attribute name="name" type="string" use="optional" default="ENUMERATION_NAME..."/>
+    	<attribute name="value" type="string" default="0" use="optional"/>
+    	<attribute name="blurb" type="string"></attribute>
+    </complexType>
+
+
+
+    <complexType name="Document">
+    	<sequence>
+    		<element maxOccurs="unbounded" minOccurs="0" name="struct"
+    			type="tns:Atom">
+    		</element>
+    	</sequence>
+        <attribute name="name" type="string"></attribute>
+        <attribute default="false" name="ghost" type="boolean" />
+
+    </complexType>
+
+
+    <complexType name="Path">
+		<sequence>
+
+			<element name="child" type="tns:Path" maxOccurs="1"
+				minOccurs="0">
+			</element>
+		</sequence>
+
+		<attribute name="index" type="long" default="0"></attribute>
+		<attribute name="range" type="long" default="0"></attribute>
+		<attribute name="field" type="anyURI" ecore:reference="tns:Field"></attribute>
+	</complexType>
+    
+    
+</schema>

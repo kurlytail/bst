@@ -1,0 +1,222 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="DesignModuleFile" 
+	imports ="java.util.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.constraint.hardware.verilog.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.struct.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% CellInstance cell = (CellInstance) argument;
+long defaultFrequency = 125000000;
+long moduleFrequency = defaultFrequency;
+String moduleClockName = "clk";
+String moduleResetName = "rst_n";
+ClockDomain moduleDomain = ProjectUtil.getReferringInstance(cell.getCell(), ClockDomain.class);
+if(moduleDomain != null) {
+	moduleClockName = moduleDomain.getName() + "_clk";
+	moduleResetName = moduleDomain.getName() + "_rst_n";
+}
+%>
+
+`timescale 1ns/100ps
+
+`include "gen_<%=((Instance)cell.eContainer()).getName()%>_design.vh"
+
+module gen_<%=cell.getName()%>_wrapper(/*AUTOARG*/);
+
+<%
+
+Set<ClockDomain> clockDomains = ProjectUtil.getReferringInstances(cell.getCell().getInput(), ClockDomain.class);
+clockDomains.addAll(ProjectUtil.getReferringInstances(cell.getCell().getOutput(), ClockDomain.class));
+
+Set<MasterTube> processedOutputTubes = new HashSet<MasterTube>();
+Set<MasterTube> processedInputTubes = new HashSet<MasterTube>();
+
+%>
+
+	input wire <%=moduleClockName%>;
+	input wire <%=moduleResetName%>;
+<%for(ClockDomain domain: clockDomains) {%>
+	input wire <%=domain.getName()%>_clk;
+	input wire <%=domain.getName()%>_rst_n;
+<%}%>
+
+<%for(TubeInstance ti: cell.getOutput()) {
+	BusWidth widthConstraint = ProjectUtil.getReferringInstance(ti.getTube(), BusWidth.class);
+	int width = 32;
+	if (widthConstraint != null) {
+		width = widthConstraint.getWidth();
+	}
+	String clockname = "clk";
+	String resetname = "rst_n";
+	ClockDomain clockDomain = ProjectUtil.getReferringInstance(ti.getTube(), ClockDomain.class);
+	long tubeFrequency = defaultFrequency;
+	if(clockDomain != null) {
+		tubeFrequency = clockDomain.getFrequency().longValue();
+		clockname = clockDomain.getName() + "_clk";
+		resetname = clockDomain.getName() + "_rst_n";
+	}
+	int finalWidth = (int)((width * tubeFrequency + moduleFrequency - 1) / moduleFrequency);
+	//finalWidth = 1 << (int)(Math.ceil(Math.log(finalWidth) / Math.log(2)));
+%>
+	output wire [<%=(width-1)%>:0] <%=ti.getName()%>_data;
+	output wire <%=ti.getName()%>_rdy;
+	input wire <%=ti.getName()%>_pop;
+	wire [<%=(finalWidth-1)%>:0] <%=ti.getName()%>_before_width_data;
+	wire <%=ti.getName()%>_before_width_rdy;
+	wire <%=ti.getName()%>_before_width_pop;
+	wire [<%=(finalWidth-1)%>:0] <%=ti.getName()%>_sync_data;
+	wire <%=ti.getName()%>_sync_rdy;
+	wire <%=ti.getName()%>_sync_pop;
+<%	if (width != finalWidth) { %>
+	gen_width_<%=finalWidth%>_to_<%=width%> <%=ti.getName()%>_width_change(
+		.clk(<%=clockname%>),
+		.rst_n(<%=resetname%>),
+		.rdy_o(<%=ti.getName()%>_rdy),
+		.pop_o(<%=ti.getName()%>_pop),
+		.data_o(<%=ti.getName()%>_data),
+		.rdy_i(<%=ti.getName()%>_before_width_rdy),
+		.pop_i(<%=ti.getName()%>_before_width_pop),
+		.data_i(<%=ti.getName()%>_before_width_data),
+		);
+<% } else { %>
+	assign <%=ti.getName()%>_data = <%=ti.getName()%>_before_width_data;
+	assign <%=ti.getName()%>_rdy = <%=ti.getName()%>_before_width_rdy;
+	assign <%=ti.getName()%>_before_width_pop = <%=ti.getName()%>_pop;
+<%}%>
+<%	if (tubeFrequency != moduleFrequency) { %>
+	gen_<%=finalWidth%>_async_fifo <%=ti.getName()%>_async_fifo(
+		.clk_o(<%=clockname%>),
+		.rst_n_o(<%=resetname%>),
+		.rdy_o(<%=ti.getName()%>_before_width_rdy),
+		.pop_o(<%=ti.getName()%>_before_width_pop),
+		.data_o(<%=ti.getName()%>_before_width_data),
+		.clk_i(<%=moduleClockName%>),
+		.rst_n_i(<%=moduleResetName%>),
+		.rdy_i(<%=ti.getName()%>_sync_rdy),
+		.pop_i(<%=ti.getName()%>_sync_pop),
+		.data_i(<%=ti.getName()%>_sync_data),
+		);
+<% } else { %>
+	assign <%=ti.getName()%>_before_width_data = <%=ti.getName()%>_sync_data;
+	assign <%=ti.getName()%>_before_width_rdy = <%=ti.getName()%>_sync_rdy;
+	assign <%=ti.getName()%>_sync_pop = <%=ti.getName()%>_before_width_pop;
+<%}%>
+<%
+	if(processedOutputTubes.contains(ti.getTube())) continue;
+	processedOutputTubes.add(ti.getTube());
+
+	Collection<Struct> structList = MasterUtil.getDescriptors(ti.getTube());
+	if (structList.isEmpty()) continue;
+	
+	Struct descriptorStruct = null;
+	for (Struct struct: structList) {
+		descriptorStruct = struct;
+		break;
+	}
+	
+%>
+	gen_<%=descriptorStruct.getName()%>_<%=finalWidth%>_pack
+		<%=ti.getTube().getName()%>_<%=descriptorStruct.getName()%>_<%=finalWidth%>_pack(/*AUTOINST*/);
+		
+<%}%>
+
+<%for(TubeInstance ti: cell.getInput()) {
+	BusWidth widthConstraint = ProjectUtil.getReferringInstance(ti.getTube(), BusWidth.class);
+	int width = 32;
+	if (widthConstraint != null) {
+		width = widthConstraint.getWidth();
+	}
+	String clockname = "clk";
+	String resetname = "rst_n";
+	ClockDomain clockDomain = ProjectUtil.getReferringInstance(ti.getTube(), ClockDomain.class);
+	long tubeFrequency = defaultFrequency;
+	if(clockDomain != null) {
+		tubeFrequency = clockDomain.getFrequency().longValue();
+		clockname = clockDomain.getName() + "_clk";
+		resetname = clockDomain.getName() + "_rst_n";
+	}
+	int finalWidth = (int)((width * tubeFrequency + moduleFrequency - 1) / moduleFrequency);
+	//finalWidth = 1 << (int)(Math.ceil(Math.log(finalWidth) / Math.log(2)));
+%>
+	input wire [<%=(width-1)%>:0] <%=ti.getName()%>_data;
+	input wire <%=ti.getName()%>_rdy;
+	output wire <%=ti.getName()%>_pop;
+	wire [<%=(finalWidth-1)%>:0] <%=ti.getName()%>_after_width_data;
+	wire <%=ti.getName()%>_after_width_rdy;
+	wire <%=ti.getName()%>_after_width_pop;
+	wire [<%=(finalWidth-1)%>:0] <%=ti.getName()%>_sync_data;
+	wire <%=ti.getName()%>_sync_rdy;
+	wire <%=ti.getName()%>_sync_pop;
+<%	if (width != finalWidth) { %>
+	gen_width_<%=width%>_to_<%=finalWidth%> <%=ti.getName()%>_width_change(
+		.clk(<%=clockname%>),
+		.rst_n(<%=resetname%>),
+		.rdy_i(<%=ti.getName()%>_rdy),
+		.pop_i(<%=ti.getName()%>_pop),
+		.data_i(<%=ti.getName()%>_data)
+		.rdy_o(<%=ti.getName()%>_after_width_rdy),
+		.pop_o(<%=ti.getName()%>_after_width_pop),
+		.data_o(<%=ti.getName()%>_after_width_data)
+		);
+<% } else { %>
+	assign <%=ti.getName()%>_after_width_data = <%=ti.getName()%>_data;
+	assign <%=ti.getName()%>_after_width_rdy = <%=ti.getName()%>_rdy;
+	assign <%=ti.getName()%>_pop = <%=ti.getName()%>_after_width_pop;
+<%}%>
+<%	if (tubeFrequency != moduleFrequency) { %>
+	gen_<%=finalWidth%>_async_fifo <%=ti.getName()%>_async_fifo(
+		.clk_i(<%=clockname%>),
+		.rst_n_i(<%=resetname%>),
+		.rdy_i(<%=ti.getName()%>_after_width_rdy),
+		.pop_i(<%=ti.getName()%>_after_width_pop),
+		.data_i(<%=ti.getName()%>_after_width_data),
+		.clk_o(<%=moduleClockName%>),
+		.rst_n_o(<%=moduleResetName%>),
+		.rdy_o(<%=ti.getName()%>_sync_rdy),
+		.pop_o(<%=ti.getName()%>_sync_pop),
+		.data_o(<%=ti.getName()%>_sync_data),
+		);
+<% } else { %>
+	assign <%=ti.getName()%>_sync_data = <%=ti.getName()%>_after_width_data;
+	assign <%=ti.getName()%>_sync_rdy = <%=ti.getName()%>_after_width_rdy;
+	assign <%=ti.getName()%>_after_width_pop = <%=ti.getName()%>_sync_pop;
+<%}%>
+
+
+<%
+	if(processedInputTubes.contains(ti.getTube())) continue;
+	processedInputTubes.add(ti.getTube());
+	
+	Collection<Struct> structList = MasterUtil.getDescriptors(ti.getTube());
+	if (structList.isEmpty()) continue;
+	
+	Struct descriptorStruct = null;
+	for (Struct struct: structList) {
+		descriptorStruct = struct;
+		break;
+	}
+
+%>
+	gen_<%=descriptorStruct.getName()%>_<%=finalWidth%>_unpack
+		<%=ti.getTube().getName()%>_<%=descriptorStruct.getName()%>_<%=finalWidth%>_unpack(/*AUTOINST*/);
+		
+<%}%>
+
+
+endmodule
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:()
+// verilog-library-extensions:(".v" ".vh")
+// eval:(verilog-read-includes)
+// eval:(setq verilog-auto-output-ignore-regexp "^w_.*")
+// eval:(setq verilog-auto-input-ignore-regexp "^w_.*")
+// End:
+

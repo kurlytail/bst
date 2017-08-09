@@ -1,0 +1,27 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="LogrotateConfigFile" 
+	imports ="java.util.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.layer.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% Instance instance = (Instance) argument;%>
+
+# Copy this file into logrotate.conf to use log rotation
+# Try "man logrotate" for more info on the config file
+
+size 100k
+rotate 1
+missingok
+copytruncate
+
+<%for(CellInstance ci: instance.getCell()) {%>
+CURDIR/<%=instance.getName()%>_logs/<%=ci.getName()%>_err.log {
+}
+<%}%>
+

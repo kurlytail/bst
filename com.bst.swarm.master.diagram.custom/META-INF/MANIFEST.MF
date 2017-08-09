@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Custom
+Bundle-SymbolicName: com.bst.swarm.master.diagram.custom;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: BST
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.bst.swarm.master.diagram

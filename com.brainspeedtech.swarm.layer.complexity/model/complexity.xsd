@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema
+	targetNamespace="http://www.brainspeedtech.com/swarm/layer/complexity"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/layer/complexity" xmlns:pref="http://www.brainspeedtech.com/swarm/layer">
+	<import schemaLocation="../../com.brainspeedtech.swarm.layer/model/layer.xsd" namespace="http://www.brainspeedtech.com/swarm/layer"></import>
+
+	<complexType name="SpaceComplexity">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+				<attribute name="units" type="float"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="TimeComplexity">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+				<attribute name="units" type="float"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="InstanceConstraint">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+				<attribute name="count" type="int"></attribute>
+
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ContainerConstraint">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

@@ -1,0 +1,9 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="CScope" 
+	imports ="org.eclipse.core.resources.* java.io.File java.util.* org.eclipse.emf.ecore.* com.brainspeedtech.swarm.project.util.* com.brainspeedtech.struct.util.StructResourceImpl org.eclipse.emf.ecore.resource.Resource com.brainspeedtech.struct.* com.brainspeedtech.swarm.master.* com.brainspeedtech.swarm.master.util.* com.brainspeedtech.swarm.inst.* com.brainspeedtech.swarm.flow.*;"
+%>
+<%Collection<File> files = (Collection<File>) argument;%>	
+
+<%for(File file: files) { %>
+<%=file.getName()%>
+<%}%>

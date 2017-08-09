@@ -1,0 +1,350 @@
+<%@ jet package="com.brainspeedtech.gen.software.java"
+	class="StructHeaderFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.java.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*
+	org.eclipse.emf.transaction.util.*;"
+%>
+<%
+Resource resource = (Resource)argument;
+%>
+<%
+	String fileName = resource.getURI().lastSegment()
+						.replaceAll("\\.struct$", "");
+	List<Atom> atoms = new ArrayList<Atom>();
+	Set<Document> includeFiles = new HashSet<Document>();
+
+	TreeIterator<EObject> contents = resource.getAllContents();
+	while(contents.hasNext()) {
+		EObject eObject = contents.next();
+		if (eObject instanceof Atom) {
+			Atom atom = (Atom) eObject;
+			atoms.add((Atom) eObject);
+			if (atom.getAtom() != null) {
+				if (atom.getAtom().eResource() == resource)
+					continue;
+				includeFiles.add((Document)EcoreUtil.getObjectByType(atom.getAtom().eResource().getContents(),
+					StructPackage.eINSTANCE.getDocument()));
+			}
+			if (atom instanceof Struct) {
+				Struct str = (Struct) atom;
+				for (Field f : str.getField()) {
+					if (f.getAtom() != null) {
+						if (f.getAtom().eResource() == resource)
+							continue;
+						includeFiles.add((Document)EcoreUtil.getObjectByType(f.getAtom().eResource().getContents(),
+							StructPackage.eINSTANCE.getDocument()));
+					}
+				}
+			}
+		}
+	}
+	
+	Collection<Struct> structs = EcoreUtil.getObjectsByType(
+		atoms, StructPackage.eINSTANCE.getStruct());
+		
+	Document currentDoc = (Document)EcoreUtil.getObjectByType(resource.getContents(),
+			StructPackage.eINSTANCE.getDocument());
+		
+	JavaPackage javaPackage = ProjectUtil.getReferringInstance(currentDoc,JavaPackage.class);
+			
+	String className = currentDoc.eResource().getURI().lastSegment().replaceAll("\\.struct$", "");
+	String packageName;
+	if (javaPackage != null) {
+		packageName = javaPackage.getName();
+	} else {
+		packageName = TransactionUtil.getEditingDomain(resource).getID() + ".gen.struct";
+	}
+	
+%>
+package <%=packageName%>;
+
+import java.nio.ByteBuffer;
+
+<%for (Document includeFile : includeFiles) {
+	javaPackage = ProjectUtil.getReferringInstance(includeFile,
+			JavaPackage.class);
+%>
+<%if(javaPackage != null){%>
+import <%=javaPackage.getName()%>.<%=includeFile.eResource().getURI().lastSegment().replaceAll("\\.struct$", "")%>;
+<%} else {%>
+<%}%>
+<%}%>
+
+public class <%=className%> {
+
+<%for(Atom atom: atoms) {
+	if(ProjectUtil.getReferringInstance(atom, NativeType.class) != null)
+		continue;
+	if(atom instanceof Struct) { %>
+	public static class <%=atom.getName()%> extends SwarmStructBase {
+<%		for (Field f : ((Struct) atom).getField()) {
+			if (f.getAtom() == null) {%>
+		public int <%=f.getName()%> = 0;
+<%		
+		} else if(f.getAtom().getName().equals("uint16")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+		public short <%=f.getName()%> = 0;
+<%
+				} else {
+%>
+		public short <%=f.getName()%>[] = new short[<%=StructUtil.getFieldCount(f)%>];
+<%				}
+			} else if(f.getAtom().getName().equals("uint32")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+		public int <%=f.getName()%> = 0;
+<%
+				} else {
+%>
+		public int <%=f.getName()%>[] = new int[<%=StructUtil.getFieldCount(f)%>];
+<%				}
+			} else if(f.getAtom().getName().equals("uint64")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+		public long <%=f.getName()%> = 0;
+<%
+				} else {
+%>
+		public long <%=f.getName()%>[] = new long[<%=StructUtil.getFieldCount(f)%>];
+<%				}
+			} else {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+		public <%=StructGenerator.getHeirarchicalName(f)%> <%=f.getName()%> = new <%=StructGenerator.getHeirarchicalName(f)%>();
+<%
+				} else {
+%>
+		public <%=StructGenerator.getHeirarchicalName(f)%> <%=f.getName()%>[] = new <%=StructGenerator.getHeirarchicalName(f)%>[<%=StructUtil.getFieldCount(f)%>];
+		{
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i] = new  <%=StructGenerator.getHeirarchicalName(f)%>();
+			}
+		}
+<%				}
+			}
+		}
+%>
+		public void unpack(ByteBuffer byteBuffer) {
+			
+			int last_value = 0;
+<%		
+		int bits_remaining = 0;
+		for (Field f : ((Struct) atom).getField()) {
+			if(f.getAtom() == null) {
+				int mask = ((1 << StructUtil.getFieldCount(f)) - 1);
+				if(StructUtil.getFieldCount(f) == 32) mask = 0xffffffff;
+			
+				if (bits_remaining == 0) {
+%>
+			last_value = byteBuffer.getInt();
+<%
+					bits_remaining = 32;
+				}
+%>
+			<%=f.getName()%> = (last_value & <%=mask%>);
+			last_value >>>= <%=StructUtil.getFieldCount(f)%>;
+<%
+				bits_remaining -= StructUtil.getFieldCount(f);
+			}
+		
+				if(f.getAtom() != null) {
+					if(f.getAtom().getName().equals("uint64")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			<%=f.getName()%> = byteBuffer.getLong();
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i] = byteBuffer.getLong();
+			}
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint32")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			<%=f.getName()%> = byteBuffer.getInt();
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i] = byteBuffer.getInt();
+			}
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint16")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			<%=f.getName()%> = byteBuffer.getShort();
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i] = byteBuffer.getShort();
+			}
+<%
+						}
+					}
+					else if(f.getAtom() instanceof Atom) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			<%=f.getName()%>.unpack(byteBuffer);
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i].unpack(byteBuffer);
+			}
+<%
+						}
+					}
+				}
+		}
+%>
+		}
+	
+		public void pack(ByteBuffer byteBuffer) {
+			int last_value = 0;
+<%		
+		long buffer_size = 0;
+		bits_remaining = 32;
+		for (Field f : ((Struct) atom).getField()) {
+			if(f.getAtom() == null) {
+				int mask = ((1 << StructUtil.getFieldCount(f)) - 1);
+				if(StructUtil.getFieldCount(f) == 32) mask = 0xffffffff;
+%>
+			last_value |= ((int)(<%=f.getName()%> & <%=mask%>)) << <%=32-bits_remaining%>;
+<%
+				bits_remaining -= StructUtil.getFieldCount(f);
+				if (bits_remaining == 0) {
+%>
+					byteBuffer.putInt(last_value);
+					last_value = 0;
+<%
+					bits_remaining = 32;
+					buffer_size += 4;
+				}
+				
+			}
+		
+		
+				if(f.getAtom() != null) {
+					buffer_size += (StructUtil.getFieldCount(f) * StructUtil.getAtomSize(f.getAtom()))/8;
+					if(f.getAtom().getName().equals("uint64")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			byteBuffer.putLong(<%=f.getName()%>);
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				byteBuffer.putLong(<%=f.getName()%>[i]);
+			}
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint32")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			byteBuffer.putInt(<%=f.getName()%>);
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				 byteBuffer.putInt(<%=f.getName()%>[i]);
+			}
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint16")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			byteBuffer.putShort(<%=f.getName()%>);
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				 byteBuffer.putShort(<%=f.getName()%>[i]);
+			}
+<%
+						}
+					}
+					else if(f.getAtom() instanceof Atom) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+			<%=f.getName()%>.pack(byteBuffer);
+<%
+						} else {
+%>
+			for(int i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+				<%=f.getName()%>[i].pack(byteBuffer);
+			}
+<%
+						}
+					}
+				}
+		}
+		if (bits_remaining != 32) {
+%>
+			byteBuffer.putInt(last_value);
+<%
+			bits_remaining = 32;
+			buffer_size += 4;
+			
+		}
+		
+%>		
+		}
+	
+		public long getByteSize() {
+			return <%=buffer_size%>;
+		}
+	}
+	
+
+<%
+	} else if (atom instanceof com.brainspeedtech.struct.Enum) {
+%>
+	public enum <%=atom.getName()%> {
+<%		for (EnumTerm et : ((com.brainspeedtech.struct.Enum) atom).getTerm()) {%>
+		<%=et.getName()%> (<%=et.getValue()%>),
+<%		}%>
+		<%=atom.getName()%>_MAX;
+		private static long maxValue = 0;
+		private long value;
+		
+		private void setValue(long v) {
+			value = v;
+			maxValue = v + 1;
+		}
+		
+		private void setValue() {
+			value = maxValue ++;
+		}
+		
+		<%=atom.getName()%>(int value) {
+			setValue(value);
+		}
+		
+		<%=atom.getName()%>() {
+			setValue();
+		}
+		
+		public long getValue() {
+			return value;
+		}
+	}
+
+<%
+	}
+}%>
+}

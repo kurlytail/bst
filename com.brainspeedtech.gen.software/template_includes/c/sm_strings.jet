@@ -1,0 +1,31 @@
+static inline const char* <%=instance.getName()%>_state_str(ENUM_<%=instance.getName().toUpperCase()%>_STATE state)
+{
+	static const char* state_str_array[] = {
+		"Uninitialized State",
+<%
+for(State state: instance.getState()) {%>
+		"<%=state.getName().toUpperCase()%>",
+<% }%>
+	};
+	if (state > ENUM_<%=instance.getName().toUpperCase()%>_MAX_STATE) {
+		return "Bad State";
+	}
+
+	return state_str_array[state];
+}
+
+
+static inline const char* <%=instance.getName()%>_transition_str(ENUM_<%=instance.getName().toUpperCase()%>_TRANSITION transition)
+{
+	static const char* state_transition_array[] = {
+		"NULL_TRANSITION",
+<%	for (String transition : transitions) { %>
+		"<%=transition.toUpperCase()%>",
+<% }%>
+	};
+	if (transition > ENUM_<%=instance.getName().toUpperCase()%>_MAX_TRANSITION) {
+		return "Bad Transition";
+	}
+	
+	return state_transition_array[transition];
+}

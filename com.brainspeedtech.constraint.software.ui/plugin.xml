@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="com.brainspeedtech.swarm.layer.Layer"
+            id="com.brainspeedtech.constraint.software.ui.contribution1">
+         <action
+               label="Create Default Server Sockets"
+               class="com.brainspeedtech.constraint.software.ui.popup.actions.CreateDefaultServerSockets"
+               menubarPath="additions"
+               enablesFor="1"
+               id="com.brainspeedtech.constraint.software.ui.createDefaultServerSockets">
+         </action>
+         <action
+               label="Create Default Client Sockets"
+               class="com.brainspeedtech.constraint.software.ui.popup.actions.CreateDefaultClientSockets"
+               menubarPath="additions"
+               enablesFor="1"
+               id="com.brainspeedtech.constraint.software.ui.createDefaultClientSockets">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

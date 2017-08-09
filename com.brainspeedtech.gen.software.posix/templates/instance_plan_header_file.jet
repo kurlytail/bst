@@ -1,0 +1,359 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="InstancePlanHeaderFile" 
+	imports ="
+	java.util.*
+	com.brainspeedtech.swarm.layer.util.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.layer.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% MasterCell cell = (MasterCell) argument; %>	
+<%@ include file="ccopyright.jet"%>
+
+<%
+Collection<CellInstance> cellInstances =  ProjectUtil.getReferringInstances(cell, CellInstance.class);
+%>
+
+#ifndef __GEN__<%=cell.getName().toUpperCase()%>_H__
+#define __GEN__<%=cell.getName().toUpperCase()%>_H__
+
+#include <unistd.h>
+#include "gen_<%=((MasterDesign)cell.eContainer()).getName()%>.h"
+#include "gen_<%=((MasterDesign)cell.eContainer()).getName()%>_counters.h"
+
+
+
+<%for(MasterTube ti : cell.getInput()) {
+	if (ProjectUtil.getReferringInstance(ti, IgnorePosixTube.class) != null) continue;
+	if (ProjectUtil.getReferringInstance(ti, SharedMemoryTube.class) != null) continue;
+%>
+<%
+    String returnType = ProjectUtil.getReferringInstance(ti, BlockingReceiver.class) == null ? "void" : "int";
+%>
+int get_<%=ti.getName()%>_flow(<%=ti.getName()%>_t* hdr);
+int <%=ti.getName()%>_transaction_id(<%=ti.getName()%>_t* hdr) __attribute__((weak));
+<%if(ProjectUtil.getReferringInstance(ti, SingleTubeHandler.class) != null) {%>
+<%=returnType%> <%=ti.getName()%>_handler(<%=ti.getName()%>_t* hdr);
+<%} else {%>
+<%for(Flow flow : MasterUtil.getFlows(ti)) {%>
+<%=returnType%> <%=ti.getName()%>_<%=flow.getName()%>_handler(<%=ti.getName()%>_t* hdr);
+int <%=ti.getName()%>_<%=flow.getName()%>_transaction_id(<%=ti.getName()%>_t* hdr) __attribute__((weak));
+<%}%>
+<%} // SingleTubeHandler %>
+<%}%>
+int <%=cell.getName()%>_init();
+int <%=cell.getName()%>_idle();
+
+
+#define TASK_<%=cell.getName().toUpperCase()%>_INSTANCE_COUNT (<%=cellInstances.size()%>)
+
+<%
+  Collection<SharedVariable> sharedVariables = ProjectUtil.getReferringInstances(cell, SharedVariable.class);
+  Set<SharedMemoryTube> sharedMemoryTubes = new HashSet<SharedMemoryTube>();
+  sharedMemoryTubes.addAll(ProjectUtil.getReferringInstances(cell.getInput(), SharedMemoryTube.class));
+  sharedMemoryTubes.addAll(ProjectUtil.getReferringInstances(cell.getOutput(), SharedMemoryTube.class));
+%>
+
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/shared_mem_init_decl.jet"%>
+
+<%for(SharedVariable svar: sharedVariables) {%>
+extern <%=svar.getStruct().getName()%>_t* <%=svar.getName()%>;
+<%}%>
+
+<%
+for (CellInstance ci: cellInstances) { 
+%>
+
+#ifdef TASK_<%=ci.getName().toUpperCase()%>
+#define TASK_<%=ci.getCell().getName().toUpperCase()%>_INSTANCE <%=ci.getInstance()%>
+#define GEN_<%=ci.getCell().getName().toUpperCase()%>_INSTANCE_ID <%=ci.getInstance()%>
+#define GEN_<%=((Instance)ci.eContainer()).getName().toUpperCase()%>_INSTANCE_ID <%=ci.getInstance()%>
+
+#define TASK_<%=ci.getCell().getName().toUpperCase()%>_INSTANCE <%=ci.getInstance()%>
+#define GEN_TASK_NAME "<%=ci.getName()%>"
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {
+	Collection<MasterTube> tubes = new HashSet<MasterTube>(cell.getInput());
+	Collection<MasterTube> sharedTubes = new HashSet<MasterTube>(svar.getTube());
+	tubes.addAll(cell.getOutput());
+	sharedTubes.retainAll(tubes);
+	
+	Collection<TubeInstance> instTubes = new LinkedList<TubeInstance>(ci.getOutput());
+	instTubes.addAll(ci.getInput());
+
+	Set<Integer> instanceUsed = new HashSet<Integer>();	
+	for(TubeInstance ti: instTubes) {
+		if(!sharedTubes.contains(ti.getTube())) continue;
+		if(instanceUsed.contains(ti.getInstance())) continue;
+%>
+extern <%=svar.getStruct().getName()%>_t* <%=svar.getName()%>_<%=instanceUsed.size()%>;
+#define shared_<%=svar.getName()%>_<%=instanceUsed.size()%> (*<%=svar.getName()%>_<%=instanceUsed.size()%>)
+<%		instanceUsed.add(ti.getInstance());
+ 	}
+%>
+<%}%>
+
+<%
+Map<MasterTube, Integer> indexMap = new HashMap<MasterTube, Integer>();
+for(TubeInstance ti : ci.getInput()) {
+	if (ProjectUtil.getReferringInstance(ti.getTube(), IgnorePosixTube.class) != null) continue;
+	if (ProjectUtil.getReferringInstance(ti.getTube(), SharedMemoryTube.class) != null) continue;
+	if(!indexMap.containsKey(ti.getTube())) indexMap.put(ti.getTube(),new Integer(0));
+	int i = indexMap.get(ti.getTube()).intValue();
+%>
+extern char* pending_ptr_<%=ti.getName()%>;
+extern size_t pending_size_<%=ti.getName()%>;
+extern fd_pair_t INPUT_<%=ti.getName().toUpperCase()%>;
+#define INPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>_MAPPED_TO_BYPASS INPUT_<%=ti.getName().toUpperCase()%>
+#define SWARM_RECV_INPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__) {\
+	_SWARM_RECV_INTERNAL_(INPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__)); \
+<%
+    TubeReceiveCounter rcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+}
+#define SWARM_RECV_LOGGED_INPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__) {\
+	_SWARM_RECV_INTERNAL_LOGGED_(INPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__)); \
+<%
+    rcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+}
+#define SWARM_RECV_NONBLOCKING_INPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__) \
+	_SWARM_RECV_INTERNAL_NONBLOCKING_(INPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__))
+#define SWARM_RECV_BUSY_INPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%> ({\
+    int status = 	_SWARM_RECV_BUSY_INTERNAL_(INPUT_<%=ti.getName().toUpperCase()%>);\
+<%
+    rcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    if (!status) { \
+        COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+    }\
+<%}%>
+    status;\
+})
+
+<%
+	i ++;
+	indexMap.put(ti.getTube(),new Integer(i));
+}
+
+for(MasterTube ti: ci.getCell().getInput()) {
+	if (ProjectUtil.getReferringInstance(ti, IgnorePosixTube.class) != null) continue;
+	if (ProjectUtil.getReferringInstance(ti, SharedMemoryTube.class) != null) continue;
+	Set<TubeInstance> childTubes = new HashSet<TubeInstance>();
+	childTubes.addAll(ProjectUtil.getReferringInstances(ti, TubeInstance.class));
+	if (ci != null)
+		childTubes.retainAll(ci.getInput());
+	Collection<Struct> structList = MasterUtil.getDescriptors(ti);
+	String descriptorPrint = "";
+	for (Struct struct: structList) {
+		descriptorPrint = "swarm_print_struct_" + struct.getName() + "((" + struct.getName() + "_t*)(__ptr__)" + ",0)";
+	}
+	if(childTubes.size() == 0) continue;
+%>
+#define <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT (<%=childTubes.size()%>)
+extern fd_pair_t* <%=ti.getName()%>_input_instances[];
+#define SWARM_RECV_RELATIVE_INPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+	swarm_read_fd("INPUT_<%=ti.getName().toUpperCase()%>_relative " # __instance__, \
+		<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 0);\
+<%
+    TubeReceiveCounter rcounter = ProjectUtil.getReferringInstance(ti, TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+}
+#define SWARM_RECV_RELATIVE_LOGGED_INPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+	swarm_read_fd("INPUT_<%=ti.getName().toUpperCase()%>_relative " # __instance__, \
+		<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 1, 0);\
+<%
+    rcounter = ProjectUtil.getReferringInstance(ti, TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+}
+#define SWARM_RECV_NONBLOCKING_RELATIVE_INPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+	swarm_read_fd("INPUT_<%=ti.getName().toUpperCase()%>_relative " # __instance__, \
+		<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 1);\
+}
+#define SWARM_RECV_BUSY_RELATIVE_INPUT_<%=ti.getName().toUpperCase()%>(__instance__) ({\
+	swarm_read_fd("INPUT_<%=ti.getName().toUpperCase()%>_relative " # __instance__, \
+		<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 1);\
+<%
+    rcounter = ProjectUtil.getReferringInstance(ti, TubeReceiveCounter.class);
+    if(rcounter != null) {%>
+    if (<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size != 0) { \
+        COUNTER_<%=rcounter.getName().toUpperCase()%>_INC;\
+    }\
+<%}%>
+	<%=ti.getName()%>_input_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size != 0;\
+})
+
+<%}%>
+
+<%
+indexMap = new HashMap<MasterTube, Integer>();
+for(TubeInstance ti : ci.getOutput()) {
+	if (ProjectUtil.getReferringInstance(ti.getTube(), IgnorePosixTube.class) != null) continue;
+	if (ProjectUtil.getReferringInstance(ti.getTube(), SharedMemoryTube.class) != null) continue;
+	if(!indexMap.containsKey(ti.getTube())) indexMap.put(ti.getTube(),new Integer(0));
+	int i = indexMap.get(ti.getTube()).intValue();
+%>
+extern char* pending_ptr_<%=ti.getName()%>;
+extern size_t pending_size_<%=ti.getName()%>;
+extern fd_pair_t OUTPUT_<%=ti.getName().toUpperCase()%>;
+#define OUTPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>_MAPPED_TO_BYPASS OUTPUT_<%=ti.getName().toUpperCase()%>
+#define SWARM_SEND_OUTPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__) {\
+<%
+    TubeTransmitCounter tcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	_SWARM_SEND_INTERNAL_(OUTPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__));\
+}
+#define SWARM_SEND_LOGGED_OUTPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__) {\
+<%
+    tcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	_SWARM_SEND_INTERNAL_LOGGED_(OUTPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__));\
+}
+
+#define SWARM_SEND_NONBLOCKING_OUTPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%>(__ptr__, __size__){\
+<%
+    tcounter = ProjectUtil.getReferringInstance(ti.getTube(), TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	 _SWARM_SEND_INTERNAL_NONBLOCKING_(OUTPUT_<%=ti.getName().toUpperCase()%>, (char*)(__ptr__), (__size__));\
+}
+#define SWARM_SEND_BUSY_OUTPUT_<%=ti.getTube().getName().toUpperCase()%>_<%=i%> _SWARM_SEND_BUSY_INTERNAL_(OUTPUT_<%=ti.getName().toUpperCase()%>)
+<%
+	i++;
+	indexMap.put(ti.getTube(),new Integer(i));
+	}
+%>
+
+/* Map tube ids to task relative ids */
+<%for(MasterTube ti: ci.getCell().getOutput()) {
+	if (ProjectUtil.getReferringInstance(ti, IgnorePosixTube.class) != null) continue;
+	if (ProjectUtil.getReferringInstance(ti, SharedMemoryTube.class) != null) continue;
+	Set<TubeInstance> childTubes = new HashSet<TubeInstance>();
+	childTubes.addAll(ProjectUtil.getReferringInstances(ti, TubeInstance.class));
+	if (ci != null)
+		childTubes.retainAll(ci.getOutput());
+	Collection<Struct> structList = MasterUtil.getDescriptors(ti);
+	String descriptorPrint = "";
+	for (Struct struct: structList) {
+		descriptorPrint = "swarm_print_struct_" + struct.getName() + "((" + struct.getName() + "_t*)(__ptr__)" + ",0)";
+	}
+	if(childTubes.size() == 0) continue;
+%>
+#define <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT (<%=childTubes.size()%>)
+extern fd_pair_t* <%=ti.getName()%>_output_instances[];
+#define SWARM_SEND_RELATIVE_OUTPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+<%
+    TubeTransmitCounter tcounter = ProjectUtil.getReferringInstance(ti, TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	swarm_write_fd("OUTPUT_<%=ti.getName().toUpperCase()%>_relative_ " # __instance__, \
+		<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 0);\
+}
+#define SWARM_SEND_RELATIVE_LOGGED_OUTPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+<%
+    tcounter = ProjectUtil.getReferringInstance(ti, TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	swarm_write_fd("OUTPUT_<%=ti.getName().toUpperCase()%>_relative_ " # __instance__, \
+		<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 1, 0);\
+}
+#define SWARM_SEND_NONBLOCKING_RELATIVE_OUTPUT_<%=ti.getName().toUpperCase()%>(__instance__, __ptr__, __size__) {\
+	assert(<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size == 0); \
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_ptr = (char*)(__ptr__);\
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size = (__size__);\
+<%
+    tcounter = ProjectUtil.getReferringInstance(ti, TubeTransmitCounter.class);
+    if(tcounter != null) {%>
+    COUNTER_<%=tcounter.getName().toUpperCase()%>_INC;\
+<%}%>
+	swarm_write_fd("OUTPUT_<%=ti.getName().toUpperCase()%>_relative_ " # __instance__, \
+		<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 1);\
+}
+#define SWARM_SEND_BUSY_RELATIVE_OUTPUT_<%=ti.getName().toUpperCase()%>(__instance__) ({\
+	swarm_write_fd("OUTPUT_<%=ti.getName().toUpperCase()%>_relative_ " # __instance__, \
+		<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT], 0, 1);\
+	<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->pending_size != 0\
+		|| (<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->credit_fd >= 0 && \
+		<%=ti.getName()%>_output_instances[(__instance__) % <%=ti.getName().toUpperCase()%>_CHILD_TUBE_COUNT]->init_credits == 0);\
+})
+
+<%}%>
+
+
+<%
+  Collection<SharedVariable> ciSharedVariables = ProjectUtil.getReferringInstances(ci.getCell(), SharedVariable.class);
+%>
+
+<%for(SharedVariable svar: ciSharedVariables) {%>
+extern <%=svar.getStruct().getName()%>_t* <%=svar.getName()%>;
+#define shared_<%=svar.getName()%> (*<%=svar.getName()%>)
+<%}%>
+
+
+#endif
+<%
+}
+%>
+
+<%
+Collection<Counter> counters = ProjectUtil.getReferringInstances(cell, Counter.class);
+counters.addAll(ProjectUtil.getReferringInstances(cell.getInput(), TubeReceiveCounter.class));
+counters.addAll(ProjectUtil.getReferringInstances(cell.getOutput(), TubeTransmitCounter.class));
+if(counters.size() != 0) {
+%>
+extern <%=cell.getName()%>_counters_t *counter_file;
+    <%for(Counter counter: counters) {
+        String type;
+        switch(counter.getWidth()) {
+        case _16BIT: type = "uint16_t"; break;
+        case _32BIT: type = "uint32_t"; break;
+        case _64BIT: type = "uint64_t"; break;
+        }
+    %>
+#define COUNTER_<%=counter.getName().toUpperCase()%>_INC (++counter_file-><%=counter.getName()%>)
+#define COUNTER_<%=counter.getName().toUpperCase()%>_DEC (--counter_file-><%=counter.getName()%>)
+#define COUNTER_<%=counter.getName().toUpperCase()%>_ADD(__value__) (counter_file-><%=counter.getName()%> += (__value__))
+#define COUNTER_<%=counter.getName().toUpperCase()%>_SUB(__value__) (counter_file-><%=counter.getName()%> -= (__value__))
+#define COUNTER_<%=counter.getName().toUpperCase()%>_SET(__value__) (counter_file-><%=counter.getName()%> = (__value__))
+<%  }
+}%>
+
+#endif

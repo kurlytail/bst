@@ -1,0 +1,22 @@
+<%@ jet package="com.brainspeedtech.gen.software.python"
+	class="SwarmStructBaseFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.python.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*;"
+%>
+
+class swarm_struct_base:
+    def encode_binary(self):
+        return self.unpack()
+
+    def decode_binary(self):
+        return self.pack()

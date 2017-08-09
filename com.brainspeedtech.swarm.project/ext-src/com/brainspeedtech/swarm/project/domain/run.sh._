@@ -1,0 +1,6 @@
+echo "var _ = require('underscore');" > generate.js
+cat login.js >> generate.js
+cat swarmlib.js >> generate.js
+cat nodegen.js >> generate.js
+node generate.js
+

@@ -1,0 +1,70 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="DesignHeaderFile" 
+	imports ="java.util.*
+		com.brainspeedtech.constraint.software.posix.*
+		com.brainspeedtech.swarm.layer.*
+		com.brainspeedtech.constraint.software.*
+		org.eclipse.emf.ecore.*
+		com.brainspeedtech.swarm.project.util.*
+		com.brainspeedtech.struct.util.StructResourceImpl
+		org.eclipse.emf.ecore.resource.Resource
+		com.brainspeedtech.struct.*
+		com.brainspeedtech.swarm.master.*
+		com.brainspeedtech.swarm.master.util.*
+		com.brainspeedtech.swarm.inst.*
+		com.brainspeedtech.swarm.flow.*;"
+%>
+<%Instance instance = (Instance) argument;%>	
+<%@ include file="ccopyright.jet"%>
+
+#ifndef __GEN__<%=instance.getName().toUpperCase()%>_H__
+#define __GEN__<%=instance.getName().toUpperCase()%>_H__
+
+#include <stdint.h>
+
+#define GEN_DESIGN_<%=instance.getName().toUpperCase()%>
+#define GEN_PLATFORM_POSIX
+
+#include "gen_<%=instance.getName()%>_parameters.h"
+#include "gen_<%=instance.getName()%>_flows.h"
+#include "gen_<%=instance.getName()%>_swarm_lib.h"
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/resolve_includes.jet"%>
+
+
+static const char* gen_<%=instance.getName()%>_flow_string(int flow)
+{
+	switch(flow) {
+<%
+	String lastString = "";
+for(Flow flow: MasterUtil.getDesignFlows(instance)) {
+	if (!lastString.equals(flow.getName())) {%>
+	case ENUM_<%=flow.getName().toUpperCase()%>_FLOW:
+		return "<%=flow.getName().toUpperCase()%>";
+<%} lastString = flow.getName(); }%> 	
+	default:
+		return "Unrecognized flow";
+	}
+}
+
+<%
+if (!instance.getTube().isEmpty()) {
+	MasterDesign mDesign = (MasterDesign)instance.getTube().iterator().next().getTube().eContainer();
+	for(MasterTube ti : mDesign.getTube()) {
+%>
+typedef union _<%=ti.getName()%> {
+	uint8_t uint8;
+<%Collection<Struct> structList = MasterUtil.getDescriptors(ti);
+	for (Struct struct: structList) {%>
+	<%=struct.getName()%>_t <%=struct.getName()%>;
+<%}%>
+} __attribute__((aligned(1), packed)) <%=ti.getName()%>_t;
+
+<%	}
+}
+%>
+
+#define SWARM_MEMORY_FENCE 	asm volatile("mfence" ::: "memory")
+
+extern int work_dir_fd;
+
+#endif

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.brainspeedtech.swarm.layer.complexity/src"
+    modelPluginID="com.brainspeedtech.swarm.layer.complexity" modelName="Complexity"
+    importerID="org.eclipse.xsd.ecore.importer" complianceLevel="6.0" copyrightFields="false"
+    providerRootExtendsClass="com.brainspeedtech.swarm.project.validation.ProblemDecoratorItemProvider"
+    tableProviders="true" usedGenPackages="../../com.brainspeedtech.swarm.layer/model/layer.genmodel#//layer platform:/plugin/com.bst.swarm.master/model/master.genmodel#//master platform:/plugin/com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst ../../com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow ../../com.bst.struct/model/struct.genmodel#//struct platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm">
+  <foreignModel>complexity.xsd</foreignModel>
+  <genPackages prefix="Complexity" basePackage="com.brainspeedtech.swarm.layer" resource="XML"
+      disposableProviderFactory="true" extensibleProviderFactory="true" childCreationExtenders="true"
+      ecorePackage="complexity.ecore#/">
+    <genClasses ecoreClass="complexity.ecore#//ContainerConstraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//ContainerConstraint/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//ContainerConstraint/name"/>
+    </genClasses>
+    <genClasses ecoreClass="complexity.ecore#//InstanceConstraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//InstanceConstraint/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//InstanceConstraint/count"/>
+    </genClasses>
+    <genClasses ecoreClass="complexity.ecore#//SpaceComplexity">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//SpaceComplexity/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//SpaceComplexity/units"/>
+    </genClasses>
+    <genClasses ecoreClass="complexity.ecore#//TimeComplexity">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//TimeComplexity/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute complexity.ecore#//TimeComplexity/units"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

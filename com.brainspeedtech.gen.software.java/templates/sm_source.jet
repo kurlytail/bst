@@ -1,0 +1,129 @@
+<%@ jet package="com.brainspeedtech.gen.software.java"
+	class="SMInstanceFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.java.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*
+	com.brainspeedtech.swarm.sm.*
+	org.eclipse.emf.transaction.util.TransactionUtil
+	org.eclipse.emf.transaction.TransactionalEditingDomain
+	org.eclipse.emf.transaction.util.*;"
+%>
+
+<%
+Resource resource = (Resource)argument;
+StateMachine instance = (StateMachine) EcoreUtil.getObjectByType(
+		resource.getContents(), SmPackage.eINSTANCE.getStateMachine());
+Collection<StateGroup> groups = ProjectUtil.getReferringInstances(instance.getState(), StateGroup.class);
+		
+String className = instance.eResource().getURI().lastSegment().replaceAll("\\.sm$", "");
+String packageName;
+JavaPackage javaPackage = ProjectUtil.getReferringInstance(instance,JavaPackage.class);
+
+if (javaPackage != null) {
+	packageName = javaPackage.getName();
+} else {
+    packageName = TransactionUtil.getEditingDomain(resource).getID() + ".gen.struct";
+}
+%>
+package <%=packageName%>;
+
+import java.lang.Exception;
+
+public abstract class <%=instance.getName()%> {
+
+	public enum STATE {
+<%
+int stateCount = 0;
+for(State state: instance.getState()) {%>
+		<%=state.getName().toUpperCase()%>,
+<%
+	++stateCount;
+}%>
+		MAX_STATE
+	}
+
+<%
+	Set<String> transitions = new HashSet<String>();
+	for (Transition transition : instance.getTransition()) {
+		transitions.add(transition.getName().toUpperCase());
+	}
+%>
+
+	public enum TRANSITION {
+		NULL,
+<%
+int enumCount = 1;
+for(String transition: transitions) {%>
+		<%=transition.toUpperCase()%>,
+<%
+	++enumCount;
+}%>
+		MAX_TRANSITION
+	}
+	
+	public abstract STATE getState();
+<%
+for(State state: instance.getState()) {%>
+// Compute the right transition for <%=state.getName()%> state
+// Allowed transitions are
+<% for(Transition transition : state.getDest()) { %>
+//		<%=transition.getName().toUpperCase()%>
+<% }%>
+//		NULL
+	protected abstract TRANSITION compute_<%=state.getName()%>_transition();
+<%}%>
+	public abstract STATE
+		setState(
+			TRANSITION transition,
+			STATE state
+			);
+<%for(State state: instance.getState()) {%>
+	protected void process_<%=state.getName()%>_state() throws Exception
+	{
+		TRANSITION transition;
+	
+		transition = compute_<%=state.getName()%>_transition();
+		switch(transition) {
+<% for(Transition transition : state.getDest()) { %>
+		case <%=transition.getName().toUpperCase()%>:
+			setState(TRANSITION.<%=transition.getName().toUpperCase()%>, 
+				STATE.<%=transition.getTo().getName().toUpperCase()%>);
+		break;
+<% }%>
+		case NULL:
+			setState(TRANSITION.NULL, STATE.<%=state.getName().toUpperCase()%>);
+			break;
+		default:
+			throw(new Exception("Unexpected transition\n"));
+		}
+	}
+<%}%>
+	public void sm() throws Exception
+	{
+		STATE current_state;
+	
+		current_state = getState();
+		switch(current_state) {
+<%for(State state: instance.getState()) {%>
+		case <%=state.getName().toUpperCase()%>:
+			process_<%=state.getName()%>_state();
+			break;
+<%}%>
+		default:
+			throw(new Exception("Unexpected transition\n"));
+		}
+	}
+}
+
+
+
+

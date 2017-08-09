@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.bst.designer_1.0.0.qualifier.jar" id="com.bst.designer" version="1.0.0.qualifier">
+      <category name="com.bst.designer"/>
+   </feature>
+   <category-def name="com.bst.designer" label="BST Design Tools"/>
+</site>

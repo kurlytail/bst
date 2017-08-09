@@ -1,0 +1,36 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="DesignHeaderFile" 
+	imports ="java.util.* org.eclipse.emf.ecore.* com.brainspeedtech.swarm.project.util.* com.brainspeedtech.struct.util.StructResourceImpl org.eclipse.emf.ecore.resource.Resource com.brainspeedtech.struct.* com.brainspeedtech.swarm.master.* com.brainspeedtech.swarm.master.util.* com.brainspeedtech.swarm.inst.* com.brainspeedtech.swarm.flow.*;"
+%>
+<%Instance instance = (Instance) argument;%>	
+
+`ifndef __<%=instance.getName().toUpperCase()%>_VH__
+`define __<%=instance.getName().toUpperCase()%>_VH__
+
+`define GEN_DESIGN_<%=instance.getName().toUpperCase()%>
+
+<%
+		Set<String> includeFiles = new HashSet<String>();
+
+		for (Resource includeResource : instance.eResource().getResourceSet()
+				.getResources()) {
+			if (includeResource instanceof StructResourceImpl) {
+				includeFiles.add(includeResource.getURI().lastSegment()
+						.replaceAll("\\.struct$", ".vh"));
+			}
+		}
+
+		for (String f : includeFiles) {
+%>
+`include "gen_<%=f%>"
+<%		}
+%>
+
+<%int flowId = 0;%>
+<%for(Flow flow: MasterUtil.getDesignFlows(instance)) {%>
+`define ENUM_<%=flow.getName().toUpperCase()%>_FLOW <%=flowId%>
+<%++flowId;
+}%>
+`define ENUM_MAX_FLOWS <%=flowId%>
+
+`endif

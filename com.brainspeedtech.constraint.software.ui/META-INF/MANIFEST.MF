@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ui
+Bundle-SymbolicName: com.brainspeedtech.constraint.software.ui; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.brainspeedtech.constraint.software.ui.Activator
+Bundle-Vendor: BRAINSPEEDTECH
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ com.brainspeedtech.swarm.layer,
+ com.brainspeedtech.swarm.project,
+ com.brainspeedtech.constraint.software,
+ com.brainspeedtech.swarm.layer.editor,
+ org.eclipse.gmf.runtime.common.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

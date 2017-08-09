@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: com.bst.struct.edit;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Activator: com.brainspeedtech.struct.provider.StructEditPlugin$Implementation
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.brainspeedtech.struct.provider
+Require-Bundle: org.eclipse.core.runtime,
+ com.bst.struct;visibility:=reexport,
+ org.eclipse.emf.edit;visibility:=reexport,
+ com.brainspeedtech.swarm.project,
+ org.eclipse.ui
+Bundle-ActivationPolicy: lazy

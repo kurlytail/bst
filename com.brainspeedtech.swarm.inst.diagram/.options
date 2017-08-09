@@ -1,0 +1,7 @@
+# Tracing options for the com.brainspeedtech.swarm.inst.diagram plug-in
+
+# Common issues
+com.brainspeedtech.swarm.inst.diagram/debug=false
+
+# Visual IDs
+com.brainspeedtech.swarm.inst.diagram/debug/visualID=false

@@ -1,0 +1,7 @@
+# Tracing options for the com.bst.swarm.master.diagram plug-in
+
+# Common issues
+com.bst.swarm.master.diagram/debug=false
+
+# Visual IDs
+com.bst.swarm.master.diagram/debug/visualID=false

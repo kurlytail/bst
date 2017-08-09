@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+<!--
+   <extension point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="com.brainspeedtech.swarm.presentation.SwarmModelWizardID"
+            name="%_UI_SwarmModelWizard_label"
+            class="com.brainspeedtech.swarm.presentation.SwarmModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/SwarmModelFile.gif">
+         <description>%_UI_SwarmModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+-->
+   <extension point="org.eclipse.ui.editors">
+   <!--
+      <editor
+            id="com.brainspeedtech.swarm.presentation.SwarmEditorID"
+            name="%_UI_SwarmEditor_label"
+            icon="icons/full/obj16/SwarmModelFile.gif"
+            extensions="swarm"
+            class="com.brainspeedtech.swarm.presentation.SwarmEditor"
+            contributorClass="com.brainspeedtech.swarm.presentation.SwarmActionBarContributor">
+      </editor>
+   -->
+      <editor
+            class="com.brainspeedtech.swarm.presentation.SwarmConfigurationEditor"
+            extensions="swarm"
+            id="com.brainspeedtech.swarm.presentation.SwarmConfigurationEditor"
+            name="Swarm Configuration Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.emf.transaction.listeners">
+      <listener
+            class="com.brainspeedtech.swarm.listeners.FlowDeleteListener">
+      </listener>
+      <listener
+            class="com.brainspeedtech.swarm.listeners.ResourceLoadedListener"></listener>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.brainspeedtech.swarm.listeners.Startup">
+      </startup>
+   </extension>
+   <!--
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.brainspeedtech.swarm.presentation.SwarmViewPart"
+            id="com.brainspeedtech.swarm.presentation.SwarmViewPart"
+            name="Swarm Configuration">
+      </view>
+   </extension>
+   -->
+
+</plugin>

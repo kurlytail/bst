@@ -1,0 +1,209 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="RegisterFile" 
+	imports ="java.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.struct.util.StructResourceImpl
+	org.eclipse.emf.ecore.resource.Resource
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.reg.*
+	com.brainspeedtech.struct.util.*
+	com.brainspeedtech.struct.Enum
+	org.eclipse.emf.ecore.util.*;"
+%>
+<% Resource resource = (Resource) argument;  	
+	Document doc = (Document) EcoreUtil.getObjectByType(
+	resource.getContents(), StructPackage.eINSTANCE.getDocument());
+	if (doc == null)
+		return "";
+	Collection<Register> registers = EcoreUtil.getObjectsByType(
+			doc.getStruct(), RegPackage.eINSTANCE.getRegister());
+	if (registers.isEmpty())
+		return "";
+	String[] copyrightMessage = LayerUtil.getCopyrightMessage(doc);	
+%>
+<%for(String message: copyrightMessage) {%>
+// <%=message%>
+<%}%>
+
+<%
+		Set<String> includeFiles = new HashSet<String>();
+
+		for (Resource includeResource : doc.eResource().getResourceSet()
+				.getResources()) {
+			if (includeResource instanceof StructResourceImpl) {
+				includeFiles.add(includeResource.getURI().lastSegment()
+						.replaceAll("\\.struct$", ".vh"));
+			}
+		}
+
+		for (String f : includeFiles) {
+%>
+`include "gen_<%=f%>"
+<%		}
+%>
+
+<%for (Register register: registers) { %>
+
+module <%=register.getName()%>(/*AUTOARG*/);
+	
+	/*AUTOINPUT*/
+	/*AUTOOUTPUT*/
+	/*AUTOWIRE*/
+	
+	output wire o_ack;
+	
+	input wire i_wr;
+	input wire i_req;
+	input wire clk;
+	input wire rst_n;
+	input wire [31:0] i_serial_addr;
+	input wire [31:0] i_serial_data;
+	output wire [31:0] o_serial_data;
+	
+	reg r_req;
+	reg r_wr;
+	reg [31:0] r_serial_addr;
+	reg r_ack;
+	
+	wire [31:0] w_serial_addr;
+
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() == null) {
+%>
+	output wire [<%=(StructUtil.getFieldCount(regInstance)-1)%>:0] o_<%=regInstance.getName()%>;
+	output wire o_<%=regInstance.getName()%>_rd_req;
+	output wire o_<%=regInstance.getName()%>_wr_req;
+	reg [<%=(StructUtil.getFieldCount(regInstance)-1)%>:0] r_<%=regInstance.getName()%>;
+	assign o_<%=regInstance.getName()%> = r_<%=regInstance.getName()%>;
+	input wire i_<%=regInstance.getName()%>_wr_req;
+	input wire [<%=(StructUtil.getFieldCount(regInstance)-1)%>:0] i_<%=regInstance.getName()%>;
+<%	}
+}%>
+
+	assign o_ack = r_ack <%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() != null) {
+		for(long index = 0; index < StructUtil.getFieldCount(field); ++index) {
+%> | w_<%=regInstance.getName()%>_<%=index%>_ack <%		}
+	}
+}%> ;
+
+
+ 	always @(posedge clk or negedge rst_n) begin
+    	if(!rst_n) begin
+			/*AUTORESET*/
+		end else begin
+		
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() == null) {
+%>
+			 if(i_<%=regInstance.getName()%>_wr_req) begin
+			    r_<%=regInstance.getName()%> <= i_<%=regInstance.getName()%>;
+			 end
+<%	}
+}%>
+
+	 		if(i_req && i_wr) begin
+
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() == null) {
+%>
+			    if (i_serial_addr == `<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_START_DWORD) begin
+			       r_<%=regInstance.getName()%> <= i_serial_data[`<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_END_DWORD_OFFSET:`<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_START_DWORD_OFFSET];
+			    end
+<%	}
+}%>
+	 		end
+		end
+	end
+	
+	always @(posedge clk or negedge rst_n) begin
+	    if(!rst_n) begin
+			/*AUTORESET*/
+	    end else begin
+			r_req <= i_req;
+			r_wr <= i_wr;
+			r_serial_addr <= i_serial_addr;
+		end
+	end
+	
+	always @(posedge clk or negedge rst_n) begin
+	    if(!rst_n) begin
+			/*AUTORESET*/
+	    end else begin
+			if(i_req) begin
+				r_ack <= 0'b0;
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() == null) {
+%>
+			    if (i_serial_addr == `<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_START_DWORD) begin
+		      		r_ack <= 1'b1;
+			    end
+<%	}
+}%>
+		 	end
+		end
+	end
+	
+	always @(/*AUTOSENSE*/) begin
+	    if(r_req && ~r_wr) begin
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() == null) {
+%>
+		    if (i_serial_addr == `<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_START_DWORD) begin
+	       		o_serial_data[`<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_END_DWORD_OFFSET:`<%=register.getName().toUpperCase()%>_<%=regInstance.getName().toUpperCase()%>_START_DWORD_OFFSET]
+	       			= r_<%=regInstance.getName()%>;
+	       		o_<%=regInstance.getName()%>_rd_req = i_req & ~i_wr;
+	       		o_<%=regInstance.getName()%>_wr_req = i_req & i_wr;
+		    end else begin
+	       		o_<%=regInstance.getName()%>_rd_req = 1'b0;
+	       		o_<%=regInstance.getName()%>_wr_req = 1'b0;
+		    end
+<%	}
+}%>
+		end
+   	end
+   	
+<%for (Field field: register.getField()) {
+	RegisterInstance regInstance = (RegisterInstance)field;
+	if (regInstance.getAtom() != null) {
+		Register inner = (Register)regInstance.getAtom();
+		long count = StructUtil.getFieldCount(field); %>
+	/* <%=inner.getName()%> AUTO_TEMPLATE (
+		.clk(clk),
+		.rst_n(rst_n),
+		.i_wr(i_wr),
+		.i_serial_addr(w_serial_addr[]),
+		.o_ack(w_@"vl-cell-name"_ack),
+		.i_serial_data(i_serial_data),
+		.o_serial_data(w_@"vl-cell-name"_serial_data[]),
+		.i_req(w_@"vl-cell-name"_req[]),
+		.i_\(.*\) (i_@"vl-cell-name"_\1[]),
+		.o_\(.*\) (o_@"vl-cell-name"_\1[]),
+		.\(.*\) (@"vl-cell-name"_\1[]),
+		);*/
+<%		for(long index = 0; index < count; ++index) {
+%>
+	<%=inner.getName()%> <%=regInstance.getName()%>_<%=index%>(/*AUTOINST*/);
+<%
+		}	
+	}%>
+<%}%>   	
+endmodule
+
+<%}%>
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:()
+// verilog-library-extensions:(".v" ".vh")
+// eval:(verilog-read-includes)
+// eval:(setq verilog-auto-output-ignore-regexp "^w_.*")
+// eval:(setq verilog-auto-input-ignore-regexp "^w_.*")
+// End:
+

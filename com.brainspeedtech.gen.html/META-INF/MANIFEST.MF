@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Html
+Bundle-SymbolicName: com.brainspeedtech.gen.html; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.brainspeedtech.gen.html.Activator
+Bundle-Vendor: BRAINSPEEDTECH
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ com.brainspeedtech.swarm.project,
+ org.eclipse.core.variables,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ com.bst.struct,
+ com.bst.gen,
+ com.brainspeedtech.swarm.flow,
+ com.bst.swarm.master,
+ com.brainspeedtech.swarm.inst,
+ com.brainspeedtech.reg,
+ com.bst.struct.editor,
+ com.brainspeedtech.constraint.web.html;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy

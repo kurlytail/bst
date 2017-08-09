@@ -1,0 +1,16 @@
+<%
+		Set<String> includeFiles = new HashSet<String>();
+
+		for (Resource includeResource : instance.eResource().getResourceSet()
+				.getResources()) {
+			if (includeResource instanceof StructResourceImpl) {
+				includeFiles.add(includeResource.getURI().lastSegment()
+						.replaceAll("\\.struct$", ".h"));
+			}
+		}
+
+		for (String f : includeFiles) {
+%>
+#include "gen_<%=f%>"
+<%		}
+%>

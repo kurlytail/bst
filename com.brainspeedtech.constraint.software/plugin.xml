@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/constraint/software"
+            class="com.brainspeedtech.constraint.software.SoftwarePackage"
+            genModel="model/software.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="software"
+            class="com.brainspeedtech.constraint.software.util.SoftwareResourceFactoryImpl"/>
+   </extension>
+   
+      <extension
+         point="org.eclipse.emf.validation.constraintProviders">
+      <constraintProvider
+            cache="true">
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/layer">
+         </package>
+         <constraints
+               categories="com.brainspeedtech.swarm.project.validation">
+            <constraint
+                  class="com.brainspeedtech.constraint.software.validation.MissingStructureForSharedVariable"
+                  id="com.brainspeedtech.constraint.software.validation.MissingStructureForSharedVariable"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Missing Structure Check"
+                  severity="ERROR"
+                  statusCode="1">
+               <message>
+                  Missing Structure in Shared Variable {0}
+               </message>
+               <description>
+                  Missing Structure in Shared Variable
+               </description>
+            </constraint>
+         </constraints>
+      </constraintProvider>
+   </extension>
+   
+
+</plugin>

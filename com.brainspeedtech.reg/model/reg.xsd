@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.brainspeedtech.com/reg"
+	xmlns:tns="http://www.brainspeedtech.com/reg"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	elementFormDefault="qualified" xmlns:pref="http://www.brainspeedtech.com/struct">
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd" namespace="http://www.brainspeedtech.com/struct"></import>
+
+	<complexType name="Register">
+		<complexContent>
+            <extension base="pref:Struct">
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="RegisterInstance">
+		<complexContent>
+			<extension base="pref:Field">
+				<attribute name="location" type="int"></attribute>
+				<attribute name="type">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="read write"></enumeration>
+							<enumeration value="read only"></enumeration>
+							<enumeration value="write only"></enumeration>
+							<enumeration value="reserved"></enumeration>
+							<enumeration value="read clear"></enumeration>
+							<enumeration value="write clear"></enumeration>
+							<enumeration value="write lost"></enumeration>
+							<enumeration value="external"></enumeration>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

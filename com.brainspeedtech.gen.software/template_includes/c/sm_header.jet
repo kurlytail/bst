@@ -1,0 +1,30 @@
+typedef enum _ENUM_<%=smReference.getName().toUpperCase()%>_STATE {
+	ENUM_<%=smReference.getName().toUpperCase()%>_UNINITIALIZED_STATE = 0,
+<%
+int stateCount = 0;
+for(State state: smReference.getState()) {%>
+	ENUM_<%=smReference.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE = <%=stateCount+1%>,
+<%
+	++stateCount;
+}%>
+	ENUM_<%=smReference.getName().toUpperCase()%>_MAX_STATE = <%=stateCount%>
+} ENUM_<%=smReference.getName().toUpperCase()%>_STATE;
+
+<%
+	Set<String> transitions = new HashSet<String>();
+	for (Transition transition : smReference.getTransition()) {
+		transitions.add(transition.getName());
+	}
+%>
+
+typedef enum _ENUM_<%=smReference.getName().toUpperCase()%>_TRANSITION {
+	ENUM_<%=smReference.getName().toUpperCase()%>_NULL_TRANSITION = 0,
+<%
+int enumCount = 0;
+for(String transition: transitions) {%>
+	ENUM_<%=smReference.getName().toUpperCase()%>_<%=transition.toUpperCase()%>_TRANSITION = <%=enumCount+1%>,
+<%
+	++enumCount;
+}%>
+	ENUM_<%=smReference.getName().toUpperCase()%>_MAX_TRANSITION = <%=enumCount%>
+} ENUM_<%=smReference.getName().toUpperCase()%>_TRANSITION;

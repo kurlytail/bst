@@ -1,0 +1,21 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="MonitorFile" 
+	imports ="java.util.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.layer.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% Instance instance = (Instance) argument;%>
+#!/bin/bash
+
+if [ -a logrotate.conf ]
+then
+    CURDIR=`pwd | sed -e 's/[]\\/()$*.^|[]/\\\\&/g'`
+    sed -e"s/CURDIR/$CURDIR/" logrotate.conf > logrotate.final.conf
+    logrotate -s logrotate logrotate.final.conf
+fi

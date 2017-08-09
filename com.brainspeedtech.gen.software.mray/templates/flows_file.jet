@@ -1,0 +1,29 @@
+<%@ jet package="com.brainspeedtech.gen.software.mray"
+	class="FlowsHeaderFile" 
+	imports ="java.util.* com.brainspeedtech.swarm.project.util.*
+		com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.struct.util.StructResourceImpl org.eclipse.emf.ecore.resource.Resource com.brainspeedtech.struct.* com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.master.util.* com.brainspeedtech.swarm.inst.* com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.swarm.layer.*;"
+%>
+<% Instance instance = (Instance) argument;
+%>	
+/*
+ *  (c)2013 Mangstor, LLC. All rights reserved.
+ */
+
+
+#ifndef __GEN__<%=instance.getName().toUpperCase()%>_FLOWS_H__
+#define __GEN__<%=instance.getName().toUpperCase()%>_FLOWS_H__
+
+typedef enum _ENUM_<%=instance.getName().toUpperCase()%>_FLOWS {
+	ENUM_<%=instance.getName().toUpperCase()%>_NULL_FLOW = 0,
+<%
+	int flow_num = 1;
+	for(Flow flow: MasterUtil.getDesignFlows(instance)) {%>
+	ENUM_<%=flow.getName().toUpperCase()%>_FLOW = <%=flow_num%>,
+<% ++flow_num; }%> 
+	ENUM_<%=instance.getName().toUpperCase()%>_MAX_FLOWS
+} ENUM_<%=instance.getName().toUpperCase()%>_FLOWS;
+
+#endif

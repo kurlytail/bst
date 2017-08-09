@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension point="org.eclipse.ui.commands">
+	<category name="Swarm" description="Swarm Diagram commands" id="com.brainspeedtech.swarm.master.diagram.category"/>
+	<command categoryId="com.brainspeedtech.swarm.master.diagram.category" description="Create a new test case" id="com.brainspeedtech.swarm.master.diagram.createTestCase" name="Create Test Case">
+	</command>
+</extension>
+
+<extension point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="com.brainspeedtech.swarm.master.diagram.createTestCase.objectContribution"
+            objectClass="com.brainspeedtech.swarm.master.diagram.edit.parts.MasterCellEditPart">
+         <menu 
+            id="SwarmMenu" 
+            label="&amp;Swarm " 
+            path="additions"> 
+            <separator name="group1"/>
+         </menu>
+         <action
+               class="com.brainspeedtech.swarm.master.diagram.custom.CreateTestCase"
+               definitionId="com.brainspeedtech.swarm.master.diagram.createTestCase"
+               enablesFor="1"
+               id="com.brainspeedtech.swarm.master.diagram.custom.CreateTestCase"
+               label="&amp;Create Test Case"
+               menubarPath="SwarmMenu/group1">
+         </action>
+      </objectContribution>                    
+</extension>
+</plugin>

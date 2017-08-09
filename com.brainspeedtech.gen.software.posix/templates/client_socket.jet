@@ -1,0 +1,13 @@
+<%@ jet package="com.brainspeedtech.gen.software.mray"
+	class="FifoTube" 
+	imports ="java.util.* 
+	com.brainspeedtech.swarm.layer.util.* 
+	com.brainspeedtech.swarm.layer.* 
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.flow.*
+	org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.layer.util.*;"
+%>

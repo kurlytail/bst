@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.brainspeedtech.constraint.software/src"
+    modelPluginID="com.brainspeedtech.constraint.software" modelName="Software" importerID="org.eclipse.xsd.ecore.importer"
+    complianceLevel="6.0" copyrightFields="false" providerRootExtendsClass="com.brainspeedtech.swarm.project.validation.ProblemDecoratorItemProvider"
+    tableProviders="true" colorProviders="true" fontProviders="true" usedGenPackages="platform:/plugin/com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow platform:/plugin/com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst platform:/plugin/com.brainspeedtech.swarm.layer/model/layer.genmodel#//layer platform:/plugin/com.bst.swarm.master/model/master.genmodel#//master platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm platform:/plugin/com.bst.struct/model/struct.genmodel#//struct">
+  <foreignModel>software.xsd</foreignModel>
+  <genPackages prefix="Software" basePackage="com.brainspeedtech.constraint" resource="XML"
+      disposableProviderFactory="true" extensibleProviderFactory="true" childCreationExtenders="true"
+      ecorePackage="software.ecore#/">
+    <genClasses ecoreClass="software.ecore#//BlockingReceiver">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//BlockingReceiver/masterTube"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//BufferDepth">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//BufferDepth/masterTube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//BufferDepth/depth"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//CustomInstanceCell">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//CustomInstanceCell/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//CustomMasterCell">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//CustomMasterCell/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//FileTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//FileTube/instanceTube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//FileTube/name"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//IgnoreInvalidTransitions">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//IgnoreInvalidTransitions/state"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//IgnoreInvalidTransitions/stateMachines"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//MemoryFIFO">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//MemoryFIFO/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//NativeType">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//NativeType/object"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//NoIdleHandler">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//NoIdleHandler/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//NoInitHandler">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//NoInitHandler/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//SharedMemoryTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SharedMemoryTube/tube"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SharedMemoryTube/struct"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//SharedMemoryTube/name"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//SharedVariable">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SharedVariable/masterCell"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SharedVariable/struct"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//SharedVariable/count"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//SharedVariable/name"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//SingleTubeHandler">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SingleTubeHandler/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//SocketTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//SocketTube/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//SocketTube/clientReceiver"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//StateGroup">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference software.ecore#//StateGroup/state"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//StateGroup/name"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//StructSizeLimit">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference software.ecore#//StructSizeLimit/structure"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//StructSizeLimit/limit"/>
+    </genClasses>
+    <genClasses ecoreClass="software.ecore#//TCPSocketTube">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//TCPSocketTube/serverIP"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute software.ecore#//TCPSocketTube/serverPort"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

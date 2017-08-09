@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ Copyright @2012 BrainSpeed Technolgoies
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/reg"
+            class="com.brainspeedtech.reg.RegPackage"
+            genModel="model/reg.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="reg"
+            class="com.brainspeedtech.reg.util.RegResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

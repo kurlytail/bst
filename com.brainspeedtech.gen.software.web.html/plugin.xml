@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="htmlBuilder"
+         name="Html Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.brainspeedtech.gen.software.web.html.builder.HtmlBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="htmlNature"
+         name="Html Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.brainspeedtech.gen.software.web.html.builder.HtmlNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.brainspeedtech.gen.software.web.html.htmlBuilder">
+      </builder>
+      <requires-nature
+            id="com.bst.gen.swarmInstanceNature">
+      </requires-nature>
+   </extension>
+   
+       <extension
+          point="org.eclipse.ui.propertyPages">
+       <page
+             category="com.brainspeedtech.swarm.project.properties.base"
+             class="com.brainspeedtech.gen.software.web.html.properties.HtmlPropertyPage"
+             id="com.brainspeedtech.gen.software.html.properties.HtmlPropertyPage"
+             name="Swarm Html Properties"
+             nameFilter="*">
+          <enabledWhen>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+       </page>
+    </extension>
+
+</plugin>

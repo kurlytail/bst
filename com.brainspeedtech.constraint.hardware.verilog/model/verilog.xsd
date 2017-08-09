@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema targetNamespace="http://www.brainspeedtech.com/constraint/hardware/verilog"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.brainspeedtech.com/constraint/hardware/verilog"
+	xmlns:pref="http://www.brainspeedtech.com/swarm/layer" xmlns:pref1="http://www.brainspeedtech.com/swarm/inst"
+	xmlns:pref2="http://www.brainspeedtech.com/struct" xmlns:pref3="http://www.brainspeedtech.com/swarm/master">
+	<import schemaLocation="../../com.brainspeedtech.swarm.layer/model/layer.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/layer">
+	</import>
+
+	<import schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd"
+		namespace="http://www.brainspeedtech.com/struct">
+	</import>
+
+
+
+
+
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/master"></import>
+	<complexType name="BusWidth">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="masterTube" type="anyURI" ecore:reference="pref3:MasterTube"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+				<attribute name="width" type="int"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ClockDomain">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="masterTube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="pref3:MasterTube">
+					</element>
+					<element name="masterCell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="pref3:MasterCell">
+					</element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+				<attribute name="frequency" type="unsignedLong" default="125000000"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Bandwidth">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="masterTube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="pref3:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="VerilogGeneration">
+		<complexContent>
+			<extension base="pref:NatureBase"></extension>
+		</complexContent>
+	</complexType>
+</schema>

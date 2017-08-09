@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema
+	targetNamespace="http://www.brainspeedtech.com/constraint/software"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.brainspeedtech.com/constraint/software"
+	xmlns:struct="http://www.brainspeedtech.com/struct"
+	xmlns:layer="http://www.brainspeedtech.com/swarm/layer"
+	xmlns:inst="http://www.brainspeedtech.com/swarm/inst"
+	xmlns:master="http://www.brainspeedtech.com/swarm/master" xmlns:sm="http://www.brainspeedtech.com/swarm/sm">
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.layer/model/layer.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/layer">
+	</import>
+
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd"
+		namespace="http://www.brainspeedtech.com/struct">
+	</import>
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/master">
+	</import>
+	<import schemaLocation="../../com.brainspeedtech.swarm.sm/model/sm.xsd" namespace="http://www.brainspeedtech.com/swarm/sm"></import>
+	<complexType name="NativeType">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI"
+						ecore:reference="struct:Atom" maxOccurs="unbounded"
+						minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="SocketTube" abstract="true">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="inst:TubeInstance">
+					</element>
+				</sequence>
+				<attribute name="clientReceiver" type="boolean"
+					default="false" use="optional">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="TCPSocketTube">
+		<complexContent>
+			<extension base="tns:SocketTube">
+				<attribute name="serverPort" type="int" default="8000"
+					use="optional">
+				</attribute>
+				<attribute name="serverIP" type="string" use="optional"
+					default="localhost">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="SharedVariable">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="masterCell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterCell">
+					</element>
+					<element name="struct" type="anyURI" maxOccurs="1"
+						minOccurs="1" ecore:reference="struct:Struct">
+					</element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+				<attribute name="count" type="int" default="1"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="CustomMasterCell">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="cell" type="anyURI"
+						ecore:reference="master:MasterCell" maxOccurs="1" minOccurs="1">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="CustomInstanceCell">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="cell" type="anyURI"
+						ecore:reference="inst:CellInstance" maxOccurs="1" minOccurs="1">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<complexType name="StructSizeLimit">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="structure" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="struct:Struct">
+					</element>
+				</sequence>
+				<attribute name="limit" type="long"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="IgnoreInvalidTransitions">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="state" type="anyURI"
+						ecore:reference="sm:State" maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="stateMachines" type="anyURI" maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="sm:StateMachine"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="NoIdleHandler">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="cell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterCell">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="NoInitHandler">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="cell" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterCell">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="StateGroup">
+        <annotation>
+        	<documentation>Define a group of states in a state machine as beloinging to a state machine unit. The implementations are expected to create separate entry points for the states that belong to a State Group.</documentation>
+        </annotation>
+        <complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="state" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="sm:State"></element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FileTube">
+	    <annotation>
+        	<documentation>Defines tubes that are sourced through external named files</documentation>
+        </annotation>
+	
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="instanceTube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="inst:TubeInstance"></element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="SingleTubeHandler">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BufferDepth">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="masterTube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+				</sequence>
+				<attribute name="depth" type="int" default="1"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="BlockingReceiver">
+        <complexContent>
+            <extension base="layer:ConstraintBase">
+                <sequence>
+                    <element name="masterTube" type="anyURI" maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube"></element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+	<complexType name="MemoryFIFO">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="SharedMemoryTube">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0" ecore:reference="master:MasterTube">
+					</element>
+					<element name="struct" type="anyURI" maxOccurs="1"
+						minOccurs="1" ecore:reference="struct:Struct">
+					</element>
+				</sequence>
+				<attribute name="name" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

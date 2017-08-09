@@ -1,0 +1,24 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="InstanceHeaderFile" 
+	imports ="java.util.*
+	com.brainspeedtech.swarm.layer.util.*
+	com.brainspeedtech.struct.util.StructResourceImpl
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.resource.Resource
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.swarm.master.util.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% CellInstance instance = (CellInstance) argument;%>  	
+<%@ include file="ccopyright.jet"%>
+
+#ifndef __GEN__<%=instance.getName().toUpperCase()%>_H__
+#define __GEN__<%=instance.getName().toUpperCase()%>_H__
+
+#include "gen_<%=((Instance)instance.eContainer()).getName()%>.h"
+#include "gen_<%=instance.getCell().getName()%>.h"
+
+
+#endif

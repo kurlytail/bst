@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:struct="http://www.brainspeedtech.com/struct" elementFormDefault="qualified" targetNamespace="http://www.brainspeedtech.com/struct/inst" xmlns:tns="http://www.brainspeedtech.com/struct/inst">
+	<xsd:import schemaLocation="../../com.bst.struct/model/struct.xsd" namespace="http://www.brainspeedtech.com/struct"></xsd:import>
+	<xsd:complexType name="Instance">
+		<xsd:sequence>
+
+			<xsd:element name="terms" type="tns:InstanceTerm"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="struct" type="xsd:anyURI"
+			ecore:reference="struct:Struct">
+		</xsd:attribute>
+		<xsd:attribute name="count" type="xsd:int" default="1"></xsd:attribute>
+
+	</xsd:complexType>
+
+
+	<xsd:complexType name="InstanceTerm">
+		<xsd:sequence>
+			<xsd:element name="path" type="struct:Path" maxOccurs="1"
+				minOccurs="1">
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="value" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="index" type="xsd:int"></xsd:attribute>
+		<xsd:attribute name="range" type="xsd:int"></xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

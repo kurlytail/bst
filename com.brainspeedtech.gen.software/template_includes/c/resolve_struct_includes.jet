@@ -1,0 +1,48 @@
+<%
+	List<Atom> atoms = new ArrayList<Atom>();
+	HashMap<String, Boolean> includeFiles = new HashMap<String, Boolean>();
+
+	TreeIterator<EObject> contents = resource.getAllContents();
+	while(contents.hasNext()) {
+		EObject eObject = contents.next();
+		if (eObject instanceof Atom) {
+			Atom atom = (Atom) eObject;
+			atoms.add((Atom) eObject);
+			if (atom.getAtom() != null) {
+				if (atom.getAtom().eResource() == resource)
+					continue;
+				atom.getAtom().eResource().getURI()
+                        .toFileString().length();
+				includeFiles.put(atom.getAtom().eResource().getURI()
+						.toFileString(), true);
+			}
+			if (atom instanceof Struct) {
+				Struct str = (Struct) atom;
+				for (Field f : str.getField()) {
+					if (f.getAtom() != null) {
+						if (f.getAtom().eResource() == resource)
+							continue;
+						EcoreUtil.resolveAll(f.getAtom());
+						if (f.getAtom() == null ||
+							f.getAtom().eResource() == null ||
+							f.getAtom().eResource().getURI() == null) 
+							continue;
+                        URI uri = f.getAtom().eResource().getURI();
+                        String fileString = uri.toFileString();
+                        f.getAtom().eResource().getURI()
+                                .toFileString().length();
+						includeFiles.put(f.getAtom().eResource().getURI()
+								.toFileString(), true);
+					}
+				}
+			}
+		}
+	}
+	
+	Collection<Struct> structs = EcoreUtil.getObjectsByType(
+		atoms, StructPackage.eINSTANCE.getStruct());
+%>
+
+<%for (String includeFile : includeFiles.keySet()) {%>
+#include "gen_<%=(new File(includeFile)).getName().replaceAll("\\.struct$", ".h")%>"
+<%}%>

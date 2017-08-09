@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="com.bst.struct"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.flow"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.layer"/>
+	<classpathentry kind="src" path="com.bst.swarm.master"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.sm"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.inst"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.complexity"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.software.posix"/>
+	<classpathentry kind="src" path="com.brainspeedtech.swarm.project"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.software.posix"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.software"/>
+	<classpathentry kind="src" path="com.bst.struct.editor"/>
+<<<<<<< .mine
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.hardware.hx"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constriant.software.hx"/>
+	<classpathentry kind="src" path="com.bst.gen"/>
+	<classpathentry kind="src" path="com.brainspeedtech.reg"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.hardware.verilog"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.hyperx"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.html"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.software.java"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.software.posix.vpi"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.software.python"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.verilog"/>
+	<classpathentry kind="src" path="com.brainspeedtech.gen.tcl"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.software.java"/>
+	<classpathentry kind="src" path="com.brainspeedtech.constraint.software.python"/>
+=======
+	<classpathentry kind="src" path="com.brainspeedtech.struct"/>
+>>>>>>> .r2366
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.core.resources_3.7.101.v20120125-1505.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.core.resources.source_3.7.101.v20120125-1505.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/akamath/tools/eclipse/plugins/org.eclipse.platform.doc.isv_3.7.2.v20120120-1417.jar!/reference/api"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/dtree/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/events/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/localstore/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/properties/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/propertytester/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/refresh/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/resources/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/resources/mapping/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/resources/projectvariables/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/resources/refresh/win32/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/utils/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/watson/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/filtermatchers/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/mapping/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/refresh/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/team/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/resources/variableresolvers/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.ecore.source_2.7.0.v20120127-1122.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/plugin/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/resource/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/resource/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/internal/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.common_2.7.0.v20120127-1122.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.validation_1.4.0.v20100428-2315.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.validation.source_1.4.0.v20100428-2315.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/akamath/tools/eclipse/plugins/org.eclipse.emf.validation.doc_1.3.0.v20091215-1218.jar!/references/javadoc"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/validation/internal/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/validation/internal/emfadapter/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/validation/internal/l10n/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/internal/modeled/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/internal/modeled/model/validation/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/internal/modeled/model/validation/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/internal/modeled/model/validation/util/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/validation/internal/service/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/validation/internal/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/marker/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/model/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/preferences/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/service/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/validation/xml/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.ecore.xmi_2.7.0.v20120127-1122.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.ecore.xmi.source_2.7.0.v20120127-1122.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.transaction_1.4.0.v20100331-1738.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.transaction.source_1.4.0.v20100331-1738.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/akamath/tools/eclipse/plugins/org.eclipse.emf.transaction.doc_1.4.0.v20091215-1213.jar!/references/javadoc"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/transaction/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/transaction/impl/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/transaction/internal/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/emf/transaction/internal/l10n/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/transaction/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.edit_2.7.2.v20120130-0943.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.emf.core_1.4.1.v20101222-2230.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.emf.core.source_1.4.1.v20101222-2230.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/emf/core/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/emf/core/clipboard/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/emf/core/internal/l10n/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/emf/core/internal/plugin/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/emf/core/internal/resources/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/emf/core/internal/util/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/emf/core/internal/validation/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/emf/core/resources/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/emf/core/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.notation_1.5.0.v20110309-2159.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.notation_1.5.0.v20110309-2159.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/notation/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/notation/datatype/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/notation/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/notation/stylepooling/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/notation/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.ecore.change_2.7.1.v20120127-1122.jar"/>
+<<<<<<< .mine
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.diagram.core_1.4.1.v20101221-2230.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.diagram.core.source_1.4.1.v20101221-2230.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/commands/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/edithelpers/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/diagram/core/internal/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/diagram/core/internal/commands/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/diagram/core/internal/l10n/*"/>
+			<accessrule kind="discouraged" pattern="org/eclipse/gmf/runtime/diagram/core/internal/listener/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/listener/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/preferences/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/providers/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/services/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/services/eventbroker/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/services/view/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/gmf/runtime/diagram/core/view/factories/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.gmf.runtime.common.core_1.4.1.v20101119-2230.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.core.expressions_3.4.300.v20110228.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.mwe.utils_1.1.1.v201108020506.jar" sourcepath="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.mwe.utils.source_1.1.1.v201108020506.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.emf.mwe.core_1.1.1.v201108020506.jar"/>
+=======
+	<classpathentry kind="lib" path="commons-cli-1.2/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="commons-io-2.4/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="commons-logging-1.1.3/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="commons-logging-1.1.3/commons-logging-adapters-1.1.3.jar"/>
+	<classpathentry kind="lib" path="commons-logging-1.1.3/commons-logging-api-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+	<classpathentry kind="lib" path="/home/akamath/tools/eclipse/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+>>>>>>> .r2366
+	<classpathentry kind="output" path="bin"/>
+</classpath>

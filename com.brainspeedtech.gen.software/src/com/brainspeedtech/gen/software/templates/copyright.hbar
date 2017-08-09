@@ -1,0 +1,8 @@
+
+{{#if CopyrightMessage}}
+/***
+{{message}}
+*/
+{{else}}
+/* Please use the CopyrightMessage Constraint */
+{{/if}}

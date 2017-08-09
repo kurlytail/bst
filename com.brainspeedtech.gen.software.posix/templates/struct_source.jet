@@ -1,0 +1,106 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="StructSourceFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	com.brainspeedtech.struct.util.*
+	java.util.*;"
+%>
+<%Resource resource = (Resource) argument;
+	String fileName = resource.getURI().lastSegment()
+						.replaceAll("\\.struct$", "");
+%>
+
+#define __STDC_FORMAT_MACROS
+
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+extern void swarm_print(int level, const char* format, ...);
+
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/resolve_struct_includes.jet"%>
+#include "gen_<%=fileName%>.h"
+
+<%for(Atom atom: atoms) {
+	if(ProjectUtil.getReferringInstance(atom, NativeType.class) != null) {
+		if(atom instanceof Struct) { %>
+void swarm_print_struct_<%=atom.getName()%>(<%=atom.getName()%>_t *value, int level)
+{
+<%	if(StructUtil.getAtomSize(atom) <= 32) { %>
+		swarm_print(-1, "0x%" SCNx32 " ", *value);
+<%	} else {  %>
+		swarm_print(-1, "0x%" SCNx64 " ", *value);
+<%	} %>
+	if (level == 0) swarm_print(-1, "\n");
+}
+<%		}
+		continue;
+	}
+		
+	if(atom instanceof Struct) { %>
+void swarm_print_struct_<%=atom.getName()%>(<%=atom.getName()%>_t *value, int level)
+{
+	int i;
+	int current_level = level;
+	++level;
+	swarm_print(-1, "{ ");
+<%		for (Field f : ((Struct) atom).getField()) {
+			if (f.getAtom() == null || ProjectUtil.getReferringInstance(atom, NativeType.class) != null) {
+				if (StructUtil.getFieldCount(f) <= 32) {%>
+	swarm_print(-1, "<%=f.getName()%> = 0x%" SCNx32 " ", value-><%=f.getName()%>);
+<%				}
+			} else if (f.getAtom() instanceof com.brainspeedtech.struct.Enum) {
+				if (StructUtil.getFieldCount(f) <= 1) {
+					if (f.getAtom().getCount() <= 32) {%>
+	swarm_print(-1, "<%=f.getName()%> = 0x%" SCNx32 " ", value-><%=f.getName()%>);
+<%
+					} else {%>
+	for(i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+		swarm_print(-1, "<%=f.getName()%>[%d] = 0x%" SCNx32 " ", i, value-><%=f.getName()%>[i]);
+	}
+<%					}
+				} else {
+					if (StructUtil.getFieldCount(f) > 1) {
+%>
+	for(i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+		swarm_print(-1, "<%=f.getName()%>[%d] = ", i);
+		swarm_print_struct_<%=f.getAtom().getName()%>(&value-><%=f.getName()%>[i], level);
+	}
+<%					} else {
+%>
+	swarm_print(-1, "<%=f.getName()%> = ");
+	swarm_print_struct_<%=f.getAtom().getName()%>(&value-><%=f.getName()%>, level);
+<%					}
+%>
+<%				}
+			} else {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+	swarm_print(-1, "<%=f.getName()%> = ");
+	swarm_print_struct_<%=f.getAtom().getName()%>(&value-><%=f.getName()%>, level);
+<%
+				} else {
+%>
+	for(i = 0; i < <%=StructUtil.getFieldCount(f)%>; ++i) {
+		swarm_print(-1, "<%=f.getName()%>[%d] = ", i);
+		swarm_print_struct_<%=f.getAtom().getName()%>(&value-><%=f.getName()%>[i], level);
+	}
+<%				}
+			}
+		} %>
+	swarm_print(-1, "} ");
+	if(current_level == 0) swarm_print(-1, "\n");
+}
+<%	}
+%>
+
+<%}%>
+

@@ -1,0 +1,17 @@
+<%
+Collection<Parameter> parameters = new LinkedList<Parameter>();
+for(Resource resource: TransactionUtil.getEditingDomain(instance).getResourceSet().getResources()) {
+	Layer layer = (Layer)EcoreUtil.getObjectByType(resource.getContents(), LayerPackage.eINSTANCE.getLayer());
+	if (layer == null) continue;
+	parameters.addAll((Collection<? extends Parameter>)EcoreUtil.getObjectsByType(layer.eContents(), LayerPackage.eINSTANCE.getParameter()));
+}
+%>
+<%for(Parameter parameter: parameters) {
+	if(parameter.isDisabled()) continue;
+	%>
+//  <%=parameter.getName().toUpperCase()%> = <%=parameter.getValue()%>
+<%	if(parameter.getBlurb() != null) { %>
+//  <%=parameter.getBlurb()%>
+<% 	} %>
+#define <%=parameter.getName().toUpperCase()%>  <%=SoftwareUtil.computeParameter(parameter)%>
+<%}%>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<gmfgraph:Canvas xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:gmfgraph="http://www.eclipse.org/gmf/2006/GraphicalDefinition" name="inst">
+  <figures
+      name="Default">
+    <descriptors
+        name="CellInstanceFigure">
+      <actualFigure
+          xsi:type="gmfgraph:RoundedRectangle"
+          name="CellInstanceFigure">
+        <layout
+            xsi:type="gmfgraph:FlowLayout"/>
+        <children
+            xsi:type="gmfgraph:Label"
+            name="CellInstanceNameFigure"
+            text="&lt;...>"/>
+      </actualFigure>
+      <accessors
+          figure="//@figures.0/@descriptors.0/@actualFigure/@children.0"/>
+    </descriptors>
+    <descriptors
+        name="TubeInstanceFigure">
+      <actualFigure
+          xsi:type="gmfgraph:PolylineConnection"
+          name="TubeInstanceFigure"
+          targetDecoration="//@figures.0/@descriptors.1/@actualFigure/@children.1">
+        <children
+            xsi:type="gmfgraph:Label"
+            name="TubeInstanceNameFigure"
+            text="&lt;...>"/>
+        <children
+            xsi:type="gmfgraph:PolygonDecoration"
+            name="TubeTargetDecoration"/>
+      </actualFigure>
+      <accessors
+          figure="//@figures.0/@descriptors.1/@actualFigure/@children.0"/>
+    </descriptors>
+  </figures>
+  <nodes
+      name="CellInstance"
+      figure="CellInstanceFigure"/>
+  <connections
+      name="TubeInstance"
+      figure="TubeInstanceFigure"/>
+  <labels
+      name="CellInstanceName"
+      figure="CellInstanceFigure"
+      elementIcon="false"
+      accessor="//@figures.0/@descriptors.0/@accessors.0"/>
+  <labels
+      name="TubeInstanceName"
+      figure="TubeInstanceFigure"
+      elementIcon="false"
+      accessor="//@figures.0/@descriptors.1/@accessors.0"/>
+</gmfgraph:Canvas>

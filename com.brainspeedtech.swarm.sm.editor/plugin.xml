@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="com.brainspeedtech.swarm.sm.presentation.SmModelWizardID"
+            name="%_UI_SmModelWizard_label"
+            class="com.brainspeedtech.swarm.sm.presentation.SmModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/SmModelFile.gif">
+         <description>%_UI_SmModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <editor
+            id="com.brainspeedtech.swarm.sm.presentation.SmEditorID"
+            name="%_UI_SmEditor_label"
+            icon="icons/full/obj16/SmModelFile.gif"
+            extensions="sm"
+            class="com.brainspeedtech.swarm.sm.presentation.SmEditor"
+            contributorClass="com.brainspeedtech.swarm.sm.presentation.SmActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>

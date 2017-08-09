@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/inst"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/inst" xmlns:pref="http://www.brainspeedtech.com/swarm/master">
+
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd" namespace="http://www.brainspeedtech.com/swarm/master"></import>
+	<complexType name="CellInstance">
+		<sequence>
+			<element name="input" type="anyURI" maxOccurs="unbounded"
+				minOccurs="0" ecore:reference="tns:TubeInstance"
+				ecore:opposite="to">
+			</element>
+			<element name="output" type="anyURI" maxOccurs="unbounded"
+				minOccurs="0" ecore:reference="tns:TubeInstance"
+				ecore:opposite="from">
+			</element>
+		</sequence>
+		<attribute name="cell" type="anyURI"
+			ecore:reference="pref:MasterCell">
+		</attribute>
+		<attribute name="instance" type="int"></attribute>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="internal_name" type="ID"></attribute>
+		<attribute name="pinned" type="boolean" default="false"></attribute>
+	</complexType>
+
+	<complexType name="TubeInstance">
+		<sequence>
+			<element name="from" type="anyURI" maxOccurs="1"
+				minOccurs="1" ecore:reference="tns:CellInstance"
+				ecore:opposite="output">
+			</element>
+			<element name="to" type="anyURI" maxOccurs="1" minOccurs="1"
+				ecore:reference="tns:CellInstance" ecore:opposite="input">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="internal_name" type="ID"></attribute>
+		<attribute name="tube" type="anyURI"
+			ecore:reference="pref:MasterTube">
+		</attribute>
+		<attribute name="instance" type="int"></attribute>
+	</complexType>
+
+	<complexType name="Instance">
+		<sequence>
+			<element name="tube" type="tns:TubeInstance" maxOccurs="unbounded" minOccurs="0"></element>
+			<element name="cell" type="tns:CellInstance" maxOccurs="unbounded" minOccurs="0"></element>
+		</sequence>
+		<attribute name=" name" type="string"></attribute>
+	</complexType>
+</schema>

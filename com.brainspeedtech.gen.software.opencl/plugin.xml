@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+    <extension
+          id="openclBuilder"
+          name="Swarm OpenCL Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="com.brainspeedtech.gen.software.opencl.builder.OpenCLBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="openclNature"
+          name="Swarm OpenCL Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.brainspeedtech.gen.software.opencl.builder.SwarmOpenCLNature">
+          </run>
+       </runtime>
+       <builder
+             id="com.brainspeedtech.gen.software.opencl.openclBuilder">
+       </builder>
+       <requires-nature
+             id="com.bst.gen.swarmInstanceNature">
+       </requires-nature>
+    </extension>
+    <extension
+          point="org.eclipse.ui.propertyPages">
+       <page
+             category="com.brainspeedtech.swarm.project.properties.base"
+             class="com.brainspeedtech.gen.software.opencl.properties.OpenCLPropertyPage"
+             id="com.brainspeedtech.gen.software.opencl.properties.openclPropertyPage"
+             name="Swarm OpenCL Properties"
+             nameFilter="*">
+          <enabledWhen>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+       </page>
+    </extension>
+</plugin>

@@ -1,0 +1,390 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="DesignStartupFile" 
+	imports ="java.util.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.layer.*
+	org.eclipse.emf.ecore.*;"
+%>
+<% Instance instance = (Instance) argument;%>	
+<%@ include file="ccopyright.jet"%>
+
+#define _XOPEN_SOURCE 500
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
+#include <time.h>
+#include <ftw.h>
+#include <semaphore.h>
+#include "gen_<%=instance.getName()%>.h"
+#include "gen_<%=instance.getName()%>_counters.h"
+
+
+char name_buffer[4096];
+char *program_instance_name = "<%=instance.getName()%>_logs";
+
+
+<%
+	Set<SharedVariable> sharedVariables = new HashSet<SharedVariable>();
+	Set<SharedMemoryTube> sharedMemoryTubes = new HashSet<SharedMemoryTube>();
+%>
+int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
+{
+    int rv = remove(fpath);
+
+    if (rv)
+        perror(fpath);
+
+    return rv;
+}
+
+int rmrf(char *path)
+{
+    return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+}
+
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) { %>
+int <%=ci.getName()%>_pid = 0;
+<%} 
+	sharedVariables.addAll(ProjectUtil.getReferringInstances(ci, SharedVariable.class));
+	sharedVariables.addAll(ProjectUtil.getReferringInstances(ci.getCell(), SharedVariable.class));
+	sharedMemoryTubes.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), SharedMemoryTube.class));
+	sharedMemoryTubes.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), SharedMemoryTube.class));
+}%>
+
+<%
+for(SharedVariable svar: sharedVariables) {
+%>
+<%=svar.getStruct().getName()%>_t __shared__<%=svar.getName()%><%if(svar.getCount()>1){%>[<%=svar.getCount()%>]<%}%>
+	= { 0 };
+sem_t *mem_init_<%=svar.getName()%>_sem;	
+<%
+}
+%>
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {%>
+<%=svar.getStruct().getName()%>_t __shared__<%=svar.getName()%> = { 0 };
+sem_t *mem_init_<%=svar.getName()%>_sem;	
+<%}%>
+
+
+<%for(CellInstance ci: instance.getCell()) {%>
+    <%
+    Collection<Counter> counters = ProjectUtil.getReferringInstances(ci.getCell(), Counter.class);
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), TubeReceiveCounter.class));
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), TubeTransmitCounter.class));
+    if(counters.size() != 0) {
+    %>
+<%=ci.getCell().getName()%>_counters_t* counter_file_<%=ci.getName()%> = NULL;
+<%=ci.getCell().getName()%>_counters_t counter_file_<%=ci.getName()%>_init = { 0 };
+    <%}
+}%>
+
+
+void terminate_all()
+{
+//	fprintf(stderr, "Terminating <%=instance.getName()%>\n");
+<%int cellNameSize = 0;%>
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) { %>
+	if(<%=ci.getName()%>_pid > 0) {
+//		fprintf(stderr, "Terminating <%=ci.getName()%>\n");
+		kill(<%=ci.getName()%>_pid, SIGINT);
+	}
+<%} 
+	if(ci.getName().length() > cellNameSize) cellNameSize = ci.getName().length();
+}%>
+<%
+for(SharedVariable svar: sharedVariables) {
+%>
+	sprintf(name_buffer, "/%d_%s_sem_<%=svar.getName()%>_init", getuid(), program_instance_name);
+	sem_unlink(name_buffer);
+<%
+}
+%>
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {
+	int maxSharedMemoryCount = 0;
+	for(MasterTube mTube: svar.getTube()) {
+		int instanceCount = ProjectUtil.getReferringInstances(mTube, TubeInstance.class).size();
+		if(instanceCount > maxSharedMemoryCount) {
+			maxSharedMemoryCount = instanceCount;
+		}
+	}
+	for(int sMemInstance = 0; sMemInstance < maxSharedMemoryCount; ++sMemInstance) {
+%>
+	sprintf(name_buffer, "/%d_%s_sem_<%=svar.getName()%>_<%=sMemInstance%>_init", getuid(), program_instance_name);
+	sem_unlink(name_buffer);
+<%}
+}%>
+
+
+<%for(CellInstance ci: instance.getCell()) {%>
+    <%
+    Collection<Counter> counters = ProjectUtil.getReferringInstances(ci.getCell(), Counter.class);
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), TubeReceiveCounter.class));
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), TubeTransmitCounter.class));
+    if(counters.size() != 0) {
+    %>
+    if(counter_file_<%=ci.getName()%> != NULL) {
+        //fprintf(stdout, "Counters for <%=ci.getName()%>\n");
+    <%for(Counter counter: counters) {
+            String type = "";
+            switch(counter.getWidth()) {
+            case _16BIT: type = "%d"; break;
+            case _32BIT: type = "%d"; break;
+            case _64BIT: type = "%d"; break;
+            }
+        %>
+        //fprintf(stdout, "\tCounter <%=counter.getName()%> = <%=type%>\n", counter_file_<%=ci.getName()%>-><%=counter.getName()%>);
+        <%}%>
+    }
+    <%}
+}%>
+
+}
+
+void kill_handler(int signum)
+{
+	fprintf(stderr, "<%=instance.getName()%> Received signal %d, exiting \n", signum);
+	exit(-1);
+}
+
+int work_dir_fd;
+int log_file_size = -1;
+
+int main(int argc, char* argv[])
+{
+	char filename[<%=instance.getName().length() + cellNameSize + 32%>];
+	char *cell_argv[3];
+	int wait_status;
+	char next_character;
+	int i;
+	int exit_pid;
+	int mem_file;
+	
+	// Generate pseudo random name
+	srandom((unsigned int)time(NULL));
+	atexit(terminate_all);
+	signal(SIGTERM, kill_handler);
+	signal(SIGINT, kill_handler);
+	
+	
+	if (argc > 2) {
+		program_instance_name = argv[2];
+	}
+	
+	if (argc > 1) {
+		log_file_size = atoi(argv[1]);
+	}
+	
+	rmrf(program_instance_name);
+	
+	fprintf(stderr, "Starting Design <%=instance.getName()%> with logs at %s\n", program_instance_name);	
+	if (mkdir(program_instance_name, 0777) < 0) {
+		perror("Error creating work directory");
+		exit(-1);
+	}
+	
+	work_dir_fd = open(program_instance_name, 0);
+	if (work_dir_fd < 0) {
+		perror("Error opening work directory");
+		exit(-1);
+	}
+
+<%for(SharedVariable svar: sharedVariables) {
+int varInstanceCount = 0;
+for(MasterCell mc: svar.getMasterCell()) {
+	int icCount = ProjectUtil.getReferringInstances(mc, CellInstance.class).size();
+	if (icCount > varInstanceCount) varInstanceCount = icCount;
+}
+%>
+<%for(int i = 0; i < varInstanceCount; ++i) {%>
+	mem_file = openat(work_dir_fd, "mem__<%=svar.getName()%>_<%=(i)%>", O_CREAT | O_RDWR, 0666);
+	if (mem_file < 0) {
+		perror("Error creating memfile mem__<%=svar.getName()%>_<%=(i)%>");
+		exit(-1);
+	}
+	if(write(mem_file, &__shared__<%=svar.getName()%>, sizeof(__shared__<%=svar.getName()%>)) < 0) {
+		perror("Error writing memfile mem__<%=svar.getName()%>_<%=(i)%>");
+		exit(-1);
+	}
+	close(mem_file);
+<%}%>
+	sprintf(name_buffer, "/%d_%s_sem_<%=svar.getName()%>_init", getuid(), program_instance_name);
+	sem_unlink(name_buffer);
+	mem_init_<%=svar.getName()%>_sem = sem_open(name_buffer, O_CREAT, S_IRUSR | S_IWUSR, 0);
+	if (mem_init_<%=svar.getName()%>_sem == NULL) {
+		perror("Error opening semaphore mem_init_<%=svar.getName()%>_sem");
+		exit(-1);
+	}
+<%}%>
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {
+int varInstanceCount = 0;
+for(MasterTube mt: svar.getTube()) {
+	int icCount = ProjectUtil.getReferringInstances(mt, TubeInstance.class).size();
+	if (icCount > varInstanceCount) varInstanceCount = icCount;
+}
+%>
+<%for(int i = 0; i < varInstanceCount; ++i) {%>
+	mem_file = openat(work_dir_fd, "mem__<%=svar.getName()%>_<%=(i)%>", O_CREAT | O_RDWR, 0666);
+	if (mem_file < 0) {
+		perror("Error creating memfile mem__<%=svar.getName()%>_<%=(i)%>");
+		exit(-1);
+	}
+	if(write(mem_file, &__shared__<%=svar.getName()%>, sizeof(__shared__<%=svar.getName()%>)) < 0) {
+		perror("Error writing memfile mem__<%=svar.getName()%>_<%=(i)%>");
+		exit(-1);
+	}
+	close(mem_file);
+	sprintf(name_buffer, "/%d_%s_sem_<%=svar.getName()%>_<%=(i)%>_init", getuid(), program_instance_name);
+	sem_unlink(name_buffer);
+	mem_init_<%=svar.getName()%>_sem = sem_open(name_buffer, O_CREAT, S_IRUSR | S_IWUSR, 0);
+	if (mem_init_<%=svar.getName()%>_sem == NULL) {
+		perror("Error opening semaphore mem_init_<%=svar.getName()%>_<%=(i)%>_sem");
+		exit(-1);
+	}
+<%}%>
+<%}%>
+
+<%
+for(SharedVariable svar: sharedVariables) {
+%>
+
+<%
+}
+%>
+
+<%for(TubeInstance ti: instance.getTube()) { 
+	Collection<SocketTube> socketTubes = ProjectUtil.getReferringInstances(ti, SocketTube.class);
+	if (socketTubes.isEmpty()) {
+%>
+	//fprintf(stderr, "Creating fifo_<%=ti.getName()%>\n");
+	if (mkfifoat(work_dir_fd, "fifo_<%=ti.getName()%>", 0777) < 0) {
+		perror("Error creating fifo");
+		exit(-1);
+	}
+<%
+	if(ProjectUtil.getReferringInstance(ti.getTube(), QueueDepth.class) != null ||
+		ProjectUtil.getReferringInstance(ti.getTube(), BufferDepth.class) != null) {
+%>
+	//fprintf(stderr, "Creating fifo_<%=ti.getName()%>_credit\n");
+	if (mkfifoat(work_dir_fd, "fifo_<%=ti.getName()%>_credit", 0777) < 0) {
+		perror("Error creating credit fifo");
+		exit(-1);
+	}
+<% } %>
+<%	}
+}%>
+
+<%int index = 0;%>
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) { ++index; %>
+
+    <%
+    Collection<Counter> counters = ProjectUtil.getReferringInstances(ci.getCell(), Counter.class);
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getInput(), TubeReceiveCounter.class));
+	counters.addAll(ProjectUtil.getReferringInstances(ci.getCell().getOutput(), TubeTransmitCounter.class));
+    if(counters.size() != 0) {
+    %>
+    mem_file = openat(work_dir_fd, "counter__<%=ci.getName()%>", O_CREAT | O_RDWR, 0666);
+    if (mem_file < 0) {
+        perror("Error creating stats file counter__<%=ci.getName()%>");
+        exit(-1);
+    }
+    
+    if(write(mem_file, &counter_file_<%=ci.getName()%>_init, sizeof(counter_file_<%=ci.getName()%>_init)) < 0) {
+        perror("Error writing memfile counter_file_<%=ci.getName()%>_init");
+        exit(-1);
+    }
+    
+    
+    counter_file_<%=ci.getName()%> = (<%=ci.getCell().getName()%>_counters_t*)mmap(NULL, 
+        sizeof(<%=ci.getCell().getName()%>_counters_t), PROT_READ | PROT_WRITE,
+        MAP_SHARED, mem_file, 0);
+    if (counter_file_<%=ci.getName()%>  == NULL) {
+        perror("Error mapping stats file counter__<%=ci.getName()%>");
+        exit(-1);
+    }
+    memset(counter_file_<%=ci.getName()%>, 0, sizeof(*counter_file_<%=ci.getName()%>));
+    <%}%>
+
+
+	//fprintf(stderr, "Forking for <%=ci.getName()%>\n");
+	<%=ci.getName()%>_pid = fork();
+	if(<%=ci.getName()%>_pid < 0) {
+		perror("Error forking");
+		exit(-1);
+	} else if(<%=ci.getName()%>_pid == 0) {
+		/* Setup child stdout and stdin */
+		//fclose(stderr);
+		//fclose(stdin);
+		
+		//sprintf(filename, "%s/<%=ci.getName()%>_out.log", program_instance_name);
+		//fprintf(stderr, "Opening output log file %s\n", filename);
+		//stdout = fopen(filename, "w");
+		//if (stderr == NULL) {
+		//	perror("Error opening output log file for <%=ci.getName()%>");
+		//	return -1;
+		//}
+		
+		//sprintf(filename, "%s/<%=ci.getName()%>_err.log", program_instance_name);
+		//fprintf(stderr, "Opening error log file %s\n", filename);
+		//stderr = fopen(filename, "w");
+		//if (stderr == NULL) {
+		//	perror("Error opening error log file for <%=ci.getName()%>");
+		//	return -1;
+		//}
+		
+		char str_log_file_size[64];
+		sprintf(str_log_file_size, "%d", log_file_size);
+		
+		/* Exec the new process */
+		cell_argv[0] = "<%=ci.getName()%>";
+		cell_argv[1] = str_log_file_size;
+		cell_argv[2] = program_instance_name;
+		cell_argv[3] = NULL;
+		if(execv("<%=ci.getName()%>", cell_argv) < 0) {
+			perror("Error executing program <%=ci.getName()%>");
+			return -1;
+		}
+		
+		/* Should never return after exec */
+		return -1;
+	}
+<% }
+}
+%>
+	exit_pid = wait(&wait_status);
+    int exit_value;
+    if (WIFEXITED(wait_status)) {
+        exit_value = WEXITSTATUS(wait_status);
+    } else {
+        exit_value = -1;
+    }
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) { %>
+	if (exit_pid == <%=ci.getName()%>_pid) {
+		fprintf(stderr, "Task <%=ci.getName()%> terminated\n");
+	}
+<%} }%>
+<%
+for(SharedVariable svar: sharedVariables) {
+%>
+	sprintf(name_buffer, "/%d_%s_sem_<%=svar.getName()%>_init", getuid(), program_instance_name);
+	sem_unlink(name_buffer);
+<%
+}
+%>
+	return exit_value;
+}
+

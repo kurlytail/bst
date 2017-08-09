@@ -1,0 +1,28 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="PackFile" 
+	imports ="java.util.*
+	java.util.Map.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.constraint.hardware.verilog.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.struct.*
+	org.eclipse.emf.ecore.*;"
+%>
+`timescale 1ns/100ps
+<% Entry<String, Struct> entry = (Entry<String, Struct>) argument;%>	
+
+module gen_<%=entry.getKey()%>_pack(/*AUTOARG*/);
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:()
+// verilog-library-extensions:(".v" ".vh")
+// eval:(verilog-read-includes)
+// eval:(setq verilog-auto-output-ignore-regexp "^w_.*")
+// eval:(setq verilog-auto-input-ignore-regexp "^w_.*")
+// End:
+

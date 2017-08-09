@@ -1,0 +1,9 @@
+ENABLE_AUTOGEN_PROPERTY=true
+MODEL_FOLDER=model
+ORM_ADD_ORDER_COLUMN=false
+ORM_ENFORCE_UNIQUE_NAMES=false
+ORM_GENERATE_FULL_DB_SCHEMA_NAMES=false
+ORM_RENAME_SQL_RESERVED_NAMES=false
+OUTPUT_FOLDER=src-model
+TARGET_PROJECT=com.medullanet.swarm.designer
+eclipse.preferences.version=1

@@ -1,0 +1,8 @@
+<%for(SharedVariable svar: sharedVariables) {%>
+void <%=svar.getMasterCell().get(0).getName()%>_<%=svar.getName()%>_mem_init();
+<%}%>
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {%>
+void <%=svar.getTube().get(0).getFrom().getName()%>_<%=svar.getName()%>_mem_init();
+<%
+}%>

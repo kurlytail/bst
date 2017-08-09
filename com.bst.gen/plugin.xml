@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+
+
+
+
+  
+  
+    <extension
+          point="org.eclipse.ui.popupMenus">
+       <objectContribution
+             id="com.bst.gen.contribution"
+             objectClass="org.eclipse.core.resources.IResource">
+          <menu
+                id="com.bst.gen.menu.generate"
+                label="Swarm Generators"
+                path="additions">
+             <groupMarker
+                   name="swarm">
+             </groupMarker>
+          </menu>
+       </objectContribution>
+    </extension>
+ 
+  
+
+    <extension
+          point="org.eclipse.ui.popupMenus">
+       <objectContribution
+             id="com.bst.gen.hyperx.contribution"
+             objectClass="org.eclipse.core.resources.IResource">
+          <action
+                class="com.brainspeedtech.gen.popup.actions.GenerateUnitTests"
+                enablesFor="+"
+                id="com.bst.gen.unittests"
+                label="Generate Unit Test Designs"
+                menubarPath="com.bst.gen.menu.generate/swarm">
+          </action>
+          <action
+                class="com.brainspeedtech.gen.popup.actions.GenerateFlowTests"
+                enablesFor="+"
+                id="com.bst.gen.flowtests"
+                label="Generate Flow Test Designs"
+                menubarPath="com.bst.gen.menu.generate/swarm">
+          </action>
+       </objectContribution>
+    </extension>
+    <extension
+          id="swarmMasterBuilder"
+          name="Swarm Master Model Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             callOnEmptyDelta="false"
+             hasNature="true">
+          <run
+                class="com.brainspeedtech.gen.master.SwarmMasterBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="swarmMasterNature"
+          name="Flow Analysis"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.brainspeedtech.gen.SwarmMasterNature">
+          </run>
+       </runtime>
+       <requires-nature
+             id="com.brainspeedtech.swarm.project.swarmNature">
+       </requires-nature>
+       <builder
+             id="com.bst.gen.swarmMasterBuilder">
+       </builder>
+    </extension>
+    <extension
+          id="swarmInstanceBuilder"
+          name="Swarm Instance Model Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="com.brainspeedtech.gen.instance.SwarmInstanceBuilder">
+          </run></builder>
+    </extension>
+    <extension
+          id="swarmInstanceNature"
+          name="Swarm Instance Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.brainspeedtech.gen.SwarmInstanceNature">
+          </run>
+       </runtime>
+       <requires-nature
+             id="com.bst.gen.swarmMasterNature">
+       </requires-nature>
+       <builder
+             id="com.bst.gen.swarmInstanceBuilder">
+       </builder>
+    </extension>
+    
+    <extension
+         point="org.eclipse.emf.validation.constraintProviders">
+      <constraintProvider
+            cache="true"
+            mode="Batch">
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/master">
+         </package>
+         <constraints
+               categories="com.brainspeedtech.swarm.project.validation">
+            <constraint
+                  class="com.brainspeedtech.gen.validation.BadTubeAssociation"
+                  id="com.brainspeedtech.swarm.master.validation.BadTubeAssociation"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Bad Tube Association"
+                  severity="ERROR"
+                  statusCode="1">
+               <message>
+                  Bad Association. The Assocation constraint for this tube cannot satisfy the Cell instance count constraints on the associated cells
+               </message>
+            </constraint>
+         </constraints>
+      </constraintProvider>
+   </extension>
+    
+    <!--
+    <extension
+          point="org.eclipse.emf.validation.constraintProviders">
+       <category
+             id="com.brainspeedtech.gen.validation"
+             mandatory="true"
+             name="Swarm Flow and Master Constraints">
+       </category>
+       <constraintProvider
+             cache="true"
+             mode="Batch">
+          <package
+                namespaceUri="http://www.brainspeedtech.com/swarm/flow">
+          </package>
+          <constraints
+                categories="com.brainspeedtech.gen.validation">
+             <constraint
+                   class="com.brainspeedtech.gen.validation.SingleIOConstraint"
+                   id="com.brainspeedtech.gen.SingleIOConstraint"
+                   isEnabledByDefault="true"
+                   lang="Java"
+                   mode="Batch"
+                   name="Single Input and Output"
+                   severity="ERROR"
+                   statusCode="1">
+                <description>
+                   Flow Cells must have only one input or output
+                </description>
+                <message>
+                   A {0} has been found with more than one input or output
+                </message>
+             </constraint>
+          </constraints>
+       </constraintProvider>
+    </extension>
+    <extension
+          point="org.eclipse.emf.validation.constraintBindings">
+       <clientContext
+             default="false"
+             id="com.brainspeedtech.gen.context">
+          <selector
+                class="com.brainspeedtech.swarm.project.validation.ValidationDelegateClientSelector">
+          </selector>
+       </clientContext>
+       <binding
+             category="com.brainspeedtech.gen.validation"
+             context="com.brainspeedtech.gen.context">
+       </binding>
+    </extension>
+ 	-->
+    
+</plugin>

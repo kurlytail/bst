@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.bst.designer"
+      label="Designer"
+      version="1.0.0.qualifier"
+      provider-name="BrainSpeed Technologies">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.navigator"/>
+      <import plugin="org.eclipse.ui.navigator.resources"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.emf.edit.ui"/>
+      <import plugin="org.eclipse.gmf.runtime.emf.core"/>
+      <import plugin="org.eclipse.gmf.runtime.emf.commands.core"/>
+      <import plugin="org.eclipse.gmf.runtime.emf.ui.properties"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.properties"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.providers"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.providers.ide"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.render"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.resources.editor"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide"/>
+      <import plugin="org.eclipse.draw2d"/>
+      <import plugin="org.eclipse.gmf.runtime.draw2d.ui"/>
+      <import plugin="org.eclipse.gef"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.printing"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.printing.render"/>
+      <import plugin="org.eclipse.emf.validation"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.geoshapes"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.201" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.gmf.tooling.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.emf"/>
+      <import plugin="org.eclipse.emf.common"/>
+      <import plugin="org.eclipse.emf.validation.ui"/>
+      <import plugin="org.eclipse.emf.workspace.ui"/>
+      <import plugin="org.eclipse.emf.transaction"/>
+      <import plugin="org.eclipse.gmf.runtime.emf.ui"/>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.emf.workspace"/>
+      <import plugin="org.eclipse.emf.validation.ocl"/>
+      <import plugin="org.eclipse.emf.validation.ui.ide"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.gmf.runtime.common.ui"/>
+      <import plugin="org.eclipse.gmf.runtime.common.ui.services.action"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.actions"/>
+      <import plugin="org.apache.commons.lang" version="2.4.0" match="greaterOrEqual"/>
+      <import plugin="com.google.gson" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.edit"/>
+      <import plugin="org.eclipse.gmf.runtime.emf.core" version="1.4.1" match="greaterOrEqual"/>
+      <import plugin="org.apache.log4j" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.gmf.runtime.notation"/>
+      <import plugin="com.brainspeedtech.swarm.sm.edit" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.brainspeedtech.swarm.layer" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.cli" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.io" version="2.0.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.gmf.runtime.diagram.ui.providers" version="1.7.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="com.brainspeedtech.swarm.flow.diagram"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.swarm.master.diagram"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.gen"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.struct.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.project"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.flow"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.flow.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.struct"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.struct.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.swarm.master"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.bst.swarm.master.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.reg"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.reg.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.sm"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.sm.diagram"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.sm.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.layer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.layer.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.layer.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.layer.complexity"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.layer.complexity.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.inst"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.inst.diagram"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.swarm.inst.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.hardware.hx"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.hardware.hx.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.hx"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.hx.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.posix"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.posix.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.hardware.verilog"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.hardware.verilog.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.java"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.java.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.hardware.hx.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.python"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.python.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.posix.vpi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.posix.vpi.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.tcl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.software.tcl.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.web.html"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.brainspeedtech.constraint.web.html.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.gson"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>

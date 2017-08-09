@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.brainspeedtech.swarm.layer/src" creationSubmenus="true"
+    modelPluginID="com.brainspeedtech.swarm.layer" modelName="Layer" rootImplementsInterface=""
+    importerID="org.eclipse.xsd.ecore.importer" complianceLevel="6.0" copyrightFields="false"
+    providerRootExtendsClass="com.brainspeedtech.swarm.project.providers.SwarmElementTableProvider"
+    tableProviders="true" colorProviders="true" fontProviders="true" usedGenPackages="../../com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow platform:/plugin/com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst platform:/plugin/com.bst.swarm.master/model/master.genmodel#//master platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm ../../com.bst.struct/model/struct.genmodel#//struct">
+  <foreignModel>layer.xsd</foreignModel>
+  <genPackages prefix="Layer" basePackage="com.brainspeedtech.swarm" resource="XML"
+      disposableProviderFactory="true" multipleEditorPages="false" extensibleProviderFactory="true"
+      ecorePackage="layer.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="layer.ecore#//AssociationType">
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//AssociationType/OneToOne"/>
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//AssociationType/OneToMany"/>
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//AssociationType/ManyToOne"/>
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//AssociationType/ManyToMany"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="layer.ecore#//WidthType">
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//WidthType/_16bit"/>
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//WidthType/_32bit"/>
+      <genEnumLiterals ecoreEnumLiteral="layer.ecore#//WidthType/_64bit"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="layer.ecore#//AssociationTypeObject"/>
+    <genDataTypes ecoreDataType="layer.ecore#//CountType"/>
+    <genDataTypes ecoreDataType="layer.ecore#//CountType1"/>
+    <genDataTypes ecoreDataType="layer.ecore#//CountTypeObject"/>
+    <genDataTypes ecoreDataType="layer.ecore#//CountTypeObject1"/>
+    <genDataTypes ecoreDataType="layer.ecore#//WidthTypeObject"/>
+    <genClasses ecoreClass="layer.ecore#//Association">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Association/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Association/type"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//CellCounter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//CellCounter/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//CellInstanceCount">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//CellInstanceCount/cell"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//CellInstanceCount/count"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="layer.ecore#//ConstraintBase">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference layer.ecore#//ConstraintBase/exceptFor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/applyToAllNatures"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/blurb"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/disabled"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/pinned"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/process"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConstraintBase/reason"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//ConvertMasterToSM">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//ConvertMasterToSM/stateMachine"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ConvertMasterToSM/project"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Counter">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Counter/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Counter/width"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//CrossReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//CrossReference/object"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Custom">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference layer.ecore#//Custom/properties"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Custom/clazz"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//CustomTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//CustomTube/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//ExternalCell">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//ExternalCell/masterCell"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//ExternalCell/instanceCell"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//FileReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//FileReference/files"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//FlowAnalysisAndMerge"/>
+    <genClasses ecoreClass="layer.ecore#//IgnoreCell">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//IgnoreCell/masterCell"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//IgnoreFlow">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//IgnoreFlow/flow"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//IgnoreTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//IgnoreTube/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//InstanceTransform"/>
+    <genClasses ecoreClass="layer.ecore#//Layer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference layer.ecore#//Layer/constraint"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Layer/name"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//MatchingFlows">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference layer.ecore#//MatchingFlows/flows"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//MatchingFlows/name"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//ModelReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference layer.ecore#//ModelReference/object"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="layer.ecore#//NatureBase"/>
+    <genClasses ecoreClass="layer.ecore#//Parameter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Parameter/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Parameter/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Parameter/value"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//ProjectPrefixString">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//ProjectPrefixString/prefix"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Property">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Property/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Property/stringValue"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Property/objectValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Property/name"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//QueueDepth">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//QueueDepth/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//QueueDepth/depth"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//StreamingTube">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//StreamingTube/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Tap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Tap/tube"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Tap/cell"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Template">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Template/code"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Template/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Template/file"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Template/object"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//Trigger">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Trigger/from"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//Trigger/to"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//Trigger/name"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//TubeDescriptorLog">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//TubeDescriptorLog/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//TubeDescriptorLog/count"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//TubeInstanceCount">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//TubeInstanceCount/tube"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute layer.ecore#//TubeInstanceCount/count"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//TubeReceiveCounter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//TubeReceiveCounter/tube"/>
+    </genClasses>
+    <genClasses ecoreClass="layer.ecore#//TubeTransmitCounter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference layer.ecore#//TubeTransmitCounter/tube"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

@@ -1,0 +1,135 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="UnpackFile" 
+	imports ="java.util.*
+	java.util.Map.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.constraint.hardware.verilog.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.*;"
+%>
+`timescale 1ns/100ps
+<% Entry<String, Struct> entry = (Entry<String, Struct>) argument;
+   String widthString = entry.getKey().replace(entry.getValue().getName() + "_", "");
+   Integer width = Integer.valueOf(widthString);
+%>	
+
+module gen_<%=entry.getKey()%>_unpack(/*AUTOARG*/);
+
+	input wire clk;
+	input wire rst_n;
+	input wire [<%=width-1%>:0] snoop_data;
+	input wire snoop_rdy;
+	input wire parse;
+	input wire snoop_pop;
+	output wire parse_valid;
+
+<%
+List<Entry<String, Field>> entries = StructUtil.squash(entry.getValue());
+long descriptor_beat_count = (StructUtil.getAtomSize(entry.getValue()) + width - 1)/width;
+long descriptor_beat_width = (long)(Math.log(descriptor_beat_count)/Math.log(2)) + 1;
+for(Entry<String, Field> fieldEntry: entries) {%>
+	reg [<%=StructUtil.getFieldCount(fieldEntry.getValue())-1%>:0] <%=fieldEntry.getKey()%>_reg;
+	reg <%=fieldEntry.getKey()%>_valid_reg;
+	output wire [<%=StructUtil.getFieldCount(fieldEntry.getValue())-1%>:0] <%=fieldEntry.getKey()%>;
+	output wire <%=fieldEntry.getKey()%>_valid;
+<%}%>
+	reg [<%=descriptor_beat_width-1%>:0] beat_index;
+	wire [<%=descriptor_beat_width-1%>:0] parse_beat_index;
+	reg parse_valid_reg;
+	
+	assign parse_valid = (parse_valid_reg & ~parse) | (parse_beat_index == <%=descriptor_beat_width%>'d<%=descriptor_beat_count-1%>);
+	assign parse_beat_index = (parse & snoop_rdy)? <%=descriptor_beat_width%>'b0 : beat_index;
+	
+<%for(Entry<String, Field> fieldEntry: entries) {%>
+	assign <%=fieldEntry.getKey()%> = <%=fieldEntry.getKey()%>_reg;
+	assign <%=fieldEntry.getKey()%>_valid = <%=fieldEntry.getKey()%>_valid_reg;
+<%}%>
+
+	
+	always@(posedge clk or negedge rst_n)
+	begin
+		if (~rst_n)
+		begin
+			parse_valid_reg <= 1'b0;
+			beat_index <= <%=descriptor_beat_width%>'d<%=descriptor_beat_count%>;
+<%for(Entry<String, Field> fieldEntry: entries) {%>
+			<%=fieldEntry.getKey()%>_reg <= <%=StructUtil.getFieldCount(fieldEntry.getValue())%>'b0;
+			<%=fieldEntry.getKey()%>_valid_reg <= 1'b0;
+<%}%>
+		end
+		else
+		begin
+			beat_index <= parse ? 1'b1 : (snoop_pop ? beat_index + 1 : beat_index);
+			parse_valid_reg <= parse ? parse_valid : parse_valid_reg;
+
+<%for(Entry<String, Field> fieldEntry: entries) {%>
+			<%=fieldEntry.getKey()%>_reg <= <%=fieldEntry.getKey()%>;
+			<%=fieldEntry.getKey()%>_valid_reg <= <%=fieldEntry.getKey()%>_valid;
+<%}%>	
+			case (parse_beat_index)
+<%
+	long bits_done = 0;
+	int last_beat_index = -1;
+	long bits_in_field = 0;
+	Entry<String, Field> fieldEntry = null;
+	Iterator<Entry<String, Field>> it = entries.iterator();
+%>
+<%while(it.hasNext() || fieldEntry != null) {
+	if (fieldEntry == null) {
+		fieldEntry = it.next();
+	}
+	long beat_index = bits_done / width;
+	long source_bit_start = bits_in_field;
+	long source_bit_end = StructUtil.getFieldCount(fieldEntry.getValue()) - 1;
+	long input_bit_start = bits_done % width;
+	int entry_done = 0;
+	if (bits_in_field == 0) {
+		bits_in_field = StructUtil.getFieldCount(fieldEntry.getValue());
+	}
+	long input_bit_end = bits_in_field + input_bit_start - 1;
+	if (input_bit_end > width - 1) {
+		source_bit_end -= input_bit_end - width + 1;
+		bits_in_field = source_bit_end - source_bit_start + 1;
+		input_bit_end = width - 1;
+		entry_done = 0;
+	} else {
+		entry_done = 1;
+	}
+	bits_done = bits_done + bits_in_field;
+	if (last_beat_index != beat_index) {
+			++last_beat_index; 
+			if (last_beat_index != 0) {%>
+				end
+			<%}%>
+				<%=descriptor_beat_width%>'d<%=beat_index%>:
+				begin
+	<%}%>	
+					<%=fieldEntry.getKey()%>_reg[<%=source_bit_end%>:<%=source_bit_start%>] <= snoop_data[<%=input_bit_end%>:<%=input_bit_start%>];
+					<%=fieldEntry.getKey()%>_valid_reg <= 1'b<%=entry_done%>;
+<%{
+	if(entry_done == 1) {
+		fieldEntry = null;
+		bits_in_field = 0;
+	}
+}%>
+<%}%>
+				end
+			endcase
+		end
+	end
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:()
+// verilog-library-extensions:(".v" ".vh")
+// eval:(verilog-read-includes)
+// eval:(setq verilog-auto-output-ignore-regexp "^w_.*")
+// eval:(setq verilog-auto-input-ignore-regexp "^w_.*")
+// End:
+

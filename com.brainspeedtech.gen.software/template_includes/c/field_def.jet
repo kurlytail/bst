@@ -1,0 +1,38 @@
+
+
+<%for(Struct struct: structs) {
+	long currentLocation = 0;
+%>
+field_layout_t <%=struct.getName()%>_field_layout[] = {
+<%	for(Field field: struct.getField()) {
+	long nextLocation = currentLocation + StructUtil.getFieldCount(field) * 
+			StructUtil.getAtomSize(field.getAtom());
+%>
+	{ 
+		"<%=field.getName()%>", // name
+		<%=(currentLocation)%>UL, // bit_offset
+<%		if(field.getAtom() == null) { %>
+		FIELD_TYPE_BIT, // type
+<%		} else { %>
+		FIELD_TYPE_CHILD, // type
+<%		}%>
+		<%=StructUtil.getFieldCount(field)%>, // count
+<%		if(field.getAtom() == null) { %>
+		0 // child
+<%		} else { %>
+		&<%=field.getAtom().getName()%>_layout // child
+<%		}%>
+	},
+<%	currentLocation = nextLocation;
+	}%>
+	{ 0, 0, FIELD_TYPE_EOL, 0 }
+};
+struct_layout_t <%=struct.getName()%>_layout = {
+	"<%=struct.getName()%>", // name
+	<%=struct.getField().size()%>, // count
+	<%=StructUtil.getAtomSize(struct)/8%>, // byte_size
+	<%=struct.getName()%>_field_layout // fields
+};
+
+<%}%>
+

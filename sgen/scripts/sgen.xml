@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project sgen with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/akamath/tools/swarm.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="com.brainspeedtech.swarm.sgen.SGen"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ org.eclipse.core.resources_3.7.101.v20120125-1505.jar org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar org.eclipse.emf.common_2.7.0.v20120127-1122.jar org.eclipse.emf.validation_1.4.0.v20100428-2315.jar org.eclipse.emf.ecore.xmi_2.7.0.v20120127-1122.jar org.eclipse.emf.transaction_1.4.0.v20100331-1738.jar org.eclipse.emf.edit_2.7.2.v20120130-0943.jar org.eclipse.gmf.runtime.emf.core_1.4.1.v20101222-2230.jar org.eclipse.gmf.runtime.notation_1.5.0.v20110309-2159.jar org.eclipse.emf.ecore.change_2.7.1.v20120127-1122.jar org.eclipse.core.runtime_3.7.0.v20110110.jar org.eclipse.osgi_3.7.2.v20120110-1415.jar org.eclipse.gmf.runtime.diagram.core_1.4.1.v20101221-2230.jar org.eclipse.gmf.runtime.common.core_1.4.1.v20101119-2230.jar org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar org.eclipse.core.expressions_3.4.300.v20110228.jar org.eclipse.equinox.common_3.6.0.v20110523.jar commons-cli-1.2.jar commons-io-2.4.jar commons-logging-1.1.3.jar commons-logging-adapters-1.1.3.jar commons-logging-api-1.1.3.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/home/akamath/brainspeedtech-workspace/sgen/bin"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.core.resources_3.7.101.v20120125-1505.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.common_2.7.0.v20120127-1122.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.validation_1.4.0.v20100428-2315.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.ecore.xmi_2.7.0.v20120127-1122.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.transaction_1.4.0.v20100331-1738.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.edit_2.7.2.v20120130-0943.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.gmf.runtime.emf.core_1.4.1.v20101222-2230.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.gmf.runtime.notation_1.5.0.v20110309-2159.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.emf.ecore.change_2.7.1.v20120127-1122.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.gmf.runtime.diagram.core_1.4.1.v20101221-2230.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.gmf.runtime.common.core_1.4.1.v20101119-2230.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.core.expressions_3.4.300.v20110228.jar"/>
+            <zipfileset dir="/home/akamath/tools/eclipse/plugins" includes="org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset dir="/home/akamath/brainspeedtech-workspace/sgen/commons-cli-1.2" includes="commons-cli-1.2.jar"/>
+            <zipfileset dir="/home/akamath/brainspeedtech-workspace/sgen/commons-io-2.4" includes="commons-io-2.4.jar"/>
+            <zipfileset dir="/home/akamath/brainspeedtech-workspace/sgen/commons-logging-1.1.3" includes="commons-logging-1.1.3.jar"/>
+            <zipfileset dir="/home/akamath/brainspeedtech-workspace/sgen/commons-logging-1.1.3" includes="commons-logging-adapters-1.1.3.jar"/>
+            <zipfileset dir="/home/akamath/brainspeedtech-workspace/sgen/commons-logging-1.1.3" includes="commons-logging-api-1.1.3.jar"/>
+        </jar>
+    </target>
+</project>

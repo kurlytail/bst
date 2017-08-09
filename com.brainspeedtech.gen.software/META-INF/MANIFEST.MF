@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.brainspeedtech.gen.software
+Bundle-SymbolicName: com.brainspeedtech.gen.software;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.emf.ecore,
+ com.brainspeedtech.swarm.layer
+Export-Package: com.brainspeedtech.gen.software.templates,
+ com.brainspeedtech.gen.software.util
+Eclipse-LazyStart: false
+Bundle-ClassPath: .

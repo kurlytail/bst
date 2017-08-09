@@ -1,0 +1,36 @@
+<%
+for(State state: smReference.getState()) {%>
+// Compute the right transition for <%=state.getName()%> state
+// Allowed transitions are
+<% for(Transition transition : state.getDest()) { %>
+//		ENUM_<%=smReference.getName().toUpperCase()%>_<%=transition.getName().toUpperCase()%>_TRANSITION
+<% }%>
+//		ENUM_<%=smReference.getName().toUpperCase()%>_NULL_TRANSITION
+static inline ENUM_<%=smReference.getName().toUpperCase()%>_TRANSITION 
+<%=smReference.getName()%>_compute_<%=state.getName()%>_transition()
+{
+	SWARM_FATAL_ERROR;
+	return ENUM_<%=smReference.getName().toUpperCase()%>_NULL_TRANSITION;
+}
+<%}%>
+
+// Get/set the state variable
+static inline ENUM_<%=smReference.getName().toUpperCase()%>_STATE 
+get_<%=smReference.getName()%>_state()
+{
+	SWARM_FATAL_ERROR;
+	return 0;
+}
+
+static inline void	set_<%=smReference.getName()%>_state(
+	ENUM_<%=smReference.getName().toUpperCase()%>_TRANSITION transition,
+	ENUM_<%=smReference.getName().toUpperCase()%>_STATE state)
+{
+	SWARM_FATAL_ERROR;
+}
+
+static inline int get_<%=smReference.getName()%>_resource()
+{
+	SWARM_FATAL_ERROR;
+	return 0;
+}

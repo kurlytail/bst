@@ -1,0 +1,36 @@
+<%@ jet package="com.brainspeedtech.gen.verilog"
+	class="DesignTopFile" 
+	imports ="java.util.*
+	org.eclipse.emf.common.util.EList
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.*;"
+%>
+`timescale 1ns/100ps
+<% Instance instance = (Instance) argument;%>	
+
+
+`include "gen_<%=instance.getName()%>_design.vh"
+
+module <%=instance.getName()%>_top(/*AUTOARG*/);
+	/*AUTOWIRE*/
+	/*AUTOOUTPUT*/
+	/*AUTOINPUT*/
+
+<%for(CellInstance ci: instance.getCell()) { if (ci.getCell().isExternal()) continue; %>
+	gen_<%=ci.getName()%>_wrapper <%=ci.getName()%>(/*AUTOINST*/);
+
+<%}%>
+
+endmodule
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:()
+// verilog-library-extensions:(".v" ".vh")
+// eval:(verilog-read-includes)
+// eval:(setq verilog-auto-output-ignore-regexp "^w_.*")
+// eval:(setq verilog-auto-input-ignore-regexp "^w_.*")
+// End:
+

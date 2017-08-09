@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.brainspeedtech.com/constraint/boost"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.brainspeedtech.com/constraint/boost"
+	xmlns:pref="http://www.brainspeedtech.com/swarm/layer"
+	xmlns:pref1="http://www.brainspeedtech.com/swarm/inst" xmlns:pref2="http://www.brainspeedtech.com/struct">
+    <annotation>
+    	<documentation>  Copyright @2011-2013 BrainSpeed Technologies - All rights reserved
+</documentation></annotation>
+    <import
+		schemaLocation="../../com.brainspeedtech.swarm.layer/model/layer.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/layer">
+	</import>
+
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd" namespace="http://www.brainspeedtech.com/struct"></import>
+	<complexType name="NativeType">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="object" type="anyURI" ecore:reference="pref2:Atom"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="TCPSocketTube">
+		<complexContent>
+			<extension base="pref:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="pref1:TubeInstance">
+					</element>
+				</sequence>
+				<attribute name="clientReceiver" type="boolean" default="false" use="optional"></attribute>
+				<attribute name="serverPort" type="int" default="8000" use="optional"></attribute>
+				<attribute name="serverIP" type="string" use="optional" default="localhost"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BoostNature">
+		<complexContent>
+			<extension base="pref:NatureBase"></extension>
+		</complexContent>
+	</complexType>
+</schema>

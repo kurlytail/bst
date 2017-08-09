@@ -1,0 +1,527 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="SwarmLibSourceFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.project.util.*;"
+%>
+<%@ include file="ccopyright.jet"%>
+<%Instance instance = (Instance) argument;%>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <netdb.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <netinet/ip.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <stddef.h>
+#include <unistd.h>
+#include <time.h>
+#include <sched.h>
+#include <pthread.h>
+#include "gen_<%=instance.getName()%>_swarm_lib.h"
+#include "gen_<%=instance.getName()%>.h"
+#include <stdarg.h>
+#include <sys/time.h>
+
+extern const char* log_file_name __attribute__((weak));
+extern const char* log_file_name_second __attribute__((weak));
+
+extern int work_dir_fd;
+int log_file_offset = 0;
+int log_file = -1;
+FILE* fd_log_file;
+int log_file_size = 32*1024;
+
+void swarm_print(int level, const char* format, ...)
+{
+	if(log_file_size == 0) return;
+	
+	va_list list;
+	va_start(list, format);
+	
+	struct timeval tv;
+	struct timezone tz;
+	struct tm *tm;
+	gettimeofday(&tv, &tz);
+	tm=localtime(&tv.tv_sec);
+	
+	if(&log_file_name == NULL) {
+		vfprintf(stderr, format, list);
+		return;
+	}
+	
+	if(log_file == -1) {
+		log_file = openat(work_dir_fd, log_file_name, O_RDWR | O_CREAT, 0666);
+		if(log_file < 0) {
+			perror("Opening log file");
+			exit(-1);
+		}
+		
+		fd_log_file = fdopen(log_file, "w");
+		if(fd_log_file == NULL) {
+			perror("Opening log file stream");
+			exit(-1);
+		}
+	}
+	if(level >= 0) {
+		log_file_offset += fprintf(fd_log_file,
+			"nl_%d %d:%02d:%02d %ld:", level, tm->tm_hour, tm->tm_min, tm->tm_sec, tv.tv_usec);
+	}
+	log_file_offset += vfprintf(fd_log_file, format, list);
+	fflush(fd_log_file);
+			
+	if(log_file_size > 0 && log_file_offset >= log_file_size) {
+		fclose(fd_log_file);
+		close(log_file);
+		
+		if(renameat(work_dir_fd, log_file_name, work_dir_fd, log_file_name_second) < 0) {
+			perror("Renaming file");
+			exit(-1);
+		}
+		
+		log_file = -1;
+		log_file_offset = 0;		
+	}
+}
+
+// There is a tiniest bit of race here sometimes
+int read_blocking(const char* name, int fd, char* buffer, size_t buffer_size, int nonblocking)
+{
+	int return_value;
+	size_t requested_size = buffer_size;	
+	while(buffer_size != 0) {
+		return_value = read(fd, buffer, buffer_size);
+		if (return_value < 0) {
+			if(errno == EAGAIN && errno == EWOULDBLOCK) {
+				if(nonblocking) return requested_size - buffer_size;
+				sched_yield();
+				continue;
+			}
+			SWARM_PRINT("%s(%d): Credit read Error %s(%d)", name, fd,
+				strerror(errno), errno);
+			exit(-1);
+		}
+		buffer_size -= return_value;
+		buffer += return_value;
+	}
+	return requested_size;
+}
+
+void write_blocking(const char* name, int fd, char* buffer, size_t buffer_size)
+{
+	int return_value;
+		
+	while(buffer_size != 0) {
+		return_value = write(fd, buffer, buffer_size);
+		if (return_value < 0) {
+			if(errno == EAGAIN && errno == EWOULDBLOCK) {
+				sched_yield();
+				continue;
+			}
+			SWARM_PRINT("%s(%d): Credit read Error %s(%d)", name, fd,
+				strerror(errno), errno);
+			exit(-1);
+		}
+		buffer_size -= return_value;
+		buffer += return_value;
+	}
+}
+
+void swarm_dump_data_nl(int level, unsigned int addr, char* data, size_t length)
+{
+    int leading_offset;
+    int trailing_offset;
+    int run_length;
+   
+    while (length) {
+
+       leading_offset = addr & 0xF;
+       run_length = (length + leading_offset > 16) ? 16 - leading_offset : length;
+       trailing_offset = 16 - ((addr + run_length) & 0xF);
+       if(trailing_offset == 16) trailing_offset = 0;
+       SWARM_PRINT_NL(level, "0x%08x", (addr - leading_offset));
+
+       while(leading_offset--) {
+           swarm_print(-1, " . ");
+       }
+
+       while(run_length--) {
+           swarm_print(-1, " %02x", (0xff)&(*data));
+           length --;
+           data ++;
+           addr ++;
+       }
+
+       while (trailing_offset--) {
+           swarm_print(-1, " . ");
+       }
+
+       swarm_print(-1, "\n");
+    }
+
+}
+
+void swarm_read_fd(const char* name, fd_pair_t* fd, int printlog, int nonblocking)
+{
+	int32_t read_size;
+	char* ptr = fd->pending_ptr;
+	size_t size = fd->pending_size;
+
+	while(fd->pending_size) {
+	 	read_size = read(fd->fd, fd->pending_ptr, fd->pending_size); 
+	
+		if (read_size < 0) {
+			if(errno != EAGAIN && errno != EWOULDBLOCK) {
+				SWARM_PRINT("%s(%d): Read Error %s(%d)", name, fd->fd,
+					strerror(errno), errno);
+				exit(-1);
+			}
+			read_size = 0;
+		}
+		fd->pending_size -= read_size;
+		fd->pending_ptr += read_size;
+		
+		if (fd->credit_fd >= 0 && read_size != 0) {
+			write_blocking(name, fd->credit_fd, (char*)&read_size, sizeof(read_size));
+			//printf("Sent %d credits\n", read_size);
+		}
+		
+		sched_yield();
+		
+		if (nonblocking) return;
+	}
+	if (printlog) {
+ 		SWARM_PRINT_NL(1, "%s(%d): Received %p(%d)\n", name, fd->fd, ptr, (int)size);
+		swarm_dump_data_nl(1, 0, ptr, size);
+	}
+}
+
+void swarm_write_fd(const char* name, fd_pair_t *fd, int printlog, int nonblocking)
+{
+	int write_size;
+	int trimmed_size;
+
+	if (printlog) {
+		SWARM_PRINT_NL(1, "%s(%d): Posting send %p(%d)\n", name, fd->fd, fd->pending_ptr,
+		(int)fd->pending_size);
+		swarm_dump_data_nl(1, 0, fd->pending_ptr, fd->pending_size);
+	}
+	
+	if (fd->credit_fd >= 0 && fd->init_credits == 0) {
+		int32_t read_size = 0;
+		read_blocking(name, fd->credit_fd, (char*)&read_size, sizeof(read_size), nonblocking);
+		fd->init_credits = read_size;	
+	}
+		
+	while(fd->pending_size) {
+	
+		trimmed_size = fd->pending_size;
+		if (fd->credit_fd >= 0) {
+			if (fd->init_credits < trimmed_size) trimmed_size = fd->init_credits;
+		}
+		
+		if (trimmed_size > 0) {
+		 	write_size = write(fd->fd, fd->pending_ptr, trimmed_size); 
+		
+			if (write_size < 0) {
+				if(errno != EAGAIN && errno != EWOULDBLOCK) {
+					SWARM_PRINT("%s(%d): Write Error %s(%d)", name, fd->fd,
+						strerror(errno), errno);
+					exit(-1);
+				}
+				write_size = 0;
+			}
+			fd->pending_size -= write_size;
+			fd->pending_ptr += write_size;
+			trimmed_size -= write_size;
+			fd->init_credits -= write_size;
+		}
+		
+		if (fd->credit_fd >= 0 && fd->init_credits == 0) {
+			int32_t read_size = 0;
+			read_blocking(name, fd->credit_fd, (char*)&read_size, sizeof(read_size), nonblocking);
+			fd->init_credits = read_size;	
+			//printf("Received %d credits\n", read_size);
+		}
+		
+		sched_yield();
+		
+		if(nonblocking) return;
+	}
+}
+
+struct sockaddr_in getipa(const char* hostname, int port){
+	struct sockaddr_in ipa;
+	ipa.sin_family = AF_INET;
+	ipa.sin_port = htons(port);
+	
+	struct hostent* localhost = gethostbyname(hostname);
+	if(!localhost){
+		perror("resolving localhost");	
+		return ipa;
+	}
+	
+	char* addr = localhost->h_addr_list[0];
+	memcpy(&ipa.sin_addr.s_addr, addr, sizeof addr);
+	
+	return ipa;
+}
+
+int swarm_tcp_server_socket(const char* name, const char* host, int port)
+{
+	struct protoent* tcp;
+	int one = 1;
+	
+	tcp = getprotobyname("tcp");
+	
+	int sfd = socket(PF_INET, SOCK_STREAM, tcp->p_proto);
+	if(sfd < 0){
+		perror("creating a tcp socket");
+		exit(-1);
+	}
+	
+	struct sockaddr_in isa = getipa(host, port);
+	
+	if(bind(sfd, (struct sockaddr*)&isa, sizeof isa) < 0){
+		perror("binding socket to IP address");
+		exit(-1);
+	}
+	
+	if(setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) < 0) {
+		perror("Setting SO_REUSEADDR failed:");
+		exit(-1);
+	}
+	
+	
+	SWARM_PRINT_NL(0, "%s: listening on %s:%d\n", name, host, port);
+	if(listen(sfd, 1) < 0){
+		perror("setting socket to listen");
+		exit(-1);
+	}
+
+	return sfd;
+}
+
+
+
+int swarm_tcp_client_socket(const char* name, const char* host, int port)
+{
+	struct protoent* tcp;
+	tcp = getprotobyname("tcp");
+	
+	int sfd = socket(PF_INET, SOCK_STREAM, tcp->p_proto);
+	if(sfd == -1){
+		perror("creating a tcp socket");
+		exit(-1);
+	}
+	
+	struct sockaddr_in isa = getipa(host, port);
+	
+	if(fcntl(sfd, F_SETFL, fcntl(sfd, F_GETFL) | O_NONBLOCK) < 0) {
+		perror("Could not set non blocking flag for client socket");
+		exit(-1);
+	}
+	
+	SWARM_PRINT_NL(0, "%s: Connecting to %s:%d\n", name, host, port);
+	if(connect(sfd, (struct sockaddr*)&isa, sizeof isa) < 0){
+		if (errno != EINPROGRESS) {
+			perror("connecting to server");
+			exit(-1);
+		}
+	}
+	return sfd;
+}
+
+int swarm_unix_server_socket(const char* name, const char* work_dir)
+{
+	char* prevdir = getcwd(NULL, 0);
+	
+	if (chdir(work_dir) < 0) {
+		perror ("Error entering work directory:");
+		exit(-1);
+	}
+	
+	int sfd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if(sfd < 0){
+		perror("creating a unix socket");
+		exit(-1);
+	}
+	
+	struct sockaddr_un isa;
+	isa.sun_family = AF_UNIX;
+	sprintf(isa.sun_path, "%s", name);
+	
+	if(bind(sfd, (struct sockaddr*)&isa, offsetof(struct sockaddr_un, sun_path) + strlen(name) + 1) < 0){
+		perror("binding unix socket");
+		exit(-1);
+	}
+	
+	SWARM_PRINT_NL(0, "%s: listening on %s\n", name, name);
+	if(listen(sfd, 1) < 0){
+		perror("setting socket to listen");
+		exit(-1);
+	}
+
+	if(chdir(prevdir) < 0) {
+		perror ("Error returning from work dir:");
+		exit(-1);
+	}
+	
+	free(prevdir);
+	return sfd;
+}
+
+
+
+int swarm_unix_client_socket(const char* name, const char* work_dir)
+{
+	char* prevdir = getcwd(NULL, 0);
+	
+	if (chdir(work_dir) < 0) {
+		perror ("Error entering work directory:");
+		exit(-1);
+	}
+	
+	int sfd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if(sfd == -1){
+		perror("creating a unix socket");
+		exit(-1);
+	}
+	
+	struct sockaddr_un isa;
+	isa.sun_family = AF_UNIX;
+	sprintf(isa.sun_path, "%s", name);
+	
+	if(fcntl(sfd, F_SETFL, fcntl(sfd, F_GETFL) | O_NONBLOCK) < 0) {
+		perror("Could not set non blocking flag for client socket");
+		exit(-1);
+	}
+	
+	SWARM_PRINT("%s: Connecting to %s\n", name, name);
+retry_connect:
+	if(connect(sfd, (struct sockaddr*)&isa, offsetof(struct sockaddr_un, sun_path) + strlen(name) + 1) < 0){
+		swarm_print(-1, ".");
+		sched_yield();
+		goto retry_connect;
+	}
+	
+	if(chdir(prevdir) < 0) {
+		perror ("Error returning from work dir:");
+		exit(-1);
+	}
+	
+	free(prevdir);
+	return sfd;
+	
+	return sfd;
+}
+
+void swarm_generate_random_data(uint8_t* data, uint32_t length)
+{
+	while(length) {
+		*data = (uint8_t)random();
+		data++;
+		length--;
+	}
+}
+
+void swarm_generate_sequential_data(uint8_t* data, uint32_t length)
+{
+	uint8_t i = 0;
+	while(length) {
+		*data = i;
+		i++;
+		data++;
+		length--;
+	}
+}
+
+
+typedef struct _fifo_thread_args {
+    int input_fd;
+    int output_fd;
+    pthread_t thread;
+} fifo_thread_args_t;
+
+#define MAX_FIFO_SIZE (4096)
+
+static void* fifo_thread(void *arg)
+{
+    fifo_thread_args_t *fifo_arg = (fifo_thread_args_t*)arg;
+    
+    if(fcntl(fifo_arg->input_fd, F_SETFL, fcntl(fifo_arg->input_fd, F_GETFL) & ~O_NONBLOCK) < 0) {
+        perror("Could not set blocking flag for fifo");
+        exit(-1);
+    }
+    
+    if(fcntl(fifo_arg->output_fd, F_SETFL, fcntl(fifo_arg->output_fd, F_GETFL) & ~O_NONBLOCK) < 0) {
+        perror("Could not set blocking flag for fifo");
+        exit(-1);
+    }
+    
+    char fifo_buffer[MAX_FIFO_SIZE];
+   
+    while(1) {
+        int fifo_size = read(fifo_arg->input_fd, fifo_buffer, MAX_FIFO_SIZE);
+        if (fifo_size < 0) {
+            perror("Read error from fifo");
+            exit(-1);
+        }
+        
+        int fifo_ptr = 0;
+        while(fifo_size != 0) {
+            int return_value = write(fifo_arg->output_fd, &fifo_buffer[fifo_ptr], fifo_size);
+            if (return_value < 0) {
+                perror("Write error from fifo");
+                exit(-1);
+            }
+            
+            fifo_size -= return_value;
+            fifo_ptr += return_value;
+        }     
+    }
+    return NULL;
+}
+
+void swarm_fifo_thread(fd_pair_t* input, fd_pair_t* output)
+{
+    fifo_thread_args_t *args = malloc(sizeof(fifo_thread_args_t));
+    if (args == NULL) {
+        fprintf(stderr, "Error allocating fifo args\n");
+        exit (-1);
+    }
+    
+    memset(args, 0, sizeof(*args));
+    
+    args->input_fd = input->fd;
+    args->output_fd = output->fd;
+
+    if(pthread_create(&args->thread, NULL, fifo_thread, args) < 0) {
+        perror("Could not create fifo thread\n");
+        exit(-1);
+    }
+     
+    if (input->credit_fd >= 0 && output->credit_fd >= 0) {
+        args = malloc(sizeof(fifo_thread_args_t));
+        if (args == NULL) {
+            fprintf(stderr, "Error allocating fifo args\n");
+            exit (-1);
+        }
+        
+        memset(args, 0, sizeof(*args));
+        args->output_fd = input->credit_fd;
+        args->input_fd = output->credit_fd;
+
+        
+        if(pthread_create(&args->thread, NULL, fifo_thread, args) < 0) {
+            perror("Could not create fifo thread\n");
+            exit(-1);
+        }
+        
+    }
+
+}

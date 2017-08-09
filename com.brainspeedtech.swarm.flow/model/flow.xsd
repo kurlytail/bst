@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:pref="http://www.brainspeedtech.com/struct"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/flow"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/flow" xmlns:pref1="http://www.brainspeedtech.com/swarm/sm">
+	<import namespace="http://www.brainspeedtech.com/struct"
+		schemaLocation="../../com.bst.struct/model/struct.xsd" />
+
+	<complexType name="Tube">
+		<sequence>
+			<element ecore:reference="pref:Struct" maxOccurs="unbounded"
+				minOccurs="0" name="descriptor" type="anyURI">
+			</element>
+
+		</sequence>
+		<attribute name="name" type="string" />
+		<attribute ecore:opposite="output" ecore:reference="tns:Cell"
+			name="from" type="anyURI" />
+		<attribute ecore:opposite="input" ecore:reference="tns:Cell"
+			name="to" type="anyURI" />
+	</complexType>
+
+	<complexType name="Cell">
+		<sequence>
+			<element ecore:reference="tns:Tube" maxOccurs="unbounded"
+				minOccurs="0" name="input" type="anyURI">
+			</element>
+			<element ecore:reference="tns:Tube" maxOccurs="unbounded"
+				minOccurs="0" name="output" type="anyURI">
+			</element>
+		</sequence>
+		<attribute name="name" type="string" />
+		<attribute default="false" name="external" type="boolean" />
+		<attribute default="1" name="count" type="int" />
+		<attribute name="domain" type="string" />
+
+	</complexType>
+
+	<complexType name="Flow">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="cell"
+				type="tns:Cell">
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="tube"
+				type="tns:Tube">
+			</element>
+
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+	</complexType>
+
+	
+</schema>

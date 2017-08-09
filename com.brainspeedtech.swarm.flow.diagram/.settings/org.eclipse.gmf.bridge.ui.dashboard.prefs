@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+gmf_dashboard/domainGenerationModel=platform\:/resource/com.brainspeedtech.swarm.flow/model/flow.genmodel
+gmf_dashboard/domainModel=platform\:/resource/com.brainspeedtech.swarm.flow/model/flow.ecore
+gmf_dashboard/generationModel=platform\:/resource/com.brainspeedtech.swarm.flow.diagram/model/flow.gmfgen
+gmf_dashboard/graphicalDefinitionModel=platform\:/resource/com.brainspeedtech.swarm.flow.diagram/model/flow.gmfgraph
+gmf_dashboard/mappingModel=platform\:/resource/com.brainspeedtech.swarm.flow.diagram/model/flow.gmfmap
+gmf_dashboard/toolingDefinitionModel=platform\:/resource/com.brainspeedtech.swarm.flow.diagram/model/flow.gmftool

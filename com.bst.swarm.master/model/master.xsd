@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:pref="http://www.brainspeedtech.com/struct"
+	xmlns:pref1="http://www.brainspeedtech.com/swarm"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/master"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/master" xmlns:pref2="http://www.brainspeedtech.com/swarm/flow">
+
+
+	<import schemaLocation="../../com.brainspeedtech.swarm.flow/model/flow.xsd" namespace="http://www.brainspeedtech.com/swarm/flow"></import>
+	<complexType name="MasterTube">
+		<sequence>
+
+
+			<element ecore:reference="pref2:Tube" maxOccurs="unbounded"
+				minOccurs="0" name="designTubes" type="anyURI">
+			</element>
+		</sequence>
+		<attribute name="name" type="string" />
+		<attribute name="internal_name" type="ID"></attribute>
+		<attribute ecore:opposite="output"
+			ecore:reference="tns:MasterCell" name="from" type="anyURI">
+		</attribute>
+		<attribute ecore:opposite="input"
+			ecore:reference="tns:MasterCell" name="to" type="anyURI">
+		</attribute>
+	</complexType>
+
+	<complexType name="MasterCell">
+		<sequence>
+			<element ecore:reference="tns:MasterTube"
+				maxOccurs="unbounded" minOccurs="0" name="input" type="anyURI">
+			</element>
+			<element ecore:reference="tns:MasterTube"
+				maxOccurs="unbounded" minOccurs="0" name="output" type="anyURI">
+			</element>
+			<element ecore:reference="pref2:Cell" maxOccurs="unbounded"
+				minOccurs="0" name="designCells" type="anyURI">
+			</element>
+		</sequence>
+		<attribute name="name" type="string" />
+		<attribute name="internal_name" type="ID"></attribute>
+		<attribute default="false" name="external" type="boolean" />
+		<attribute default="1" name="count" type="int" />
+		<attribute name="pinned" type="boolean"></attribute>
+	</complexType>
+
+	<complexType name="MasterDesign">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="cell"
+				type="tns:MasterCell">
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="tube"
+				type="tns:MasterTube">
+			</element>
+
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+	</complexType>
+
+
+</schema>

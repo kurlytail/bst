@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.brainspeedtech.constraint.software.java/src"
+    modelPluginID="com.brainspeedtech.constraint.software.java" modelName="Java" importerID="org.eclipse.xsd.ecore.importer"
+    copyrightFields="false" providerRootExtendsClass="com.brainspeedtech.swarm.project.validation.ProblemDecoratorItemProvider"
+    tableProviders="true" usedGenPackages="platform:/plugin/com.brainspeedtech.swarm.flow/model/flow.genmodel#//flow platform:/plugin/com.brainspeedtech.swarm.inst/model/inst.genmodel#//inst platform:/plugin/com.brainspeedtech.swarm.layer/model/layer.genmodel#//layer platform:/plugin/com.bst.swarm.master/model/master.genmodel#//master platform:/plugin/com.brainspeedtech.swarm.sm/model/sm.genmodel#//sm platform:/plugin/com.brainspeedtech.constraint.software/model/software.genmodel#//software platform:/plugin/com.bst.struct/model/struct.genmodel#//struct">
+  <foreignModel>java.xsd</foreignModel>
+  <genPackages prefix="Java" basePackage="com.brainspeedtech.constraint.software"
+      resource="XML" disposableProviderFactory="true" extensibleProviderFactory="true"
+      childCreationExtenders="true" ecorePackage="java.ecore#/">
+    <genClasses ecoreClass="java.ecore#//JavaGenerator"/>
+    <genClasses ecoreClass="java.ecore#//Package">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference java.ecore#//Package/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute java.ecore#//Package/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

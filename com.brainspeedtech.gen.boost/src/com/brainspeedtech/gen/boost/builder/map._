@@ -1,0 +1,13 @@
+generator_map['Makefile.boost'] =
+    {
+        'object' : { 'design' : swarm_design },
+        'template' : 'CLASSLOADERtemplates/Makefile._'
+    };
+
+<%_.each(swarm_design.StateMachine, function(sm, i) {%>
+    generator_map['gen_<%=sm.name%>_sm.hpp'] =
+        {
+            'object' : { 'sm' : swarm_design.StateMachine[<%=i%>] },
+            'template' : 'CLASSLOADERtemplates/sm.hpp._'
+        };
+<%});%> 

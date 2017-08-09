@@ -1,0 +1,49 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+    class="DumpCountersFile" 
+    imports ="java.util.*
+        org.eclipse.emf.ecore.* 
+        com.brainspeedtech.swarm.project.util.* 
+        com.brainspeedtech.struct.util.StructResourceImpl 
+        org.eclipse.emf.ecore.resource.Resource 
+        com.brainspeedtech.struct.* 
+        com.brainspeedtech.swarm.master.* 
+        com.brainspeedtech.swarm.master.util.* 
+        com.brainspeedtech.swarm.inst.* 
+        com.brainspeedtech.swarm.layer.*
+        com.brainspeedtech.swarm.flow.*;"
+%>
+<%MasterDesign design = (MasterDesign) argument;%>    
+<%@ include file="ccopyright.jet"%>
+
+#ifndef __GEN__<%=design.getName().toUpperCase()%>_PRINT_COUNTER_H__
+#define __GEN__<%=design.getName().toUpperCase()%>_PRINT_COUNTER_H__
+
+#include "gen_<%=design.getName()%>.h"
+
+<%for(MasterCell cell: design.getCell()) {
+	List<Counter> counters = new LinkedList<Counter>();
+    counters.addAll(ProjectUtil.getReferringInstances(cell, Counter.class));
+    counters.addAll(ProjectUtil.getReferringInstances(cell.getInput(), TubeReceiveCounter.class));
+    counters.addAll(ProjectUtil.getReferringInstances(cell.getOutput(), TubeTransmitCounter.class));
+    Comparator<? super Counter> comparator = new Comparator<Counter>() {
+		@Override
+		public int compare(Counter o1, Counter o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	};
+	Collections.sort(counters, comparator);
+	if(counters.size() != 0) {
+%>
+
+void print_<%=cell.getName()%>_counters (const char* prefix, const void* data) 
+{
+	<%=cell.getName()%>_counters_t *counters = (<%=cell.getName()%>_counters_t*)data;	
+<%for(Counter counter: counters) {%>
+	printf("%s <%=counter.getName()%> = %d\n", prefix, counters-><%=counter.getName()%>);
+<%}%>
+}
+
+<%  }
+}%>
+
+#endif

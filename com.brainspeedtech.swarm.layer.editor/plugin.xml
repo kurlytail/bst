@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.swarm.layer.presentation.LayerModelWizard"
+            finalPerspective="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            icon="icons/full/obj16/LayerModelFile.gif"
+            id="com.brainspeedtech.swarm.layer.presentation.LayerModelWizardID"
+            name="%_UI_LayerModelWizard_label"
+            preferredPerspectives="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective">
+         <description>%_UI_LayerModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <editor
+            id="com.brainspeedtech.swarm.layer.presentation.LayerEditorID"
+            name="%_UI_LayerEditor_label"
+            icon="icons/full/obj16/LayerModelFile.gif"
+            extensions="layer"
+            class="com.brainspeedtech.swarm.layer.presentation.LayerEditor"
+            contributorClass="com.brainspeedtech.swarm.layer.presentation.LayerActionBarContributor">
+      </editor>
+   </extension>
+<extension point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="com.brainspeedtech.swarm.master.diagram.createTestCase.objectContribution"
+            objectClass="org.eclipse.gef.editparts.AbstractGraphicalEditPart">
+         <menu 
+            id="SwarmMenu" 
+            label="&amp;Swarm " 
+            path="additions"> 
+            <separator name="group1"/>
+         </menu>
+         <action
+               class="com.brainspeedtech.swarm.layer.presentation.ConstraintAction"
+               id="com.brainspeedtech.swarm.layer.editor.action.constraint"
+               label="Constraints"
+               menubarPath="SwarmMenu/group1">
+         </action>
+       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="com.brainspeedtech.swarm.layer.editor.swarmSubmenu"
+            objectClass="com.brainspeedtech.swarm.layer.ConstraintBase">
+         <menu
+               id="SwarmMenu"
+               label="&amp;Swarm "
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="com.brainspeedtech.swarm.layer.ConstraintBase"
+               id="com.brainspeedtech.swarm.layer.editor.action.enable"
+               label="Enable"
+               menubarPath="SwarmMenu/group1">
+         </action>
+      </objectContribution>                    
+</extension>
+<!--
+  <extension
+         point="org.eclipse.ltk.core.refactoring.copyParticipants">
+      <copyParticipant
+            class="com.brainspeedtech.swarm.layer.participants.CopyParticipant"
+            id="com.brainspeedtech.swarm.layer.edit.copyParticipant"
+            name="Layer Copy">
+         <enablement>
+            <instanceof
+                  value="org.eclipse.core.resources.IFile">
+            </instanceof></enablement>
+      </copyParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.renameParticipants">
+      <renameParticipant
+            class="com.brainspeedtech.swarm.layer.participants.RenameParticipant"
+            id="com.brainspeedtech.swarm.layer.edit.renameParticipant"
+            name="Layer Rename">
+         <enablement>
+            <instanceof
+                  value="org.eclipse.core.resources.IFile">
+            </instanceof>
+         </enablement>
+      </renameParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.moveParticipants">
+      <moveParticipant
+            class="com.brainspeedtech.swarm.layer.participants.MoveParticipant"
+            id="com.brainspeedtech.swarm.layer.edit.moveParticipant"
+            name="Layer Move">
+         <enablement>
+            <instanceof
+                  value="org.eclipse.core.resources.IFile">
+            </instanceof>
+         </enablement>
+      </moveParticipant>
+   </extension>
+-->
+</plugin>

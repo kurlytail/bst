@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="reg" nsURI="http://www.brainspeedtech.com/reg" nsPrefix="reg">
+  <eClassifiers xsi:type="ecore:EClass" name="Register" eSuperTypes="../../com.bst.struct/model/struct.ecore#//Struct">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Register"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RegisterInstance" eSuperTypes="../../com.bst.struct/model/struct.ecore#//Field">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="RegisterInstance"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="location" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"
+        unsettable="true">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="location"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//TypeType"
+        unsettable="true">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="type"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TypeType">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="type_._type"/>
+    </eAnnotations>
+    <eLiterals name="readWrite" literal="read write"/>
+    <eLiterals name="readOnly" value="1" literal="read only"/>
+    <eLiterals name="writeOnly" value="2" literal="write only"/>
+    <eLiterals name="reserved" value="3"/>
+    <eLiterals name="readClear" value="4" literal="read clear"/>
+    <eLiterals name="writeClear" value="5" literal="write clear"/>
+    <eLiterals name="writeLost" value="6" literal="write lost"/>
+    <eLiterals name="external" value="7"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="TypeTypeObject" instanceClassName="org.eclipse.emf.common.util.Enumerator">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="type_._type:Object"/>
+      <details key="baseType" value="type_._type"/>
+    </eAnnotations>
+  </eClassifiers>
+</ecore:EPackage>

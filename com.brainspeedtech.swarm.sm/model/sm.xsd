@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/sm"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/sm"
+	xmlns:pref="http://www.brainspeedtech.com/struct/inst" xmlns:pref1="http://www.brainspeedtech.com/struct">
+
+
+
+
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd" namespace="http://www.brainspeedtech.com/struct"></import>
+	<complexType name="StateMachine">
+		<complexContent>
+			<extension base="pref1:Struct">
+
+
+				<sequence>
+					<element name="state" type="tns:State"
+						maxOccurs="unbounded" minOccurs="1">
+					</element>
+					<element name="transition" type="tns:Transition"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="state_path" type="pref1:Path"
+						maxOccurs="1" minOccurs="1">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Transition">
+		<sequence>
+			<element name="to" type="anyURI" maxOccurs="1" minOccurs="1"
+				ecore:reference="tns:State" ecore:opposite="source">
+			</element>
+			<element name="from" type="anyURI" maxOccurs="1"
+				minOccurs="1" ecore:reference="tns:State" ecore:opposite="dest">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+	</complexType>
+
+	<complexType name="State">
+		<sequence>
+			<element name="source" type="anyURI" maxOccurs="unbounded"
+				minOccurs="0" ecore:reference="tns:Transition"
+				ecore:opposite="to">
+			</element>
+			<element name="dest" type="anyURI" maxOccurs="unbounded"
+				minOccurs="0" ecore:reference="tns:Transition"
+				ecore:opposite="from">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+	</complexType>
+</schema>

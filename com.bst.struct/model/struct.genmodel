@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="(c) Copyright 2011, BrainSpeed Technologies" modelDirectory="/com.bst.struct/src"
+    modelPluginID="com.bst.struct" templateDirectory="" modelName="Struct" importerID="org.eclipse.xsd.ecore.importer"
+    complianceLevel="6.0" providerRootExtendsClass="com.brainspeedtech.swarm.project.providers.SwarmElementTableProvider"
+    tableProviders="true" colorProviders="true">
+  <foreignModel>struct.xsd</foreignModel>
+  <genPackages prefix="Struct" basePackage="com.brainspeedtech" resource="XML" disposableProviderFactory="true"
+      extensibleProviderFactory="true" childCreationExtenders="true" ecorePackage="struct.ecore#/">
+    <genClasses ecoreClass="struct.ecore#//Atom">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference struct.ecore#//Atom/atom"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Atom/blurb"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Atom/count"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Atom/name"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//Document">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference struct.ecore#//Document/struct"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Document/ghost"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Document/name"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//Enum">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference struct.ecore#//Enum/term"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//EnumTerm">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//EnumTerm/blurb"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//EnumTerm/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//EnumTerm/value"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//Field">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference struct.ecore#//Field/atom"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Field/blurb"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Field/count"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Field/name"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//Path">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference struct.ecore#//Path/child"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference struct.ecore#//Path/field"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Path/index"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute struct.ecore#//Path/range"/>
+    </genClasses>
+    <genClasses ecoreClass="struct.ecore#//Struct">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference struct.ecore#//Struct/field"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

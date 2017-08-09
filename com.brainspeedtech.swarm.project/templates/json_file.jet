@@ -1,0 +1,26 @@
+<%@ jet package="com.brainspeedtech.swarm.project.json"
+	class="JSONFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.project.domain.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*;"
+%>
+
+<%
+SwarmCachingEditingDomain domain = (SwarmCachingEditingDomain)argument;
+MasterDesign design = ProjectUtil.getMasterDesign(domain.getResourceSet().getResources().get(0));
+%>
+var design = {
+	name : "<%=domain.getID()%>",
+	master_cell : [
+<%for(MasterCell mCell: design.getCell()) {%>
+		{ name : "<%=mCell.getName()%>" },
+<%}%>
+	]
+};

@@ -1,0 +1,19 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="DesignTopHeaderFile" 
+	imports ="java.util.* com.brainspeedtech.swarm.project.util.* 
+	com.brainspeedtech.struct.util.StructResourceImpl org.eclipse.emf.ecore.resource.Resource com.brainspeedtech.struct.* com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.master.util.* com.brainspeedtech.swarm.inst.* com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.swarm.layer.*;"
+%>
+<% Instance instance = (Instance) argument;
+%>	
+/*
+ *  (c)2013 Mangstor, LLC. All rights reserved.
+ */
+
+
+#ifndef __DESIGN_TOP_H__
+#define __DESIGN_TOP_H__
+
+#include "gen_<%=instance.getName()%>.h"
+#endif

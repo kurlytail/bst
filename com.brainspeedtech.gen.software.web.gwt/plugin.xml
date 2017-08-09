@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="gwtBuilder"
+         name="GWT Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.brainspeedtech.gen.software.web.gwt.builder.GWTBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="GWTNature"
+         name="GWT Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.brainspeedtech.gen.software.web.gwt.builder.GWTNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.brainspeedtech.gen.software.web.gwt.gwtBuilder">
+      </builder>aaaaa
+      <requires-nature
+            id="com.bst.gen.swarmInstanceNature">
+      </requires-nature>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+       <page
+             category="com.brainspeedtech.swarm.project.properties.base"
+             class="com.brainspeedtech.gen.software.web.gwt.properties.GWTPropertyPage"
+             id="com.brainspeedtech.gen.software.web.gwt.properties.posixPropertyPage"
+             name="Swarm GWT Properties"
+             nameFilter="*">
+          <enabledWhen>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+       </page>
+   </extension>
+
+</plugin>

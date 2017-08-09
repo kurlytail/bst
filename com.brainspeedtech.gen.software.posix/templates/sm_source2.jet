@@ -1,0 +1,202 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="SMSourceFile2" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.sm.*
+	com.brainspeedtech.swarm.project.util.*
+	java.util.*
+	com.brainspeedtech.constraint.software.*
+	org.eclipse.emf.transaction.util.TransactionUtil
+	org.eclipse.emf.transaction.TransactionalEditingDomain"
+%>
+<%@ include file="ccopyright.jet"%>
+<%StateMachine instance = (StateMachine) argument;%>
+<%TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(instance);
+ 	String designName = domain.getID();
+%>
+
+#ifndef __<%=instance.getName().toUpperCase()%>_SM_C_H__
+#define __<%=instance.getName().toUpperCase()%>_SM_C_H__
+
+#include "gen_<%=designName%>.h"
+#include "gen_<%=designName%>_swarm_lib.h"
+#include "gen_<%=instance.getName()%>_sm.h"
+
+<%
+	Set<String> transitions = new HashSet<String>();
+	for (Transition transition : instance.getTransition()) {
+		transitions.add(transition.getName());
+	}
+%>
+
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/sm_strings.jet"%>
+
+<%
+for(State state: instance.getState()) {%>
+// Compute the right transition for <%=state.getName()%> state
+// Allowed transitions are
+<% for(Transition transition : state.getDest()) { %>
+//		ENUM_<%=instance.getName().toUpperCase()%>_<%=transition.getName().toUpperCase()%>_TRANSITION
+<% }%>
+//		ENUM_<%=instance.getName().toUpperCase()%>_NULL_TRANSITION
+#define <%=instance.getName().toUpperCase()%>_COMPUTE_<%=state.getName().toUpperCase()%>_TRANSITION \
+	<%=instance.getName()%>_compute_<%=state.getName()%>_transition()
+
+<%}%>
+
+// Get/set the state variable
+#define GET_<%=instance.getName().toUpperCase()%>_STATE get_<%=instance.getName()%>_state()
+#define SET_<%=instance.getName().toUpperCase()%>_STATE(__transition__, __state__) {\
+	if ((__transition__) != ENUM_<%=instance.getName().toUpperCase()%>_NULL_TRANSITION) {\
+		SWARM_PRINT4("STATE MACHINE <%=instance.getName().toUpperCase()%> %s(%d) => %s => %s\n",<%=instance.getName()%>_state_str(GET_<%=instance.getName().toUpperCase()%>_STATE),\
+			GET_<%=instance.getName().toUpperCase()%>_RESOURCE, \
+			<%=instance.getName()%>_transition_str(__transition__),\
+			<%=instance.getName()%>_state_str(__state__)); \
+		set_<%=instance.getName()%>_state(__transition__, __state__);\
+	}\
+}
+#define GET_<%=instance.getName().toUpperCase()%>_RESOURCE get_<%=instance.getName()%>_resource()
+
+<%for(State state: instance.getState()) {%>
+void <%=instance.getName()%>_process_<%=state.getName()%>_state()
+{
+	int transition;
+	
+	if(GET_<%=instance.getName().toUpperCase()%>_STATE !=
+		ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE) {
+		SWARM_PRINT2("<%=instance.getName()%>_sm(%d): Invalid State %s expected <%=state.getName()%>\n",
+			GET_<%=instance.getName().toUpperCase()%>_RESOURCE,
+			<%=instance.getName()%>_state_str(GET_<%=instance.getName().toUpperCase()%>_STATE));
+		SWARM_FATAL_ERROR;
+	}
+	
+	transition = <%=instance.getName().toUpperCase()%>_COMPUTE_<%=state.getName().toUpperCase()%>_TRANSITION;
+	switch(transition) {
+<% for(Transition transition : state.getDest()) { %>
+	case ENUM_<%=instance.getName().toUpperCase()%>_<%=transition.getName().toUpperCase()%>_TRANSITION:
+		SET_<%=instance.getName().toUpperCase()%>_STATE(transition, 
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=transition.getTo().getName().toUpperCase()%>_STATE);
+		break;
+<% }%>
+	case ENUM_<%=instance.getName().toUpperCase()%>_NULL_TRANSITION:
+		SET_<%=instance.getName().toUpperCase()%>_STATE(transition, 
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE);
+		break;
+	default:
+		SWARM_PRINT2(" => Bad Transition %s in state %s\n", 
+			<%=instance.getName()%>_transition_str(transition),
+			<%=instance.getName()%>_state_str(GET_<%=instance.getName().toUpperCase()%>_STATE));
+		SWARM_FATAL_ERROR;
+		break;
+	}
+}
+<%}%>
+
+void <%=instance.getName()%>_sm()
+{
+	int current_state;
+	
+	current_state = GET_<%=instance.getName().toUpperCase()%>_STATE;
+	switch(current_state) {
+<%for(State state: instance.getState()) {%>
+	case ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE:
+		<%=instance.getName()%>_process_<%=state.getName()%>_state();
+		break;
+<%}%>
+	default:
+		SWARM_PRINT2(" => Bad state %d for resource %d\n",
+			current_state, GET_<%=instance.getName().toUpperCase()%>_RESOURCE);
+		SWARM_FATAL_ERROR;
+		break;
+	}
+}
+
+
+<%
+Collection<StateGroup> groups = ProjectUtil.getReferringInstances(instance.getState(), StateGroup.class);
+for(StateGroup group: groups) {%>
+void <%=instance.getName()%>_<%=group.getName()%>_sm()
+{
+	int current_state;
+	
+	current_state = GET_<%=instance.getName().toUpperCase()%>_STATE;
+	switch(current_state) {
+<%for(State state: group.getState()) {
+	if(state.eContainer() == instance) {%>
+	case ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE:
+		<%=instance.getName()%>_process_<%=state.getName()%>_state();
+		break;
+<%	}
+}%>
+	}
+}
+<%}%>
+
+
+<%for(String transition: transitions) {
+	Map<State, Transition> states = new HashMap<State, Transition>();
+	for (Transition trans : instance.getTransition()) {
+		if(trans.getName().equals(transition)) {
+			states.put(trans.getFrom(), trans);
+		}
+	}
+%>
+void <%=instance.getName()%>_process_<%=transition%>_transition()
+{
+	int state;
+	
+	state = GET_<%=instance.getName().toUpperCase()%>_STATE;
+	switch(state) {
+<% for(State state : states.keySet()) { %>
+	case ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE:
+		SET_<%=instance.getName().toUpperCase()%>_STATE(
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=transition.toUpperCase()%>_TRANSITION,
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=states.get(state).getTo().getName().toUpperCase()%>_STATE);
+		break;
+<% }%>
+	default:
+		SWARM_PRINT3("STATE MACHINE <%=instance.getName().toUpperCase()%> %s(%d) => Bad State %s for transition <%=transition%>\n", 
+			<%=instance.getName()%>_state_str(GET_<%=instance.getName().toUpperCase()%>_STATE),
+			GET_<%=instance.getName().toUpperCase()%>_RESOURCE, <%=instance.getName()%>_state_str(state));
+		SWARM_FATAL_ERROR;
+		break;
+	}
+}
+<%}%>
+
+<%
+for(StateGroup group: groups) {
+	for(String transition: transitions) {
+	Map<State, Transition> states = new HashMap<State, Transition>();
+	for (Transition trans : instance.getTransition()) {
+		if(trans.getName().equals(transition) &&
+			group.getState().contains(trans.getFrom())) {
+			states.put(trans.getFrom(), trans);
+		}
+	}
+%>
+void <%=instance.getName()%>_<%=group.getName()%>_process_<%=transition%>_transition()
+{
+	int state;
+	
+	state = GET_<%=instance.getName().toUpperCase()%>_STATE;
+	switch(state) {
+<% for(State state : states.keySet()) { %>
+	case ENUM_<%=instance.getName().toUpperCase()%>_<%=state.getName().toUpperCase()%>_STATE:
+		SET_<%=instance.getName().toUpperCase()%>_STATE(
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=transition.toUpperCase()%>_TRANSITION,
+			ENUM_<%=instance.getName().toUpperCase()%>_<%=states.get(state).getTo().getName().toUpperCase()%>_STATE);
+		break;
+<% }%>
+	default:
+		SWARM_PRINT3("STATE MACHINE <%=instance.getName().toUpperCase()%> %s(%d) => Bad State %s for transition <%=transition%>\n", 
+			<%=instance.getName()%>_state_str(GET_<%=instance.getName().toUpperCase()%>_STATE),
+			GET_<%=instance.getName().toUpperCase()%>_RESOURCE, <%=instance.getName()%>_state_str(state));
+		SWARM_FATAL_ERROR;
+		break;
+	}
+}
+<%}%>
+<%}%>
+
+#endif
+

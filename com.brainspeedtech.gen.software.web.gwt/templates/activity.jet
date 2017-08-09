@@ -1,0 +1,32 @@
+<%@ jet package="com.brainspeedtech.gen.software.web.gwt"
+	class="ActivityFile" 
+	imports ="java.util.*
+	com.brainspeedtech.swarm.layer.util.*
+	com.brainspeedtech.swarm.layer.*
+	com.brainspeedtech.swarm.sm.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.constraint.software.*
+	org.eclipse.emf.ecore.util.*
+	com.brainspeedtech.constraint.web.gwt.*
+	org.eclipse.emf.ecore.*;"
+%>
+
+package com.brainspeedtech.swarm.designer.client;
+
+import com.google.gwt.activity.shared.AbstractActivity;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+
+public class MyActivity extends AbstractActivity {
+
+	@Override
+	public void start(AcceptsOneWidget panel, EventBus eventBus) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

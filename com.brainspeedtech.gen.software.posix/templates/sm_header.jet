@@ -1,0 +1,20 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="SMHeaderFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.sm.*
+	com.brainspeedtech.swarm.project.util.*
+	java.util.*;"
+%>
+<%@ include file="ccopyright.jet"%>
+<%StateMachine smReference = (StateMachine) argument;%>
+
+#ifndef __GEN__<%=smReference.getName().toUpperCase()%>_SM_H__
+#define __GEN__<%=smReference.getName().toUpperCase()%>_SM_H__
+
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/sm_header.jet"%>
+
+#if 0
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/sm_instancing.jet"%>
+#endif
+#endif
+

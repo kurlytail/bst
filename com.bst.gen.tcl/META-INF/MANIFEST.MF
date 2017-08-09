@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tcl
+Bundle-SymbolicName: com.bst.gen.tcl;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.brainspeedtech.gen.tcl.Activator
+Bundle-Vendor: BRAINSPEED TECHNOLOGIES
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.bst.gen,
+ com.bst.struct,
+ org.eclipse.core.resources,
+ org.eclipse.gmf.runtime.emf.core,
+ com.bst.swarm.master,
+ com.brainspeedtech.swarm.project,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ org.eclipse.core.variables,
+ com.brainspeedtech.constraint.software.tcl;bundle-version="1.0.0",
+ com.brainspeedtech.swarm.layer;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy

@@ -1,0 +1,494 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix.vpi"
+	class="InstanceVPIFile" 
+	imports ="java.util.* 
+	com.brainspeedtech.swarm.layer.util.* 
+	com.brainspeedtech.swarm.layer.* 
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.gen.software.posix.*
+	org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.layer.util.*;"
+%>
+
+<%CellInstance instance = (CellInstance) argument;
+  Instance designInstance = (Instance)instance.eContainer();
+  
+  Set<SharedVariable> sharedVariables = new HashSet<SharedVariable>();
+  sharedVariables.addAll(ProjectUtil.getReferringInstances(instance, SharedVariable.class));
+  sharedVariables.addAll(ProjectUtil.getReferringInstances(instance.getCell(), SharedVariable.class));
+    
+  Map<TubeInstance, SocketTube> serverSocketTubes = PosixUtil.getServerSocketTubes(instance);
+  Map<TubeInstance, SocketTube> clientSocketTubes = PosixUtil.getClientSocketTubes(instance);
+  Set<TubeInstance> pipeInputs = new HashSet<TubeInstance>();
+  pipeInputs.addAll(instance.getInput());
+  pipeInputs.removeAll(serverSocketTubes.keySet());
+  pipeInputs.removeAll(clientSocketTubes.keySet());
+  Set<TubeInstance> pipeOutputs = new HashSet<TubeInstance>();
+  pipeOutputs.addAll(instance.getOutput());
+  pipeOutputs.removeAll(serverSocketTubes.keySet());
+  pipeOutputs.removeAll(clientSocketTubes.keySet());
+  
+%>
+
+#include <vpi_user.h>
+#include <acc_user.h>
+#include <veriuser.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+
+#include "gen_<%=instance.getName()%>.h"
+#include "gen_<%=designInstance.getName()%>.h"
+<%
+int noiseLevel = 1;
+if (instance.getCell().isExternal()) {
+	noiseLevel = 2;
+}
+%>
+
+<%for(SharedVariable svar: sharedVariables) {%>
+<%=svar.getStruct().getName()%>_t* <%=svar.getName()%>;
+<%}%>
+
+<%  if (ProjectUtil.getReferringInstance(instance, CustomInstanceCell.class) == null &&
+		ProjectUtil.getReferringInstance(instance.getCell(), CustomMasterCell.class) == null) {
+%>
+<%for(MasterTube ti: instance.getCell().getOutput()) {
+	if (ProjectUtil.getReferringInstance(ti, IgnorePosixTube.class) != null) continue;
+	Set<TubeInstance> childTubes = new HashSet<TubeInstance>();
+	childTubes.addAll(ProjectUtil.getReferringInstances(ti, TubeInstance.class));
+	childTubes.retainAll(instance.getOutput());%>
+fd_pair_t* <%=ti.getName()%>_output_instances[<%=childTubes.size()%>];
+<%}%>
+
+<%for(MasterTube ti: instance.getCell().getInput()) {
+	if (ProjectUtil.getReferringInstance(ti, IgnorePosixTube.class) != null) continue;
+	Set<TubeInstance> childTubes = new HashSet<TubeInstance>();
+	childTubes.addAll(ProjectUtil.getReferringInstances(ti, TubeInstance.class));
+	childTubes.retainAll(instance.getInput());%>
+fd_pair_t* <%=ti.getName()%>_input_instances[<%=childTubes.size()%>];
+<%}%>
+
+<%for(TubeInstance ti : instance.getInput()) {%>
+<%=ti.getTube().getName()%>_t <%=ti.getName()%>;
+<%}%>
+
+<%for(TubeInstance ti : instance.getInput()) {%>
+char* pending_ptr_<%=ti.getName()%> = NULL;
+size_t pending_size_<%=ti.getName()%> = 0;
+fd_pair_t INPUT_<%=ti.getName().toUpperCase()%> = { -1, -1, 0 };
+<%}%>
+
+<%for(TubeInstance ti : instance.getOutput()) {%>
+char* pending_ptr_<%=ti.getName()%> = NULL;
+size_t pending_size_<%=ti.getName()%> = 0;
+fd_pair_t OUTPUT_<%=ti.getName().toUpperCase()%> = { -1, -1, 0 };
+<%}%>
+
+<%}%>
+
+<%for(TubeInstance ti : serverSocketTubes.keySet()) {%>
+int listen_<%=ti.getName()%>;
+<%}%>
+<%for(TubeInstance ti : clientSocketTubes.keySet()) {%>
+int connect_<%=ti.getName()%>;
+<%}%>
+
+int work_dir_fd;
+int call_idle = 1;
+char* program_instance_name;
+
+static int <%=instance.getName()%>_compiletf(char*user_data)
+{
+	vpiHandle systfref;
+	vpiHandle args_iter;
+	
+	struct t_vpi_value log_location_value = { .format = vpiStringVal,
+			.value.integer = 0 };
+	vpi_printf("<%=instance.getName()%> VPI\n");
+	
+	
+
+
+	systfref = vpi_handle(vpiSysTfCall, NULL);
+	args_iter = vpi_iterate(vpiArgument, systfref);
+    vpi_get_value(vpi_scan(args_iter), &log_location_value);
+    
+
+	
+	vpi_free_object(args_iter);
+	
+	program_instance_name = log_location_value.value.str;
+	int iofd __attribute__((unused));
+	
+	design_startup(program_instance_name);
+		
+
+
+
+	work_dir_fd = open(program_instance_name, 0);
+	if (work_dir_fd < 0) {
+		perror("Error opening work directory");
+		exit(-1);
+	}
+	
+	// Setup all read pipes
+<%for(TubeInstance ti: pipeInputs) {%>
+	SWARM_PRINT("Setting up tube <%=ti.getName()%>\n");
+	iofd = openat(work_dir_fd, "fifo_<%=ti.getName()%>", O_RDONLY | O_NONBLOCK);
+	if (iofd < 0) {
+		perror("Error opening fifo fifo_<%=ti.getName()%>");
+		exit(-1);
+	}
+	INPUT_<%=ti.getName().toUpperCase()%>.fd = iofd;
+<%
+	}
+%>
+
+	// Setup all server sockets
+<%for(TubeInstance ti : serverSocketTubes.keySet()) {
+	if(serverSocketTubes.get(ti) instanceof TCPSocketTube) {
+	TCPSocketTube socketTube = (TCPSocketTube)serverSocketTubes.get(ti);
+%>
+	iofd = swarm_tcp_server_socket("<%=ti.getName()%>", "<%=socketTube.getServerIP()%>", <%=socketTube.getServerPort()%>);
+	listen_<%=ti.getName()%> = iofd;
+<%}%>
+<%
+	if(serverSocketTubes.get(ti) instanceof UnixSocketTube) {
+	UnixSocketTube socketTube = (UnixSocketTube)serverSocketTubes.get(ti);
+%>
+	iofd = swarm_unix_server_socket("<%=socketTube.getName()%>", program_instance_name);
+	listen_<%=ti.getName()%> = iofd;
+<%}%>
+<%}%>
+
+
+	return 0;
+}
+
+static void <%=instance.getName()%>_post_init()
+{
+	static int first_time = 1;
+	int iofd __attribute__((unused));
+	int read_size __attribute__((unused));
+	int nfds __attribute__((unused));
+	int mem_file __attribute__((unused));
+	
+	
+	if (!first_time) return;
+
+	vpiHandle systfref;
+	vpiHandle args_iter;
+	
+	systfref = vpi_handle(vpiSysTfCall, NULL);
+	args_iter = vpi_iterate(vpiArgument, systfref);
+	vpi_scan(args_iter);
+
+	// Setup all write pipes
+<%for(TubeInstance ti: pipeOutputs) {%>
+	SWARM_PRINT("Setting up tube <%=ti.getName()%>\n");
+	iofd = openat(work_dir_fd, "fifo_<%=ti.getName()%>", O_WRONLY);
+	if (iofd < 0) {
+		perror("Error opening fifo fifo_<%=ti.getName()%>");
+		exit(-1);
+	}
+	if(fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | O_NONBLOCK) < 0) {
+		perror("Could not set non blocking flag for <%=ti.getName()%>");
+		exit(-1);
+	}
+	OUTPUT_<%=ti.getName().toUpperCase()%>.fd = iofd;
+<%
+	}
+%>
+	// Setup all client sockets
+<%for(TubeInstance ti : clientSocketTubes.keySet()) {
+	if (clientSocketTubes.get(ti) instanceof TCPSocketTube) {
+	TCPSocketTube socketTube = (TCPSocketTube)clientSocketTubes.get(ti);
+%>
+	iofd = swarm_tcp_client_socket("<%=ti.getName()%>", "<%=socketTube.getServerIP()%>", <%=socketTube.getServerPort()%>);
+<%}%>
+<%
+	if (clientSocketTubes.get(ti) instanceof UnixSocketTube) {
+	UnixSocketTube socketTube = (UnixSocketTube)clientSocketTubes.get(ti);
+%>
+	iofd = swarm_unix_client_socket("<%=socketTube.getName()%>", program_instance_name);
+<%}%>
+	if(fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | O_NONBLOCK ) < 0) {
+		perror("Could not set non blocking flag for <%=ti.getName()%>");
+		exit(-1);
+	}
+	connect_<%=ti.getName()%> = iofd;
+<%}%>
+
+	// Finish accept on servers and connects on client sockets
+<%if(!serverSocketTubes.isEmpty() || !clientSocketTubes.isEmpty() ) {%>
+
+	fd_set listenfdset;
+	fd_set connectfdset;
+	int total_connections;
+
+	total_connections = <%=serverSocketTubes.size() + clientSocketTubes.size()%>;
+	while(total_connections) {
+		FD_ZERO(&listenfdset);
+		FD_ZERO(&connectfdset);
+		nfds = 0;
+		
+<%for(TubeInstance ti: serverSocketTubes.keySet()) {
+	if (serverSocketTubes.get(ti).isClientReceiver()) {
+%>
+		if(OUTPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			FD_SET(listen_<%=ti.getName()%>, &listenfdset);
+			if (nfds <= listen_<%=ti.getName()%>)
+				nfds = listen_<%=ti.getName()%> + 1;
+		}
+<%  } else { %>
+		if(INPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			FD_SET(listen_<%=ti.getName()%>, &listenfdset);
+			if (nfds <= listen_<%=ti.getName()%>)
+				nfds = listen_<%=ti.getName()%> + 1;
+			
+		}
+<%
+	}
+}%>
+
+<%for(TubeInstance ti: clientSocketTubes.keySet()) {
+	if (clientSocketTubes.get(ti).isClientReceiver()) {
+%>
+		if(INPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			FD_SET(connect_<%=ti.getName()%>, &connectfdset);
+			if (nfds <= connect_<%=ti.getName()%>)
+				nfds = connect_<%=ti.getName()%> + 1;
+		}
+<%  } else { %>
+		if(OUTPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			FD_SET(connect_<%=ti.getName()%>, &connectfdset);
+			if (nfds <= connect_<%=ti.getName()%>)
+				nfds = connect_<%=ti.getName()%> + 1;
+		}
+<%
+	}
+}%>
+
+		if(select(nfds, &listenfdset, &connectfdset, NULL, NULL) < 0) {
+			perror("Error in socket connection establishment");
+			exit(-1);
+		}
+		
+		
+<%for(TubeInstance ti: serverSocketTubes.keySet()) {
+	if (serverSocketTubes.get(ti).isClientReceiver()) {
+%>
+		if(OUTPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			if(FD_ISSET(listen_<%=ti.getName()%>, &listenfdset)) {
+				iofd = OUTPUT_<%=ti.getName().toUpperCase()%>.fd = 
+					accept(listen_<%=ti.getName()%>, NULL, NULL);
+				if(fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | O_NONBLOCK) < 0) {
+					perror("Could not set non blocking flag for <<%=ti.getName()%>");
+					exit(-1);
+				}
+				close(listen_<%=ti.getName()%>);		
+				fprintf(stderr, "Server connected on socket tube <%=ti.getName()%>\n");
+				--total_connections;
+			}
+		}
+<%  } else { %>
+		if(INPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			if(FD_ISSET(listen_<%=ti.getName()%>, &listenfdset)) {
+				iofd = INPUT_<%=ti.getName().toUpperCase()%>.fd = 
+					accept(listen_<%=ti.getName()%>,NULL, NULL);
+				if(fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | O_NONBLOCK) < 0) {
+					perror("Could not set non blocking flag for <%=ti.getName()%>");
+					exit(-1);
+				}
+				close(listen_<%=ti.getName()%>);		
+				fprintf(stderr, "Server connected on socket tube <%=ti.getName()%>\n"); 
+		
+				--total_connections;
+			}
+		}
+<%
+	}
+}%>
+
+<%for(TubeInstance ti: clientSocketTubes.keySet()) {
+	if (clientSocketTubes.get(ti).isClientReceiver()) {
+%>
+		if(INPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			if(FD_ISSET(connect_<%=ti.getName()%>, &connectfdset)) {
+				INPUT_<%=ti.getName().toUpperCase()%>.fd = connect_<%=ti.getName()%>;
+				--total_connections;
+				fprintf(stderr, "Client connected on socket tube <%=ti.getName()%>\n");
+			}
+		}
+<%  } else { %>
+		if(OUTPUT_<%=ti.getName().toUpperCase()%>.fd == -1) {
+			if(FD_ISSET(connect_<%=ti.getName()%>, &connectfdset)) {
+				OUTPUT_<%=ti.getName().toUpperCase()%>.fd = connect_<%=ti.getName()%>;
+				--total_connections;
+				fprintf(stderr, "Client connected on socket tube <%=ti.getName()%>\n");
+			}
+		}
+<%
+	}
+}%>
+
+	}
+<%}%>
+	// Map shared memories
+<%
+for(SharedVariable svar: sharedVariables) {
+%>
+	mem_file = openat(work_dir_fd, "mem__<%=svar.getName()%>", O_RDWR);
+	if (mem_file < 0) {
+		perror("Error creating memfile mem__<%=svar.getName()%>");
+		exit(-1);
+	}
+	<%=svar.getName()%> = (<%=svar.getStruct().getName()%>_t*)mmap(NULL, 
+		sizeof(<%=svar.getStruct().getName()%>_t) * <%=svar.getCount()%>, PROT_READ | PROT_WRITE,
+		MAP_SHARED, mem_file, 0);
+	if (<%=svar.getName()%> == NULL) {
+		perror("Error mapping memfile mem__<%=svar.getName()%>");
+		exit(-1);
+	}
+<%
+}
+%>
+
+
+<%
+Map<MasterTube, Integer> indexMap = new HashMap<MasterTube, Integer>();
+for(TubeInstance ti : instance.getInput()) {
+	if(ProjectUtil.getReferringInstance(ti.getTube(), Tap.class) != null &&
+		ProjectUtil.getReferringInstance(ti.getTube(), Tap.class).getCell() == instance.getCell()) continue;
+	if (ProjectUtil.getReferringInstance(ti.getTube(), IgnorePosixTube.class) != null) continue;
+	if(!indexMap.containsKey(ti.getTube())) indexMap.put(ti.getTube(),new Integer(0));
+	int i = indexMap.get(ti.getTube()).intValue();
+%>
+	<%=ti.getTube().getName()%>_input_instances[<%=i%>] = &INPUT_<%=ti.getName().toUpperCase()%>;
+<%
+	i++;
+	indexMap.put(ti.getTube(),new Integer(i));
+}
+indexMap = new HashMap<MasterTube, Integer>();
+for(TubeInstance ti : instance.getOutput()) {
+	if(ProjectUtil.getReferringInstance(ti.getTube(), Tap.class) != null &&
+		ProjectUtil.getReferringInstance(ti.getTube(), Tap.class).getCell() == instance.getCell()) continue;
+	if (ProjectUtil.getReferringInstance(ti.getTube(), IgnorePosixTube.class) != null) continue;
+	if(!indexMap.containsKey(ti.getTube())) indexMap.put(ti.getTube(),new Integer(0));
+	int i = indexMap.get(ti.getTube()).intValue();
+%>
+	<%=ti.getTube().getName()%>_output_instances[<%=i%>] = &OUTPUT_<%=ti.getName().toUpperCase()%>;
+<%
+	i++;
+	indexMap.put(ti.getTube(),new Integer(i));
+	}
+%>
+
+	SWARM_PRINT("All queues created\n");	
+	call_idle = <%=instance.getCell().getName()%>_init();
+
+<%  if (ProjectUtil.getReferringInstance(instance, CustomInstanceCell.class) == null &&
+		ProjectUtil.getReferringInstance(instance.getCell(), CustomMasterCell.class) == null) {
+%>
+
+<%for(TubeInstance ti : instance.getInput()) {%>
+	pending_ptr_<%=ti.getName()%> = (char*)&<%=ti.getName()%>;
+	pending_size_<%=ti.getName()%> = sizeof(<%=ti.getName()%>);
+	SWARM_PRINT_NL(2, "<%=ti.getName()%>(%d): Posting receive %p(%d) type <%=ti.getName()%>_t\n", 
+		INPUT_<%=ti.getName().toUpperCase()%>.fd
+		,&<%=ti.getName()%>, (int)sizeof(<%=ti.getName()%>));
+<%}%>
+<%}%>
+
+	first_time = 0;
+	
+}
+
+static int <%=instance.getName()%>_calltf(char*user_data)
+{
+	<%=instance.getName()%>_post_init();
+
+<%if(instance.getInput().size() > 0) {%>
+	int flow;
+	int read_size;
+
+<%for(TubeInstance ti : instance.getInput()) {%>
+	
+	read_size = read(INPUT_<%=ti.getName().toUpperCase()%>.fd, 
+		pending_ptr_<%=ti.getName()%>,
+		pending_size_<%=ti.getName()%>);
+	if (read_size < 0) {
+		if(errno != EAGAIN && errno != EWOULDBLOCK) {
+			perror("Error reading from INPUT_<%=ti.getName().toUpperCase()%>");
+			SWARM_FATAL_ERROR;
+		}
+		read_size = 0;
+	}
+	pending_size_<%=ti.getName()%> -= read_size;
+	pending_ptr_<%=ti.getName()%> += read_size;
+	
+	if(pending_size_<%=ti.getName()%> == 0) {
+		SWARM_PRINT_NL(<%=noiseLevel%>, "<%=ti.getName()%>(%d): Received data type <%=ti.getName()%>_t\n", 
+			INPUT_<%=ti.getName().toUpperCase()%>.fd);
+		swarm_dump_data_nl(<%=noiseLevel%>, 0, (char*)&<%=ti.getName()%>, sizeof(<%=ti.getName()%>));
+		flow = get_<%=ti.getTube().getName()%>_flow(&<%=ti.getName()%>);
+		switch(flow) {
+<%for(Flow flow: MasterUtil.getFlows(ti.getTube())) {%>
+		case ENUM_<%=((Instance)instance.eContainer()).getName().toUpperCase()%>_<%=flow.getName().toUpperCase()%>_FLOW:
+			SWARM_PRINT_NL(<%=noiseLevel%>, "Processing flow <%=flow.getName().toUpperCase()%>\n");
+			<%=ti.getTube().getName()%>_<%=flow.getName()%>_handler(&<%=ti.getName()%>);
+			break;
+<%}%> 
+			default:
+				SWARM_PRINT("Bad flow in cell instance <%=instance.getName()%> -><%=ti.getName()%>\n");
+				SWARM_FATAL_ERROR;
+				break;
+		}
+		pending_ptr_<%=ti.getName()%> = (char*)&<%=ti.getName()%>;
+		pending_size_<%=ti.getName()%> = sizeof(<%=ti.getName()%>);
+		SWARM_PRINT_NL(2, "<%=ti.getName()%>(%d): Posting receive %p(%d) type <%=ti.getName()%>_t\n", 
+			INPUT_<%=ti.getName().toUpperCase()%>.fd
+			,&<%=ti.getName()%>, (int)sizeof(<%=ti.getName()%>));
+	}
+<%}%>
+<%}%>
+
+	if (call_idle) {
+		call_idle = <%=instance.getCell().getName()%>_idle();
+	}
+	
+	return 0;
+
+}
+
+void <%=instance.getName()%>_register()
+{
+	s_vpi_systf_data tf_data;
+
+	tf_data.type = vpiSysTask;
+	tf_data.tfname = "$<%=instance.getName()%>_vpi";
+	tf_data.calltf = <%=instance.getName()%>_calltf;
+	tf_data.compiletf = <%=instance.getName()%>_compiletf;
+	tf_data.sizetf = 0;
+	tf_data.user_data = 0;
+	vpi_register_systf(&tf_data);
+}
+
+void (*vlog_startup_routines[])() = {
+	<%=instance.getName()%>_register,
+	0
+}	;
+

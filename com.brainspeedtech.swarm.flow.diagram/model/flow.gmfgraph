@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<gmfgraph:Canvas xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:gmfgraph="http://www.eclipse.org/gmf/2006/GraphicalDefinition" name="flow">
+  <figures
+      name="Default">
+    <figures
+        xsi:type="gmfgraph:PolygonDecoration"
+        name="TubeTargetDecoration"/>
+    <descriptors
+        name="CellFigure">
+      <actualFigure
+          xsi:type="gmfgraph:RoundedRectangle"
+          name="CellFigure">
+        <layout
+            xsi:type="gmfgraph:CustomLayout"
+            qualifiedClassName="com.brainspeedtech.swarm.diagram.custom.CenteredLayout"/>
+        <children
+            xsi:type="gmfgraph:Label"
+            name="CellNameFigure"
+            text="&lt;...>"/>
+      </actualFigure>
+      <accessors
+          figure="//@figures.0/@descriptors.0/@actualFigure/@children.0"/>
+    </descriptors>
+    <descriptors
+        name="TubeFigure">
+      <actualFigure
+          xsi:type="gmfgraph:PolylineConnection"
+          name="TubeFigure"
+          targetDecoration="//@figures.0/@figures.0">
+        <children
+            xsi:type="gmfgraph:Label"
+            name="TubeNameFigure"
+            text="&lt;...>"/>
+      </actualFigure>
+      <accessors
+          figure="//@figures.0/@descriptors.1/@actualFigure/@children.0"/>
+    </descriptors>
+  </figures>
+  <nodes
+      name="Cell"
+      figure="CellFigure"/>
+  <connections
+      name="Tube"
+      figure="TubeFigure"/>
+  <labels
+      name="CellName"
+      figure="CellFigure"
+      elementIcon="false"
+      accessor="//@figures.0/@descriptors.0/@accessors.0"/>
+  <labels
+      name="TubeName"
+      figure="TubeFigure"
+      elementIcon="false"
+      accessor="//@figures.0/@descriptors.1/@accessors.0"/>
+</gmfgraph:Canvas>

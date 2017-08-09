@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypeProviders">
+      <diagramTypeProvider
+            class="com.brainspeedtech.swarm.flow.graphiti.DiagramTypeProvider"
+            id="com.brainspeedtech.swarm.project.graphiti.diagramTypeProvider"
+            name="Swarm Diagram Providers">
+         <diagramType
+               id="com.brainspeedtech.swarm.flow.graphiti.diagramType">
+         </diagramType>
+      </diagramTypeProvider>
+   </extension>
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypes">
+      <diagramType
+            id="com.brainspeedtech.swarm.flow.graphiti.diagramType"
+            name="Flow Diagram"
+            type="FlowDiagram">
+      </diagramType>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.swarm.flow.graphiti.wizards.FlowNewDiagramFileWizard"
+            finalPerspective="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            icon="icons/sample.gif"
+            id="com.brainspeedtech.swarm.flow.graphiti.wizards.NewFlowWizard"
+            name="Flow">
+      </wizard>
+   </extension>
+
+</plugin>

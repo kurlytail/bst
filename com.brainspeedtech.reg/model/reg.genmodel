@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright @2012 BrainSpeed Technolgoies"
+    modelDirectory="/com.brainspeedtech.reg/src" modelPluginID="com.brainspeedtech.reg"
+    modelName="Reg" importerID="org.eclipse.xsd.ecore.importer" complianceLevel="6.0"
+    copyrightFields="false" providerRootExtendsClass="com.brainspeedtech.swarm.project.providers.SwarmElementTableProvider"
+    tableProviders="true" usedGenPackages="../../com.bst.struct/model/struct.genmodel#//struct">
+  <foreignModel>reg.xsd</foreignModel>
+  <genPackages prefix="Reg" basePackage="com.brainspeedtech" resource="XML" disposableProviderFactory="true"
+      childCreationExtenders="true" ecorePackage="reg.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="reg.ecore#//TypeType">
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/readWrite"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/readOnly"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/writeOnly"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/reserved"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/readClear"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/writeClear"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/writeLost"/>
+      <genEnumLiterals ecoreEnumLiteral="reg.ecore#//TypeType/external"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="reg.ecore#//TypeTypeObject"/>
+    <genClasses ecoreClass="reg.ecore#//Register"/>
+    <genClasses ecoreClass="reg.ecore#//RegisterInstance">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reg.ecore#//RegisterInstance/location"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reg.ecore#//RegisterInstance/type"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

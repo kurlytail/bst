@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="htmlBuilder"
+         name="HTML Generator"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.brainspeedtech.gen.html.builder.DocBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="DocumentNature"
+         name="Document Generator"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.brainspeedtech.gen.html.builder.DocumentNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.brainspeedtech.gen.html.htmlBuilder">
+      </builder>
+      <requires-nature
+            id="com.brainspeedtech.swarm.project.swarmNature">
+      </requires-nature>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="com.brainspeedtech.swarm.project.properties.base"
+            class="com.brainspeedtech.gen.html.properties.HTMLPropertyPage"
+            id="com.brainspeedtech.gen.html.properties.samplePropertyPage"
+            name="HTML Preferences"
+            nameFilter="*">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+
+</plugin>

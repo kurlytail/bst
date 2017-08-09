@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:flow="http://www.brainspeedtech.com/swarm/flow"
+	xmlns:tns="http://www.brainspeedtech.com/swarm/gen/software"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.brainspeedtech.com/swarm/gen/software"
+	xmlns:inst="http://www.brainspeedtech.com/swarm/inst"
+	xmlns:master="http://www.brainspeedtech.com/swarm/master" xmlns:Q1="http://www.brainspeedtech.com/swarm/gen/software">
+
+	<import namespace="http://www.brainspeedtech.com/swarm/flow"
+		schemaLocation="../../com.brainspeedtech.swarm.flow/model/flow.xsd" />
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/master">
+	</import>
+
+
+
+	<complexType name="Scope">
+		<attribute name="name" type="string"></attribute>
+		<attribute name="visibility" type="string"></attribute>
+	</complexType>
+
+	<complexType name="BlockInstance">
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="type" type="anyURI"></attribute>
+    	<attribute name="count" type="int"></attribute>
+    </complexType>
+
+    <complexType name="DocumentScope">
+    	<complexContent>
+    		<extension base="tns:Scope">
+    			<sequence>
+    				<element name="structures" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    				<element name="childScope" type="tns:BlockScope" maxOccurs="unbounded" minOccurs="0"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="BlockScope">
+    	<complexContent>
+    		<extension base="tns:Scope">
+    			<sequence>
+    				<element name="blockInstances"
+    					type="tns:BlockInstance">
+    				</element>
+    				<element name="childScopes" type="tns:BlockScope"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="FunctionScope">
+    	<complexContent>
+    		<extension base="tns:BlockScope">
+    			<sequence>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AST">
+    	<complexContent>
+    		<extension base="tns:BlockInstance">
+    			<sequence>
+    				<element name="ast" type="tns:AST" maxOccurs="unbounded" minOccurs="0"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AddOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AssignOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="SubtractOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="SwitchOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="LoopOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AssignmentOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AndOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="OrOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="XorOperation"></complexType>
+
+    <complexType name="CompositionOperation">
+    	<complexContent>
+    		<extension base="tns:AST"></extension>
+    	</complexContent>
+    </complexType>
+</schema>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="swarmEditingDomainBuilder"
+         name="Swarm Editing Domain Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.brainspeedtech.swarm.project.builder.SwarmEditingDomainBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="swarmNature"
+         name="Swarm Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.brainspeedtech.swarm.project.builder.SwarmNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.brainspeedtech.swarm.project.swarmEditingDomainBuilder">
+      </builder>
+   </extension>
+   <extension
+         id="editingDomainProblem"
+         name="Editing Domain Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.brainspeedtech.swarm.project"
+            name="Swarm Wizards">
+      </category>
+      <wizard
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.swarm.project.wizards.SwarmNewProjectWizard"
+            finalPerspective="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            icon="icons/sample.gif"
+            id="com.brainspeedtech.swarm.project.wizards.SwarmNewProjectWizard"
+            name="Swarm Project"
+            preferredPerspectives="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            project="true">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="com.brainspeedtech.swarm.project"
+            name="Swarm Viewers">
+      </category>
+      <view
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.swarm.project.views.ResourceView"
+            id="com.brainspeedtech.swarm.project.views.ResourceView"
+            name="Swarm Resources View"
+            restorable="true">
+      </view>
+      <view
+            category="com.brainspeedtech.swarm.project"
+            class="com.brainspeedtech.swarm.project.views.LayerView"
+            id="com.brainspeedtech.swarm.project.views.layerView"
+            name="Swarm Layers"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="com.brainspeedtech.swarm.project.views.SwarmProjectView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+         <view
+               id="com.brainspeedtech.swarm.project.views.layerView"
+               minimized="false"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            icon="icons/releng_gears.gif"
+            id="com.brainspeedtech.swarm.project.perspectives.SwarmPerspective"
+            name="Swarm">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.brainspeedtech.swarm.project.transaction.InitializeTransactionalDomains">
+      </startup>
+   </extension>
+   
+      
+    <extension
+         point="org.eclipse.emf.validation.constraintProviders">
+      <category
+            id="com.brainspeedtech.swarm.project.validation"
+            mandatory="true"
+            name="Swarm Constraints"/>
+      <constraintProvider
+            cache="true"
+            mode="Batch">
+         <package namespaceUri="http://www.brainspeedtech.com/struct"/>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/reg">
+         </package>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/flow">
+         </package>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/sm">
+         </package>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/master">
+         </package>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/layer">
+         </package>
+         <package
+               namespaceUri="http://www.brainspeedtech.com/swarm/inst">
+         </package>
+         <constraints categories="com.brainspeedtech.swarm.project.validation">
+            <constraint
+                  class="com.brainspeedtech.swarm.project.validation.NonEmptyNamesConstraint"
+                  id="com.brainspeedtech.swarm.project.validation.NameNotEmpty"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Non-Empty Names"
+                  severity="ERROR"
+                  statusCode="1">
+               <description>
+                  All items in a swarm model should have some unique identifier or name.
+               </description>
+               <message>
+                  A {0} has been found to have no unique identifier (name or title).
+               </message>
+            </constraint>
+            <constraint
+                  class="com.brainspeedtech.swarm.project.validation.BrokenReferencesConstraint"
+                  id="com.brainspeedtech.swarm.project.validation.InvalidReference"
+                  isEnabledByDefault="true"
+                  lang="Java"
+                  mode="Batch"
+                  name="Broken Reference"
+                  severity="WARNING"
+                  statusCode="1">
+               <description>
+                  Swarm Models should not point to non-existent references.
+               </description>
+               <message>
+                  A {0} has been found to have Broken references.
+               </message>
+            </constraint>
+            
+         </constraints>
+      </constraintProvider>
+   </extension>
+   
+    <extension
+         point="org.eclipse.emf.validation.constraintBindings">
+      <clientContext
+            default="false"
+            id="com.brainspeedtech.swarm.project.context">
+         <selector class="com.brainspeedtech.swarm.project.validation.ValidationDelegateClientSelector"/>
+      </clientContext>
+      <binding
+            context="com.brainspeedtech.swarm.project.context">
+         <excludeCategory
+               ref="org.eclipse.gmf.runtime.emf.core.references">
+         </excludeCategory>
+         <category
+               ref="com.brainspeedtech.swarm.project.validation">
+         </category>
+      </binding>
+   </extension>
+    <extension
+          point="org.eclipse.ui.propertyPages">
+       <page
+             class="com.brainspeedtech.swarm.project.properties.SwarmPropertyPage"
+             id="com.brainspeedtech.swarm.project.properties.base"
+             name="Swarm"
+             nameFilter="*"
+             objectClass="org.eclipse.core.resources.IProject">
+       </page>
+    </extension>
+<extension point="org.eclipse.ui.commands">
+	<category name="Swarm" description="Swarm Diagram commands" id="com.brainspeedtech.swarm.master.diagram.category"/>
+	<command categoryId="com.brainspeedtech.swarm.master.diagram.category" description="Create a new test case" id="com.brainspeedtech.swarm.master.diagram.createTestCase" name="Create Test Case">
+	</command>
+</extension>
+<extension
+      id="com.brainspeedtech.swarm.project.gotoMarker"
+      name="Swarm Goto Marker"
+      point="org.eclipse.core.resources.markers">
+   <super
+         type="org.eclipse.core.resources.bookmark">
+   </super>
+   <attribute
+         name="com.brainspeedtech.swarm.project.goto.Object">
+   </attribute>
+</extension>
+<extension
+      point="org.eclipse.ui.popupMenus">
+   <objectContribution
+         adaptable="false"
+         id="com.brainspeedtech.swarm.project.objectContribution2"
+         objectClass="org.eclipse.core.resources.IProject">
+      <action
+            class="com.brainspeedtech.swarm.project.providers.GenerateTestBench"
+            id="com.brainspeedtech.swarm.project.action1"
+            label="Generate Test Bench"
+            menubarPath="additions">
+      </action>
+   </objectContribution>
+</extension>
+
+
+</plugin>

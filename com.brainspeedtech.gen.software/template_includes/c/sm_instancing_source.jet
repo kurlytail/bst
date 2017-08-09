@@ -1,0 +1,17 @@
+<%
+	// Find all cross references
+	Collection<CrossReference> crossReferences = ProjectUtil.getReferringInstances(cell, CrossReference.class);
+	Collection<StateMachine> smReferences = new HashSet<StateMachine>();
+%>
+<%  for(CrossReference crossReference : crossReferences) { 
+		smReferences.addAll((Collection<? extends StateMachine>)EcoreUtil.getObjectsByType(crossReference.getObject(), SmPackage.eINSTANCE.getStateMachine()));
+	} 
+%>
+<%  for(StateMachine smReference : smReferences) {
+%>
+#include "gen_<%=smReference.getName()%>_sm.h"
+<%@ include file="../../../com.brainspeedtech.gen.software/template_includes/c/sm_instancing.jet"%>
+#include "gen_<%=smReference.getName()%>_sm.c"
+<%
+	} 
+%>

@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Gen
+Bundle-SymbolicName: com.bst.gen;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.brainspeedtech.gen.Activator
+Bundle-Vendor: BRAINSPEED TECHNOLOGIES
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.emf,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.core.resources,
+ com.bst.swarm.master,
+ org.eclipse.gmf.runtime.emf.core,
+ com.bst.swarm.master.diagram,
+ com.brainspeedtech.swarm.flow.diagram,
+ com.brainspeedtech.swarm.project,
+ org.eclipse.emf.validation.ui,
+ org.eclipse.emf.workspace.ui,
+ com.brainspeedtech.swarm.inst,
+ com.brainspeedtech.swarm.inst.diagram,
+ com.brainspeedtech.swarm.layer,
+ com.brainspeedtech.swarm.sm
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: com.brainspeedtech.gen.master
+

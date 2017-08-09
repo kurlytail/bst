@@ -1,0 +1,96 @@
+<%@ jet package="com.brainspeedtech.gen.html"
+	class="TexStructFile" 
+	imports ="java.util.*
+	org.eclipse.emf.ecore.*
+	org.eclipse.emf.ecore.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.reg.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.flow.*;"
+%>
+<%Document doc = (Document) argument;
+  String fileName = doc.eResource().getURI().lastSegment().replaceAll(".struct", "");
+%>
+
+<%
+Collection<Atom> atoms = EcoreUtil.getObjectsByType(doc.eContents(),
+		StructPackage.eINSTANCE.getAtom());
+for(Atom atom: atoms) {
+%>
+\subsection{<%=atom.eClass().getName().replace("_", "\\_")%> <%=atom.getName().replace("_", "\\_")%>}
+			<% if (atom.getBlurb() != null) {%><%=atom.getBlurb().replace("_","\\_")%><%}%>
+<%	if(atom instanceof Struct) {
+		Struct struct = (Struct)atom;
+		%>
+\begin{tabularx}{\linewidth}{l l l r}
+\hline
+\bf Field & \bf Type & \bf{Unit Size} & \bf Count \\
+\hline
+<%
+	for(Field field : struct.getField()) {
+%>
+<%=field.getName().replace("_", "\\_")%> &
+<%
+			if(field.getAtom() != null) {
+%>
+				<%=field.getAtom().getName().replace("_", "\\_")%> &
+<%
+			} else {
+%>
+				bit &
+<%
+			}
+%>
+<%
+			long unitSize = StructUtil.getAtomSize(field.getAtom());
+			if ((unitSize % 8) == 0) {
+%>
+			<%=(unitSize/8)%> Bytes &
+<%
+			} else {
+%>
+			<%=unitSize%> Bit &
+<%
+			}
+%>
+			<%=StructUtil.getFieldCount(field)%> \\
+<%if(field.getBlurb() != null && field.getBlurb().length() != 0) {%>
+		\multicolumn{4}{X}{<%=field.getBlurb().replace("_","\\_")%>}\\
+<%}%>
+<%		} %>
+\end{tabularx}
+<%
+	}
+%>
+<%	if(atom instanceof com.brainspeedtech.struct.Enum) {
+		com.brainspeedtech.struct.Enum enumeration = (com.brainspeedtech.struct.Enum)atom;
+		%>
+\begin{tabularx}{\linewidth}{l r}
+\hline
+\bf Field & \bf Type \\
+\hline
+
+<%
+	for(EnumTerm term : enumeration.getTerm()) {
+%>
+<%=term.getName().replace("_", "\\_")%> & 
+<%
+	if (term.getValue() != null) {
+%>
+<%=term.getValue().replace("_", "\\_")%> 
+<%}%> \\
+<%if(term.getBlurb() != null && term.getBlurb().length() != 0) { %>
+\multicolumn{2}{X}{<%=term.getBlurb().replace("_", "\\_")%>}\\
+<%}%>
+
+<%		} %>
+\end{tabularx}
+
+<%
+	}
+}%>

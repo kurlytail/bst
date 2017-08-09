@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/swarm/sm"
+            class="com.brainspeedtech.swarm.sm.SmPackage"
+            genModel="model/sm.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="sm"
+            class="com.brainspeedtech.swarm.sm.util.SmResourceFactoryImpl"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="org.eclipse.emf.compare.ui.contenttype.ModelContentType"
+            file-extensions="sm"
+            file-names="*">
+      </file-association>
+   </extension>
+</plugin>

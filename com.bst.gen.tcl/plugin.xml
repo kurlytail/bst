@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="swarmTclBuilder"
+         name="Swarm Tcl Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.brainspeedtech.gen.tcl.builder.SwarmTclBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="swarmTclNature"
+         name="Swarm Tcl Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.brainspeedtech.gen.tcl.builder.SwarmTclNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.bst.gen.tcl.swarmTclBuilder">
+      </builder>
+      <requires-nature
+            id="com.brainspeedtech.swarm.project.swarmNature">
+      </requires-nature>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="com.brainspeedtech.swarm.project.properties.base"
+            class="com.bst.gen.tcl.properties.TclPropertyPage"
+            id="com.bst.gen.tcl.properties.samplePropertyPage"
+            name="Swarm Tcl Prerfences"
+            nameFilter="*">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+</plugin>

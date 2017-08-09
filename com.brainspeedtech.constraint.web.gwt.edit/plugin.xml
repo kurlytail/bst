@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated gwt -->
+      <factory
+            uri="http://www.brainspeedtech.com/constraint/web/gwt"
+            class="com.brainspeedtech.constraint.web.gwt.provider.GWTItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.ITableItemLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated gwt -->
+      <extender
+            uri="http://www.brainspeedtech.com/swarm/layer"
+            class="com.brainspeedtech.constraint.web.gwt.provider.GWTItemProviderAdapterFactory$LayerChildCreationExtender"/>
+   </extension>
+
+</plugin>

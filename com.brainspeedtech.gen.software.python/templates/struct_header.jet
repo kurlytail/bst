@@ -1,0 +1,310 @@
+<%@ jet package="com.brainspeedtech.gen.software.python"
+	class="StructHeaderFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.python.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*;"
+%>
+<%
+Resource resource = (Resource)argument;
+%>
+<%
+	String fileName = resource.getURI().lastSegment()
+						.replaceAll("\\.struct$", "");
+	List<Atom> atoms = new ArrayList<Atom>();
+	Set<Document> includeFiles = new HashSet<Document>();
+
+	TreeIterator<EObject> contents = resource.getAllContents();
+	while(contents.hasNext()) {
+		EObject eObject = contents.next();
+		if (eObject instanceof Atom) {
+			Atom atom = (Atom) eObject;
+			atoms.add((Atom) eObject);
+			if (atom.getAtom() != null) {
+				if (atom.getAtom().eResource() == resource)
+					continue;
+				includeFiles.add((Document)EcoreUtil.getObjectByType(atom.getAtom().eResource().getContents(),
+					StructPackage.eINSTANCE.getDocument()));
+			}
+			if (atom instanceof Struct) {
+				Struct str = (Struct) atom;
+				for (Field f : str.getField()) {
+					if (f.getAtom() != null) {
+						if (f.getAtom().eResource() == resource)
+							continue;
+						includeFiles.add((Document)EcoreUtil.getObjectByType(f.getAtom().eResource().getContents(),
+							StructPackage.eINSTANCE.getDocument()));
+					}
+				}
+			}
+		}
+	}
+	
+	Collection<Struct> structs = EcoreUtil.getObjectsByType(
+		atoms, StructPackage.eINSTANCE.getStruct());
+		
+	Document currentDoc = (Document)EcoreUtil.getObjectByType(resource.getContents(),
+			StructPackage.eINSTANCE.getDocument());
+					
+	String className = currentDoc.eResource().getURI().lastSegment().replaceAll("\\.struct$", "");
+	
+%>
+
+import struct
+import gen_swarm_struct_base 
+<%for (Document includeFile : includeFiles) {%>
+import gen_<%=includeFile.eResource().getURI().lastSegment().replaceAll("\\.struct$", "")%> 
+<%}%>
+
+<%for(Atom atom: atoms) {
+	if(ProjectUtil.getReferringInstance(atom, NativeType.class) != null)
+		continue;
+	if(atom instanceof Struct) { %>
+
+class <%=atom.getName()%>(gen_swarm_struct_base.swarm_struct_base):
+    def __init__(self):
+<%		for (Field f : ((Struct) atom).getField()) {
+			if (f.getAtom() == null) {%>
+        self.<%=f.getName()%> = 0
+<%		
+		} else if(f.getAtom().getName().equals("uint16")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+        self.<%=f.getName()%> = 0
+<%
+				} else {
+%>
+        self.<%=f.getName()%> = [0] * <%=StructUtil.getFieldCount(f)%>
+<%				}
+			} else if(f.getAtom().getName().equals("uint32")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+        self.<%=f.getName()%> = 0
+<%
+				} else {
+%>
+        self.<%=f.getName()%> = [0] * <%=StructUtil.getFieldCount(f)%>
+<%				}
+			} else if(f.getAtom().getName().equals("uint64")) {
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+        self.<%=f.getName()%> = 0
+<%
+				} else {
+%>
+        self.<%=f.getName()%> = [0] * <%=StructUtil.getFieldCount(f)%>
+<%				}
+			} else {
+			    String isLocal = "gen_";
+			    if (StructGenerator.getHeirarchicalName(f).split("\\.").length == 1) isLocal = "";
+				if (StructUtil.getFieldCount(f) <= 1) { %>
+        self.<%=f.getName()%> = <%=isLocal%><%=StructGenerator.getHeirarchicalName(f)%>()
+<%
+				} else {
+%>
+        self.<%=f.getName()%> = [<%=isLocal%><%=StructGenerator.getHeirarchicalName(f)%>()] * <%=StructUtil.getFieldCount(f)%>
+<%				}
+			}
+		}
+%>
+
+    def unpack(self, byteBuffer):
+        offset = 0
+        last_value = 0
+<%		
+		int bits_remaining = 0;
+		for (Field f : ((Struct) atom).getField()) {
+			if(f.getAtom() == null) {
+				int mask = ((1 << StructUtil.getFieldCount(f)) - 1);
+				if(StructUtil.getFieldCount(f) == 32) mask = 0xffffffff;
+			
+				if (bits_remaining == 0) {
+%>
+        last_value = struct.unpack('I', byteBuffer[offset:offset + struct.calcsize('I')])[0]
+        offset = offset + struct.calcsize('I')
+<%
+					bits_remaining = 32;
+				}
+%>
+        self.<%=f.getName()%> = (last_value & <%=mask%>)
+        last_value = last_value >> <%=StructUtil.getFieldCount(f)%>
+<%
+				bits_remaining -= StructUtil.getFieldCount(f);
+			}
+		
+				if(f.getAtom() != null) {
+					if(f.getAtom().getName().equals("uint64")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        self.<%=f.getName()%> = struct.unpack('Q', byteBuffer[offset:offset + struct.calcsize('Q')])[0]
+        offset = offset + struct.calcsize('Q')
+<%
+						} else {
+%>
+        for i in range(0,<%=StructUtil.getFieldCount(f)%>):
+            self.<%=f.getName() %>[i] = struct.unpack('Q', byteBuffer[offset:offset + struct.calcsize('Q')])[0]
+            offset = offset + struct.calcsize('Q')
+            
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint32")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        self.<%=f.getName()%> = struct.unpack('I',byteBuffer[offset:offset + struct.calcsize('I')])[0]
+        offset = offset + struct.calcsize('I')
+<%
+						} else {
+%>
+        for i in range(0,<%=StructUtil.getFieldCount(f)%>):
+            self.<%=f.getName()%>[i] = struct.unpack('I',byteBuffer[offset:offset + struct.calcsize('I')])[0]
+            offset = offset + struct.calcsize('I')
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint16")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        self.<%=f.getName()%> = struct.unpack('H',byteBuffer[offset:offset + struct.calcsize('H')])[0]
+        offset = offset + struct.calcsize('H')
+<%
+						} else {
+%>
+        for i in range(0,<%=StructUtil.getFieldCount(f)%>):
+            self.<%=f.getName()%>[i] = struct.unpack('H',byteBuffer[offset:offset + struct.calcsize('H')])[0]
+            offset = offset + struct.calcsize('H')
+<%
+						}
+					}
+					else if(f.getAtom() instanceof Atom) {
+                        String isLocal = "gen_";
+                        String hName = StructGenerator.getHeirarchicalName(f);
+                        if (hName.split("\\.").length == 1) isLocal = "";
+					   
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        self.<%=f.getName()%>.unpack(byteBuffer[offset:offset + <%=isLocal%><%=hName%>.getByteSize()])
+        offset = offset + <%=isLocal%><%=hName%>.getByteSize()
+<%
+						} else {
+%>
+        for i in range(0,<%=StructUtil.getFieldCount(f)%>):
+            self.<%=f.getName()%>[i].unpack(byteBuffer[offset:offset + <%=isLocal%><%=hName%>.getByteSize()])
+            offset = offset + <%=isLocal%><%=hName%>.getByteSize()
+<%
+						}
+					}
+				}
+		}
+%>
+	
+    def pack(self):
+        last_value = 0
+        byteBuffer = ""
+<%	
+		long buffer_size = 0;
+		bits_remaining = 32;
+		for (Field f : ((Struct) atom).getField()) {
+			if(f.getAtom() == null) {
+				int mask = ((1 << StructUtil.getFieldCount(f)) - 1);
+				if(StructUtil.getFieldCount(f) == 32) mask = 0xffffffff;
+%>
+        last_value = last_value | ((self.<%=f.getName()%> & <%=mask%>) << <%=32-bits_remaining%>)
+<%
+				bits_remaining -= StructUtil.getFieldCount(f);
+				if (bits_remaining == 0) {
+%>
+        byteBuffer += struct.pack("I", last_value)
+        last_value = 0
+<%
+					bits_remaining = 32;
+					buffer_size += 4;
+				}
+				
+			}
+		
+		
+				if(f.getAtom() != null) {
+					buffer_size += (StructUtil.getFieldCount(f) * StructUtil.getAtomSize(f.getAtom()))/8;
+					if(f.getAtom().getName().equals("uint64")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        byteBuffer += struct.pack("Q", self.<%=f.getName()%>)
+<%
+						} else {
+%>
+        for i in range(0, <%=StructUtil.getFieldCount(f)%>):
+            byteBuffer += struct.pack("Q", self.<%=f.getName()%>[i])
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint32")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        byteBuffer += struct.pack("I", self.<%=f.getName()%>)
+<%
+						} else {
+%>
+        for i in range(0, <%=StructUtil.getFieldCount(f)%>):
+            byteBuffer += struct.pack("I", self.<%=f.getName()%>[i])
+<%
+						}
+					}
+					else if(f.getAtom().getName().equals("uint16")) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        byteBuffer += struct.pack("H", self.<%=f.getName()%>)
+<%
+						} else {
+%>
+        for i in range(0, <%=StructUtil.getFieldCount(f)%>):
+            byteBuffer += struct.pack("H", self.<%=f.getName()%>[i])
+<%
+						}
+					}
+					else if(f.getAtom() instanceof Atom) {
+						if(StructUtil.getFieldCount(f) <= 1) {
+%>
+        byteBuffer += self.<%=f.getName()%>.pack()
+<%
+						} else {
+%>
+        for i in range(0, <%=StructUtil.getFieldCount(f)%>):
+            byteBuffer += self.<%=f.getName()%>[i].pack()
+<%
+						}
+					}
+				}
+		}
+		if (bits_remaining != 32) {
+%>
+        byteBuffer += struct.pack_to("I", last_value)
+<%
+			bits_remaining = 32;
+			buffer_size += 4;
+			
+		}
+		
+%>		
+        return byteBuffer
+    
+    @staticmethod    
+    def getByteSize():
+        return <%=buffer_size%>
+<%
+	} else if (atom instanceof com.brainspeedtech.struct.Enum) {
+%>
+
+class <%=atom.getName()%>:
+<%		for (EnumTerm et : ((com.brainspeedtech.struct.Enum) atom).getTerm()) {%>
+    <%=et.getName()%> = <%=et.getValue()%>
+<%		}%>
+
+<%
+	}
+}%>

@@ -1,0 +1,47 @@
+<%
+		Set<Struct> structs = new HashSet<Struct>();
+
+		for (Resource includeResource : instance.eResource().getResourceSet()
+				.getResources()) {
+			if (includeResource instanceof StructResourceImpl) {
+				Object object = EcoreUtil.getObjectByType(includeResource.getContents(),
+						StructPackage.eINSTANCE.getDocument());
+				if(object != null) {
+					Document doc = (Document)object;
+					for(Atom atom:doc.getStruct()) {
+						if(atom instanceof Struct) {
+							Struct str = (Struct)atom;
+							structs.add(str);
+						}
+					}
+				}
+			}
+		}
+MasterDesign design = ProjectUtil.getMasterDesign(instance.eResource());
+%>
+#include "gen_<%=design.getName()%>_counters_field_defn.h"
+
+struct_list_t struct_list[] = {
+<%for(Struct str: structs) {%>
+	{ "<%=str.getName()%>", &<%=str.getName()%>_layout },
+<%}%>
+<%
+for(MasterCell cell: design.getCell()) {
+	List<Counter> counters = new LinkedList<Counter>();
+    counters.addAll(ProjectUtil.getReferringInstances(cell, Counter.class));
+    counters.addAll(ProjectUtil.getReferringInstances(cell.getInput(), TubeReceiveCounter.class));
+    counters.addAll(ProjectUtil.getReferringInstances(cell.getOutput(), TubeTransmitCounter.class));
+    Comparator<? super Counter> comparator = new Comparator<Counter>() {
+		@Override
+		public int compare(Counter o1, Counter o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	};
+	Collections.sort(counters, comparator);
+    if(counters.size() != 0) {
+%>
+	{ "<%=cell.getName()%>_counters", &<%=cell.getName()%>_counters_layout },
+<%  }%>
+<%}%>
+	{ (const char*)0, 0 }
+}; 

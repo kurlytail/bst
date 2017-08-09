@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright @2011,2012,2013 BrainSpeed Technologies, http://www.brainspeedtech.com
+  Copyright @2013,2014 Medullanet Inc, http://www.medullanet.com
+  All rights reserved.
+-->
+<schema
+	targetNamespace="http://www.brainspeedtech.com/constraint/software/posix"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.brainspeedtech.com/constraint/software/posix"
+	xmlns:struct="http://www.brainspeedtech.com/struct"
+	xmlns:layer="http://www.brainspeedtech.com/swarm/layer"
+	xmlns:inst="http://www.brainspeedtech.com/swarm/inst"
+	xmlns:master="http://www.brainspeedtech.com/swarm/master" xmlns:software="http://www.brainspeedtech.com/constraint/software">
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.layer/model/layer.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/layer">
+	</import>
+
+	<import
+		schemaLocation="../../com.brainspeedtech.swarm.inst/model/inst.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/inst">
+	</import>
+	<import schemaLocation="../../com.bst.struct/model/struct.xsd"
+		namespace="http://www.brainspeedtech.com/struct">
+	</import>
+	<import schemaLocation="../../com.bst.swarm.master/model/master.xsd"
+		namespace="http://www.brainspeedtech.com/swarm/master">
+	</import>
+
+	<import schemaLocation="../../com.brainspeedtech.constraint.software/model/software.xsd" namespace="http://www.brainspeedtech.com/constraint/software"></import>
+	<complexType name="UnixSocketTube">
+		<complexContent>
+			<extension base="software:SocketTube">
+				<attribute name="name" type="string" use="required">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="IgnorePosixTube">
+		<complexContent>
+			<extension base="layer:ConstraintBase">
+				<sequence>
+					<element name="tube" type="anyURI"
+						maxOccurs="unbounded" minOccurs="0"
+						ecore:reference="master:MasterTube">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="CustomPosixTube">
+        <complexContent>
+            <extension base="layer:ConstraintBase">
+                <sequence>
+                    <element name="tube" type="anyURI"
+                        maxOccurs="unbounded" minOccurs="0"
+                        ecore:reference="master:MasterTube">
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+	<complexType name="PosixGenerator">
+		<complexContent>
+			<extension base="layer:NatureBase"></extension>
+		</complexContent>
+	</complexType>
+</schema>

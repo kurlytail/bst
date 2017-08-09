@@ -1,0 +1,13 @@
+<%for(SharedVariable svar: sharedVariables) {
+	if(instance.getCell() == svar.getMasterCell().get(0)) {
+%>
+		<%=svar.getMasterCell().get(0).getName()%>_<%=svar.getName()%>_mem_init();
+<%	}
+}%>
+
+<%for(SharedMemoryTube svar: sharedMemoryTubes) {
+	if(instance.getCell().getOutput().contains(svar.getTube().get(0))) {
+%>
+		<%=instance.getCell().getName()%>_<%=svar.getName()%>_mem_init();
+<%	}
+}%>

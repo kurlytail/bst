@@ -1,0 +1,14 @@
+
+{{> copyright MasterDesign}}
+
+#ifndef __GEN_{{uc MasterDesign.name}}_FLOWS_H__
+#define __GEN_{{uc MasterDesign.name}}_FLOWS_H__
+
+typedef enum _ENUM_{{uc MasterDesign.name}}_FLOW_ {
+    ENUM_{{uc MasterDesign.name}}_NULL_FLOW = 0,
+{{#each Flow}}    ENUM_{{uc name}}_FLOW = {{index}},
+{{/each}}    ENUM_{{uc MasterDesign.name}}_MAX_FLOWS
+} ENUM_{{uc MasterDesign.name}}_FLOW;
+
+#endif //__GEN_{{uc MasterDesign.name}}_FLOWS_H__
+

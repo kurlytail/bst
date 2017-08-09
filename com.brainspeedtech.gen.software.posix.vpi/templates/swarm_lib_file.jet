@@ -1,0 +1,131 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix.vpi"
+	class="SwarmLibFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.project.util.*;"
+%>
+<%Instance instance = (Instance) argument;%>
+
+#ifndef __<%=instance.getName().toUpperCase()%>_SWARM_LIB_H__
+#define __<%=instance.getName().toUpperCase()%>_SWARM_LIB_H__
+
+#include <vpi_user.h>
+#include <acc_user.h>
+#include <veriuser.h>
+#include <assert.h>
+#include <stdio.h>
+
+
+#define <%=instance.getName().toUpperCase()%>_USE_NATIVE_UINT64
+
+typedef struct {
+	int fd;
+	int credit_fd;
+	int32_t init_credits;
+	char* pending_ptr;
+	size_t pending_size;
+} fd_pair_t;
+
+
+#define SWARM_PASTE(__token1__, __token2__) __token1__ ## __token2__
+
+extern void swarm_dump_data_nl(int level, unsigned int addr, char* data, size_t length);
+#define swarm_dump_data(__addr__, __data__, __length__) swarm_dump_data_nl(0, __addr__, __data__, __length__)
+extern int swarm_tcp_client_socket(const char* name, const char* host, int port);
+extern int swarm_tcp_server_socket(const char* name, const char* host, int port);
+extern int swarm_unix_client_socket(const char* name, const char* work_dir);
+extern int swarm_unix_server_socket(const char* name, const char* work_dir);
+extern void swarm_read_fd(const char* name, fd_pair_t* fd, int printlog, int nonblocking);
+extern void swarm_write_fd(const char* name, fd_pair_t*, int printlog, int nonblocking);
+void swarm_generate_random_data(uint8_t* data, uint32_t length);
+void swarm_generate_sequential_data(uint8_t* data, uint32_t length);
+#define _SWARM_RECV_INTERNAL_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_read_fd(# __queue__, &__queue__, 0, 0);\
+}
+
+#define _SWARM_SEND_INTERNAL_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_write_fd(# __queue__, &__queue__, 0, 0);\
+}
+
+#define _SWARM_RECV_BUSY_INTERNAL_(__queue__, __ptr__, __size__) ({\
+	swarm_read_fd(# __queue__, &__queue__, 0, 1);\
+	__queue__.pending_size != 0;\
+})
+
+#define _SWARM_SEND_BUSY_INTERNAL_(__queue__, __ptr__, __size__) ({\
+	swarm_write_fd(# __queue__, &__queue__, 0, 1);\
+	__queue__.pending_size != 0;\
+})
+
+#define _SWARM_RECV_INTERNAL_NONBLOCKING_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_read_fd(# __queue__, &__queue__, 0, 1);\
+}
+
+#define _SWARM_SEND_INTERNAL_NONBLOCKING_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_write_fd(# __queue__, &__queue__, 0, 1);\
+}
+
+#define _SWARM_RECV_INTERNAL_LOGGED_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_read_fd(# __queue__, &__queue__, 1, 0);\
+}
+
+#define _SWARM_SEND_INTERNAL_LOGGED_(__queue__, __ptr__, __size__) {\
+	assert(__queue__.pending_size == 0); \
+	__queue__.pending_ptr = (char*)(__ptr__);\
+	__queue__.pending_size = (__size__);\
+	swarm_write_fd(# __queue__, &__queue__, 1, 0);\
+}
+
+#define SWARM_RECV(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_, __queue__)((char*)(__ptr__), (__size__))
+#define SWARM_SEND(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_, __queue__)((char*)(__ptr__), (__size__))
+#define SWARM_RECV_LOGGED(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_LOGGED_, __queue__)((char*)(__ptr__), (__size__))
+#define SWARM_SEND_LOGGED(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_LOGGED_, __queue__)((char*)(__ptr__), (__size__))
+#define SWARM_RECV_RELATIVE(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_RELATIVE_, __queue__)(__instance__, (char*)(__ptr__), (__size__))
+#define SWARM_SEND_RELATIVE(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_RELATIVE_, __queue__)(__instance__, (char*)(__ptr__), (__size__))
+#define SWARM_RECV_RELATIVE_LOGGED(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_RELATIVE_LOGGED_, __queue__)(__instance__, (char*)(__ptr__), (__size__))
+#define SWARM_SEND_RELATIVE_LOGGED(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_RELATIVE_LOGGED_, __queue__)(__instance__, (char*)(__ptr__), (__size__))
+
+#define SWARM_RECV_NONBLOCKING(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_NONBLOCKING_,__queue__)((__ptr__), (__size__))
+#define SWARM_SEND_NONBLOCKING(__queue__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_NONBLOCKING_,__queue__)((__ptr__), (__size__))
+#define SWARM_RECV_NONBLOCKING_RELATIVE(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_RECV_NONBLOCKING_RELATIVE_,__queue__)((__instance__), (__ptr__), (__size__))
+#define SWARM_SEND_NONBLOCKING_RELATIVE(__queue__, __instance__, __ptr__, __size__) SWARM_PASTE(SWARM_SEND_NONBLOCKING_RELATIVE_,__queue__)((__instance__), (__ptr__), (__size__))
+#define SWARM_RECV_BUSY(__queue__) SWARM_PASTE(SWARM_RECV_BUSY_,__queue__)
+#define SWARM_SEND_BUSY(__queue__) SWARM_PASTE(SWARM_SEND_BUSY_,__queue__)
+#define SWARM_RECV_BUSY_RELATIVE(__queue__, __instance__) SWARM_PASTE(SWARM_RECV_BUSY_RELATIVE_,__queue__)((__instance__))
+#define SWARM_SEND_BUSY_RELATIVE(__queue__, __instance__) SWARM_PASTE(SWARM_SEND_BUSY_RELATIVE_,__queue__)((__instance__))
+
+#define SWARM_SHARED(__type__, __varname__) __type__ __varname__
+
+#define SWARM_PRINT0(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+#define SWARM_PRINT1(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+#define SWARM_PRINT2(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+#define SWARM_PRINT3(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+#define SWARM_PRINT4(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+#define SWARM_PRINT(__format__, args...) SWARM_PRINT_NL(0, __format__, ## args)
+
+#define SWARM_PRINT_NL(__level__, __str__, args...) {\
+	s_vpi_time ___t___ = { .type = vpiScaledRealTime }; \
+	vpi_get_time(NULL, &___t___);\
+	fprintf(stderr, "nl_%d:%010.fps:%s:", (__level__), ___t___.real, TASK_NAME); \
+	fprintf(stderr,__str__, ## args); \
+}
+#define SWARM_FATAL_ERROR vpi_sim_control(vpiFinish)
+
+#define SWARM_SIZEOF(__tag__) sizeof(__tag__)
+
+#endif

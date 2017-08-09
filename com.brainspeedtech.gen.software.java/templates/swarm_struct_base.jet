@@ -1,0 +1,52 @@
+<%@ jet package="com.brainspeedtech.gen.software.java"
+	class="SwarmStructBaseFile" 
+	imports ="org.eclipse.emf.ecore.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	org.eclipse.core.resources.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.java.*
+	java.io.*
+	org.eclipse.emf.common.util.*
+	com.brainspeedtech.swarm.project.util.*
+	org.eclipse.emf.ecore.util.*
+	java.util.*;"
+%>
+
+package <%=(String)argument%>;
+
+import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public abstract class SwarmStructBase {
+
+	public abstract void pack(ByteBuffer byteBuffer);
+	
+	public abstract void unpack(ByteBuffer byteBuffer);
+	
+	public abstract long getByteSize();
+	
+	public void recv(InputStream stream) throws IOException {
+		long bufferSize = getByteSize();
+		ByteBuffer byteBuffer = ByteBuffer.allocate((int) bufferSize);
+		byteBuffer.position((int) bufferSize);
+		
+		while(stream.available() < bufferSize);
+		stream.read(byteBuffer.array());
+		
+		byteBuffer.flip();
+		unpack(byteBuffer);
+	}
+	
+	public void send(OutputStream stream) throws IOException {
+		long bufferSize = getByteSize();
+		ByteBuffer byteBuffer = ByteBuffer.allocate((int) bufferSize);
+		pack(byteBuffer);
+
+		byteBuffer.flip();
+		stream.write(byteBuffer.array());
+	}
+}

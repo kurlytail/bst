@@ -1,0 +1,137 @@
+<%@ jet package="com.brainspeedtech.gen.html"
+	class="HTMLStructFile" 
+	imports ="java.util.*
+	org.eclipse.emf.ecore.*
+	org.eclipse.emf.ecore.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.struct.util.*
+	org.eclipse.emf.ecore.resource.*
+	com.brainspeedtech.struct.*
+	com.brainspeedtech.reg.*
+	com.brainspeedtech.swarm.master.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.swarm.flow.*;"
+%>
+<%Document doc = (Document) argument;
+  String fileName = doc.eResource().getURI().lastSegment().replaceAll(".struct", "");
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title><%=fileName%></title>
+</head>
+<body>
+<%
+Collection<Atom> atoms = EcoreUtil.getObjectsByType(doc.eContents(),
+		StructPackage.eINSTANCE.getAtom());
+for(Atom atom: atoms) {
+%>
+	<h1><a name="<%=atom.getName()%>"><%=atom.eClass().getName()%> <%=atom.getName()%></a></h1>
+	<p><%=atom.getBlurb()%></p>
+<%	if(atom instanceof Struct) {
+		Struct struct = (Struct)atom;
+		%>
+	<table border="1" cellpadding="5" cellspacing="0">
+	<tr>
+		<th>
+			Field
+		</th>
+		<th>
+			Type
+		</th>
+		<th>
+			Unit Size
+		</th>
+		<th>
+			Count
+		</th>
+		<th>
+			Description
+		</th>
+	</tr>
+<%
+	for(Field field : struct.getField()) {
+%>
+	<tr>
+		<td>
+			<%=field.getName()%>
+		</td>
+		<td>
+<%
+			if(field.getAtom() != null) {
+%>
+				<a href="#<%=field.getAtom().getName()%>"><%=field.getAtom().getName()%></a>
+<%
+			} else {
+%>
+				bit
+<%
+			}
+%>
+		</td>
+		<td>
+<%
+			long unitSize = StructUtil.getAtomSize(field.getAtom());
+			if ((unitSize % 8) == 0) {
+%>
+			<%=(unitSize/8)%> Bytes
+<%
+			} else {
+%>
+			<%=unitSize%> Bit
+<%
+			}
+%>
+		</td>
+		<td>
+			<%=StructUtil.getFieldCount(field)%>
+		</td>
+		<td>
+			<%=field.getBlurb()%>
+		</td>
+	</tr>
+<%		} %>
+	</table>
+<%
+	}
+%>
+<%	if(atom instanceof com.brainspeedtech.struct.Enum) {
+		com.brainspeedtech.struct.Enum enumeration = (com.brainspeedtech.struct.Enum)atom;
+		%>
+	<table border="1" cellpadding="5" cellspacing="0">
+	<tr>
+		<th>
+			Enumeration
+		</th>
+		<th>
+			Value
+		</th>
+		<th>
+			Description
+		</th>
+	</tr>
+<%
+	for(EnumTerm term : enumeration.getTerm()) {
+%>
+	<tr>
+		<td>
+			<%=term.getName()%>
+		</td>
+		<td>
+			<%=term.getValue()%>
+		</td>
+		<td>
+			<%=term.getBlurb()%>
+		</td>
+	</tr>
+<%		} %>
+	</table>
+<%
+	}
+}%>
+
+</body>
+</html>

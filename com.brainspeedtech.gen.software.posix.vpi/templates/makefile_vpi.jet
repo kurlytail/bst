@@ -1,0 +1,57 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix.vpi"
+	class="MakefileVPIFile" 
+	imports ="java.util.* 
+	com.brainspeedtech.swarm.layer.util.* 
+	com.brainspeedtech.swarm.layer.* 
+	com.brainspeedtech.swarm.inst.*
+	com.brainspeedtech.constraint.software.*
+	com.brainspeedtech.constraint.software.posix.*
+	com.brainspeedtech.swarm.master.util.*
+	com.brainspeedtech.swarm.project.util.*
+	com.brainspeedtech.swarm.flow.*
+	com.brainspeedtech.gen.software.posix.*
+	org.eclipse.emf.ecore.*
+	com.brainspeedtech.swarm.layer.util.*;"
+%>
+
+BIN_DIR := .
+SOURCE_DIR := .
+
+<% Instance instance = (Instance) argument;   	
+	String[] copyrightMessage = LayerUtil.getCopyrightMessage(instance);
+  %>
+<%for(String message: copyrightMessage) {%>
+# <%=message%>
+<%}%>
+
+<%for(CellInstance ci: instance.getCell()) { %>
+SOURCE_<%=ci.getName().toUpperCase()%> := $(SOURCE_DIR)/gen_<%=ci.getCell().getName()%>_plan.c
+EXTRADEP_<%=ci.getName().toUpperCase()%> :=
+<%}%>
+
+VPI_CC := gcc
+VPI_CFLAGS := $(shell iverilog-vpi --cflags) $(shell iverilog-vpi --ldflags)
+VPI_LIBS := $(shell iverilog-vpi --ldlibs)
+
+-include $(SOURCE_DIR)/Makefile.defs
+
+all: <%for(CellInstance ci: instance.getCell()) { %> $(BIN_DIR)/<%=ci.getName()%>.vpi <%}%>
+
+<%for(CellInstance ci: instance.getCell()) {%>
+$(BIN_DIR)/<%=ci.getName()%>.vpi: $(SOURCE_DIR)/Makefile-vpi $(EXTRADEP_<%=ci.getName().toUpperCase()%>) $(SOURCE_DIR)/gen_<%=ci.getName()%>_vpi.c $(SOURCE_DIR)/gen_<%=instance.getName()%>_swarm_lib.c $(SOURCE_DIR)/gen_<%=instance.getName()%>.c $(SOURCE_<%=ci.getName().toUpperCase()%>)  $(SOURCE_DIR)/Makefile.defs
+	$(VPI_CC) $(VPI_CFLAGS) -MD -DTASK_<%=ci.getName().toUpperCase()%> -DTASK_NAME=\"<%=ci.getName()%>\" -o $(BIN_DIR)/<%=ci.getName()%>.vpi $(SOURCE_DIR)/gen_<%=ci.getName()%>_vpi.c $(SOURCE_DIR)/gen_<%=instance.getName()%>_swarm_lib.c $(SOURCE_DIR)/gen_<%=instance.getName()%>.c $(SOURCE_<%=ci.getName().toUpperCase()%>) $(VPI_LIBS)
+
+<%}%>
+
+clean:
+	rm -f $(BIN_DIR)/*.o
+	rm -f *.d
+<%for(CellInstance ci: instance.getCell()) {%>
+	rm -f $(BIN_DIR)/<%=ci.getName()%>.vpi
+<%}%>
+
+<%for(CellInstance ci: instance.getCell()) {%>
+-include <%=ci.getName()%>.d
+<%}%>
+
+

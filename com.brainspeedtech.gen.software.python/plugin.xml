@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+          id="pythonBuilder"
+          name="Swarm Python Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="com.brainspeedtech.gen.software.python.builder.PythonBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="pythonNature"
+          name="Swarm Python Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.brainspeedtech.gen.software.python.builder.SwarmPythonNature">
+          </run>
+       </runtime>
+       <builder
+             id="com.brainspeedtech.gen.software.python.pythonBuilder">
+       </builder>
+       <requires-nature
+             id="com.bst.gen.swarmInstanceNature">
+       </requires-nature>
+    </extension>
+    <extension
+          point="org.eclipse.ui.propertyPages">
+       <page
+             category="com.brainspeedtech.swarm.project.properties.base"
+             class="com.brainspeedtech.gen.software.python.properties.PythonPropertyPage"
+             id="com.brainspeedtech.gen.software.python.properties.PythonPropertyPage"
+             name="Swarm Python Properties"
+             nameFilter="*">
+          <enabledWhen>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+       </page>
+    </extension>
+</plugin>

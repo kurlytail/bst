@@ -1,0 +1,4 @@
+	Related flows for tube <%=mt.getName()%>
+<%for(Tube tube: mt.getDesignTubes()) {%>
+		Flow <%=((Flow)tube.eContainer()).getName()%>
+<%}%>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.brainspeedtech.com/swarm/flow"
+            class="com.brainspeedtech.swarm.flow.FlowPackage"
+            genModel="model/flow.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="flow"
+            class="com.brainspeedtech.swarm.flow.util.FlowResourceFactoryImpl"/>
+   </extension>
+   
+      <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="org.eclipse.emf.compare.ui.contenttype.ModelContentType"
+            file-extensions="flow"
+            file-names="*">
+      </file-association>
+   </extension>
+
+</plugin>

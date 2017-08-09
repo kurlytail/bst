@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+    <extension
+          id="posixBuilder"
+          name="Swarm Posix Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="com.brainspeedtech.gen.software.posix.builder.PosixBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="posixNature"
+          name="Swarm Posix Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="com.brainspeedtech.gen.software.posix.builder.SwarmPosixNature">
+          </run>
+       </runtime>
+       <builder
+             id="com.brainspeedtech.gen.software.posix.posixBuilder">
+       </builder>
+       <requires-nature
+             id="com.bst.gen.swarmInstanceNature">
+       </requires-nature>
+    </extension>
+    <extension
+          point="org.eclipse.ui.propertyPages">
+       <page
+             category="com.brainspeedtech.swarm.project.properties.base"
+             class="com.brainspeedtech.gen.software.posix.properties.PosixPropertyPage"
+             id="com.brainspeedtech.gen.software.posix.properties.posixPropertyPage"
+             name="Swarm Posix Properties"
+             nameFilter="*">
+          <enabledWhen>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+       </page>
+    </extension>
+</plugin>

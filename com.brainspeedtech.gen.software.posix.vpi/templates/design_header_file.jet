@@ -1,0 +1,46 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix.vpi"
+	class="DesignHeaderFile" 
+	imports ="java.util.* org.eclipse.emf.ecore.* com.brainspeedtech.swarm.project.util.* com.brainspeedtech.struct.util.StructResourceImpl org.eclipse.emf.ecore.resource.Resource com.brainspeedtech.struct.* com.brainspeedtech.swarm.master.* com.brainspeedtech.swarm.master.util.* com.brainspeedtech.swarm.inst.* com.brainspeedtech.swarm.flow.*;"
+%>
+<%Instance instance = (Instance) argument;%>	
+
+#ifndef __GEN__<%=instance.getName().toUpperCase()%>_H__
+#define __GEN__<%=instance.getName().toUpperCase()%>_H__
+
+#define GEN_DESIGN_<%=instance.getName().toUpperCase()%>
+
+#include <stdint.h>
+#include "gen_<%=instance.getName()%>_parameters.h"
+#include "gen_<%=instance.getName()%>_swarm_lib.h"
+
+<%@ include file="../../com.brainspeedtech.gen.software/template_includes/c/resolve_includes.jet"%>
+
+
+typedef enum _ENUM_<%=instance.getName().toUpperCase()%>_FLOWS {
+<%for(Flow flow: MasterUtil.getDesignFlows(instance)) {%>
+	ENUM_<%=instance.getName().toUpperCase()%>_<%=flow.getName().toUpperCase()%>_FLOW,
+<%}%> 
+	ENUM_<%=instance.getName().toUpperCase()%>_MAX_FLOWS
+} ENUM_<%=instance.getName().toUpperCase()%>_FLOWS;
+
+<%
+if (!instance.getTube().isEmpty()) {
+	MasterDesign mDesign = (MasterDesign)instance.getTube().iterator().next().getTube().eContainer();
+	for(MasterTube ti : mDesign.getTube()) {%>
+typedef union _<%=ti.getName()%> {
+	uint8_t uint8;
+<%Collection<Struct> structList = MasterUtil.getDescriptors(ti);
+	for (Struct struct: structList) {%>
+	<%=struct.getName()%>_t <%=struct.getName()%>;
+<%}%>
+} __attribute__((aligned(1), packed)) <%=ti.getName()%>_t;
+
+<%	}
+}
+%>
+
+extern int work_dir_fd;
+extern void design_startup(char*);
+;
+
+#endif

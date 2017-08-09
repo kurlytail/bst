@@ -1,0 +1,69 @@
+<%@ jet package="com.brainspeedtech.gen.software.posix"
+	class="MakeFile" 
+	imports ="java.util.* com.brainspeedtech.swarm.project.util.* com.brainspeedtech.swarm.inst.*
+	org.eclipse.emf.ecore.resource.* com.brainspeedtech.struct.util.*"
+%>
+
+<% Instance instance = (Instance) argument;   	
+	String[] copyrightMessage = LayerUtil.getCopyrightMessage(instance);
+	String headerDebugFiles = "";
+		for (Resource includeResource : instance.eResource().getResourceSet()
+				.getResources()) {
+			if (includeResource instanceof StructResourceImpl) {
+				headerDebugFiles += " $(SOURCE_DIR)/gen_" + includeResource.getURI().lastSegment()
+						.replaceAll("\\.struct$", ".c");
+			}
+		}
+	
+  %>
+<%for(String message: copyrightMessage) {%>
+# <%=message%>
+<%}%>
+
+BIN_DIR := .
+SOURCE_DIR := .
+QUIET ?= @
+
+
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) {%>
+SOURCE_<%=ci.getName().toUpperCase()%> := $(SOURCE_DIR)/gen_<%=ci.getCell().getName()%>_plan.c
+EXTRADEP_<%=ci.getName().toUpperCase()%> :=
+CFLAGS_<%=ci.getName().toUpperCase()%> :=
+LDFLAGS_<%=ci.getName().toUpperCase()%> :=
+<%} }%>
+
+-include Makefile.defs
+
+all: $(BIN_DIR)/dump_counters $(BIN_DIR)/<%=instance.getName()%> <%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) {%> $(BIN_DIR)/<%=ci.getName()%> <%} }%>
+
+$(BIN_DIR)/<%=instance.getName()%>: $(SOURCE_DIR)/Makefile-posix $(SOURCE_DIR)/gen_<%=instance.getName()%>.c Makefile.defs
+	@echo "Building  <%=instance.getName()%>"
+	$(QUIET)$(CC) $(CFLAGS) -MD -pthread -o $(BIN_DIR)/<%=instance.getName()%>  $(SOURCE_DIR)/gen_<%=instance.getName()%>.c $(LDFLAGS)
+
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) {%>
+$(BIN_DIR)/<%=ci.getName()%>: $(SOURCE_DIR)/Makefile-posix $(EXTRADEP_<%=ci.getName().toUpperCase()%>) $(SOURCE_DIR)/gen_<%=ci.getName()%>.c $(SOURCE_DIR)/gen_<%=instance.getName()%>_swarm_lib.c $(SOURCE_<%=ci.getName().toUpperCase()%>) Makefile.defs
+	@echo "Building  <%=ci.getName()%>"
+	$(QUIET)$(CC) $(CFLAGS_<%=ci.getName().toUpperCase()%>) $(CFLAGS) -MD -D TASK_<%=ci.getName().toUpperCase()%> -o $(BIN_DIR)/<%=ci.getName()%> $(SOURCE_DIR)/gen_<%=ci.getName()%>.c <%=headerDebugFiles%> $(SOURCE_DIR)/gen_<%=instance.getName()%>_swarm_lib.c $(SOURCE_<%=ci.getName().toUpperCase()%>) $(LDFLAGS_<%=ci.getName().toUpperCase()%>) $(LDFLAGS) -pthread
+
+<%} }%>
+
+$(BIN_DIR)/dump_counters: $(SOURCE_DIR)/Makefile-posix $(SOURCE_DIR)/gen_<%=instance.getName()%>_print_counters.c Makefile.defs
+	@echo "Building dump_counters"
+	$(QUIET)$(CC) $(CFLAGS) -MD -pthread -o $(BIN_DIR)/dump_counters  $(SOURCE_DIR)/gen_<%=instance.getName()%>_print_counters.c $(LDFLAGS)
+
+
+
+clean:
+	rm -f $(BIN_DIR)/dump_counters
+	rm -f $(BIN_DIR)/*.o
+	rm -f *.d
+	rm -f $(BIN_DIR)/<%=instance.getName()%>
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) {%>
+	rm -f $(BIN_DIR)/<%=ci.getName()%>
+<%} }%>
+	
+<%for(CellInstance ci: instance.getCell()) { if (!ci.getCell().isExternal()) {%>
+-include <%=ci.getName()%>.d
+<%} }%>
+
+
