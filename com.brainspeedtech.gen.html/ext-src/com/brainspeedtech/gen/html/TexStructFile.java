@@ -33,28 +33,18 @@ public class TexStructFile
   protected final String TEXT_6 = NL;
   protected final String TEXT_7 = " &";
   protected final String TEXT_8 = NL + "\t\t\t\t";
-  protected final String TEXT_9 = " &";
-  protected final String TEXT_10 = NL + "\t\t\t\tbit &";
-  protected final String TEXT_11 = NL + "\t\t\t";
-  protected final String TEXT_12 = " Bytes &";
-  protected final String TEXT_13 = NL + "\t\t\t";
-  protected final String TEXT_14 = " Bit &";
-  protected final String TEXT_15 = NL + "\t\t\t";
-  protected final String TEXT_16 = " \\\\";
-  protected final String TEXT_17 = NL + "\t\t\\multicolumn{4}{X}{";
-  protected final String TEXT_18 = "}\\\\";
-  protected final String TEXT_19 = NL + "\\end{tabularx}";
-  protected final String TEXT_20 = NL + "\\begin{tabularx}{\\linewidth}{l r}" + NL + "\\hline" + NL + "\\bf Field & \\bf Type \\\\" + NL + "\\hline" + NL;
-  protected final String TEXT_21 = NL;
-  protected final String TEXT_22 = " & ";
-  protected final String TEXT_23 = NL;
-  protected final String TEXT_24 = " ";
-  protected final String TEXT_25 = " \\\\";
-  protected final String TEXT_26 = NL + "\\multicolumn{2}{X}{";
-  protected final String TEXT_27 = "}\\\\";
-  protected final String TEXT_28 = NL;
-  protected final String TEXT_29 = NL + "\\end{tabularx}" + NL;
-  protected final String TEXT_30 = NL;
+  protected final String TEXT_9 = NL + "\t\t\t\tbit &";
+  protected final String TEXT_10 = NL + "\t\t\t";
+  protected final String TEXT_11 = " Bytes &";
+  protected final String TEXT_12 = " Bit &";
+  protected final String TEXT_13 = " \\\\";
+  protected final String TEXT_14 = NL + "\t\t\\multicolumn{4}{X}{";
+  protected final String TEXT_15 = "}\\\\";
+  protected final String TEXT_16 = NL + "\\end{tabularx}";
+  protected final String TEXT_17 = NL + "\\begin{tabularx}{\\linewidth}{l r}" + NL + "\\hline" + NL + "\\bf Field & \\bf Type \\\\" + NL + "\\hline" + NL;
+  protected final String TEXT_18 = " & ";
+  protected final String TEXT_19 = NL + "\\multicolumn{2}{X}{";
+  protected final String TEXT_20 = NL + "\\end{tabularx}" + NL;
 
   public String generate(Object argument)
   {
@@ -91,11 +81,11 @@ for(Atom atom: atoms) {
 
     stringBuffer.append(TEXT_8);
     stringBuffer.append(field.getAtom().getName().replace("_", "\\_"));
-    stringBuffer.append(TEXT_9);
+    stringBuffer.append(TEXT_7);
     
 			} else {
 
-    stringBuffer.append(TEXT_10);
+    stringBuffer.append(TEXT_9);
     
 			}
 
@@ -103,61 +93,61 @@ for(Atom atom: atoms) {
 			long unitSize = StructUtil.getAtomSize(field.getAtom());
 			if ((unitSize % 8) == 0) {
 
-    stringBuffer.append(TEXT_11);
+    stringBuffer.append(TEXT_10);
     stringBuffer.append((unitSize/8));
-    stringBuffer.append(TEXT_12);
+    stringBuffer.append(TEXT_11);
     
 			} else {
 
-    stringBuffer.append(TEXT_13);
+    stringBuffer.append(TEXT_10);
     stringBuffer.append(unitSize);
-    stringBuffer.append(TEXT_14);
+    stringBuffer.append(TEXT_12);
     
 			}
 
-    stringBuffer.append(TEXT_15);
+    stringBuffer.append(TEXT_10);
     stringBuffer.append(StructUtil.getFieldCount(field));
-    stringBuffer.append(TEXT_16);
+    stringBuffer.append(TEXT_13);
     if(field.getBlurb() != null && field.getBlurb().length() != 0) {
-    stringBuffer.append(TEXT_17);
+    stringBuffer.append(TEXT_14);
     stringBuffer.append(field.getBlurb().replace("_","\\_"));
-    stringBuffer.append(TEXT_18);
+    stringBuffer.append(TEXT_15);
     }
     		} 
-    stringBuffer.append(TEXT_19);
+    stringBuffer.append(TEXT_16);
     
 	}
 
     	if(atom instanceof com.brainspeedtech.struct.Enum) {
 		com.brainspeedtech.struct.Enum enumeration = (com.brainspeedtech.struct.Enum)atom;
 		
-    stringBuffer.append(TEXT_20);
+    stringBuffer.append(TEXT_17);
     
 	for(EnumTerm term : enumeration.getTerm()) {
 
-    stringBuffer.append(TEXT_21);
+    stringBuffer.append(TEXT_6);
     stringBuffer.append(term.getName().replace("_", "\\_"));
-    stringBuffer.append(TEXT_22);
+    stringBuffer.append(TEXT_18);
     
 	if (term.getValue() != null) {
 
-    stringBuffer.append(TEXT_23);
+    stringBuffer.append(TEXT_6);
     stringBuffer.append(term.getValue().replace("_", "\\_"));
-    stringBuffer.append(TEXT_24);
+    stringBuffer.append(TEXT_3);
     }
-    stringBuffer.append(TEXT_25);
+    stringBuffer.append(TEXT_13);
     if(term.getBlurb() != null && term.getBlurb().length() != 0) { 
-    stringBuffer.append(TEXT_26);
+    stringBuffer.append(TEXT_19);
     stringBuffer.append(term.getBlurb().replace("_", "\\_"));
-    stringBuffer.append(TEXT_27);
+    stringBuffer.append(TEXT_15);
     }
-    stringBuffer.append(TEXT_28);
+    stringBuffer.append(TEXT_6);
     		} 
-    stringBuffer.append(TEXT_29);
+    stringBuffer.append(TEXT_20);
     
 	}
 }
-    stringBuffer.append(TEXT_30);
+    stringBuffer.append(TEXT_6);
     return stringBuffer.toString();
   }
 }

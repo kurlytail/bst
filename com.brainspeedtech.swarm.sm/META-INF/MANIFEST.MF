@@ -15,3 +15,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi;visibility:=reexport,
  com.bst.struct;visibility:=reexport
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: com.brainspeedtech.swarm.sm

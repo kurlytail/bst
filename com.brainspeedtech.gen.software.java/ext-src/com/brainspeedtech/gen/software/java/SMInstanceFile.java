@@ -37,30 +37,27 @@ public class SMInstanceFile
   protected final String TEXT_6 = ",";
   protected final String TEXT_7 = NL + "\t\tMAX_STATE" + NL + "\t}" + NL;
   protected final String TEXT_8 = NL + NL + "\tpublic enum TRANSITION {" + NL + "\t\tNULL,";
-  protected final String TEXT_9 = NL + "\t\t";
-  protected final String TEXT_10 = ",";
-  protected final String TEXT_11 = NL + "\t\tMAX_TRANSITION" + NL + "\t}" + NL + "\t" + NL + "\tpublic abstract STATE getState();";
-  protected final String TEXT_12 = NL + "// Compute the right transition for ";
-  protected final String TEXT_13 = " state" + NL + "// Allowed transitions are";
-  protected final String TEXT_14 = NL + "//\t\t";
-  protected final String TEXT_15 = NL + "//\t\tNULL" + NL + "\tprotected abstract TRANSITION compute_";
-  protected final String TEXT_16 = "_transition();";
-  protected final String TEXT_17 = NL + "\tpublic abstract STATE" + NL + "\t\tsetState(" + NL + "\t\t\tTRANSITION transition," + NL + "\t\t\tSTATE state" + NL + "\t\t\t);";
-  protected final String TEXT_18 = NL + "\tprotected void process_";
-  protected final String TEXT_19 = "_state() throws Exception" + NL + "\t{" + NL + "\t\tTRANSITION transition;" + NL + "\t" + NL + "\t\ttransition = compute_";
-  protected final String TEXT_20 = "_transition();" + NL + "\t\tswitch(transition) {";
-  protected final String TEXT_21 = NL + "\t\tcase ";
-  protected final String TEXT_22 = ":" + NL + "\t\t\tsetState(TRANSITION.";
-  protected final String TEXT_23 = ", " + NL + "\t\t\t\tSTATE.";
-  protected final String TEXT_24 = ");" + NL + "\t\tbreak;";
-  protected final String TEXT_25 = NL + "\t\tcase NULL:" + NL + "\t\t\tsetState(TRANSITION.NULL, STATE.";
-  protected final String TEXT_26 = ");" + NL + "\t\t\tbreak;" + NL + "\t\tdefault:" + NL + "\t\t\tthrow(new Exception(\"Unexpected transition\\n\"));" + NL + "\t\t}" + NL + "\t}";
-  protected final String TEXT_27 = NL + "\tpublic void sm() throws Exception" + NL + "\t{" + NL + "\t\tSTATE current_state;" + NL + "\t" + NL + "\t\tcurrent_state = getState();" + NL + "\t\tswitch(current_state) {";
-  protected final String TEXT_28 = NL + "\t\tcase ";
-  protected final String TEXT_29 = ":" + NL + "\t\t\tprocess_";
-  protected final String TEXT_30 = "_state();" + NL + "\t\t\tbreak;";
-  protected final String TEXT_31 = NL + "\t\tdefault:" + NL + "\t\t\tthrow(new Exception(\"Unexpected transition\\n\"));" + NL + "\t\t}" + NL + "\t}" + NL + "}" + NL + NL + NL + NL;
-  protected final String TEXT_32 = NL;
+  protected final String TEXT_9 = NL + "\t\tMAX_TRANSITION" + NL + "\t}" + NL + "\t" + NL + "\tpublic abstract STATE getState();";
+  protected final String TEXT_10 = NL + "// Compute the right transition for ";
+  protected final String TEXT_11 = " state" + NL + "// Allowed transitions are";
+  protected final String TEXT_12 = NL + "//\t\t";
+  protected final String TEXT_13 = NL + "//\t\tNULL" + NL + "\tprotected abstract TRANSITION compute_";
+  protected final String TEXT_14 = "_transition();";
+  protected final String TEXT_15 = NL + "\tpublic abstract STATE" + NL + "\t\tsetState(" + NL + "\t\t\tTRANSITION transition," + NL + "\t\t\tSTATE state" + NL + "\t\t\t);";
+  protected final String TEXT_16 = NL + "\tprotected void process_";
+  protected final String TEXT_17 = "_state() throws Exception" + NL + "\t{" + NL + "\t\tTRANSITION transition;" + NL + "\t" + NL + "\t\ttransition = compute_";
+  protected final String TEXT_18 = "_transition();" + NL + "\t\tswitch(transition) {";
+  protected final String TEXT_19 = NL + "\t\tcase ";
+  protected final String TEXT_20 = ":" + NL + "\t\t\tsetState(TRANSITION.";
+  protected final String TEXT_21 = ", " + NL + "\t\t\t\tSTATE.";
+  protected final String TEXT_22 = ");" + NL + "\t\tbreak;";
+  protected final String TEXT_23 = NL + "\t\tcase NULL:" + NL + "\t\t\tsetState(TRANSITION.NULL, STATE.";
+  protected final String TEXT_24 = ");" + NL + "\t\t\tbreak;" + NL + "\t\tdefault:" + NL + "\t\t\tthrow(new Exception(\"Unexpected transition\\n\"));" + NL + "\t\t}" + NL + "\t}";
+  protected final String TEXT_25 = NL + "\tpublic void sm() throws Exception" + NL + "\t{" + NL + "\t\tSTATE current_state;" + NL + "\t" + NL + "\t\tcurrent_state = getState();" + NL + "\t\tswitch(current_state) {";
+  protected final String TEXT_26 = ":" + NL + "\t\t\tprocess_";
+  protected final String TEXT_27 = "_state();" + NL + "\t\t\tbreak;";
+  protected final String TEXT_28 = NL + "\t\tdefault:" + NL + "\t\t\tthrow(new Exception(\"Unexpected transition\\n\"));" + NL + "\t\t}" + NL + "\t}" + NL + "}" + NL + NL + NL + NL;
+  protected final String TEXT_29 = NL;
 
   public String generate(Object argument)
   {
@@ -107,56 +104,56 @@ for(State state: instance.getState()) {
     
 int enumCount = 1;
 for(String transition: transitions) {
-    stringBuffer.append(TEXT_9);
+    stringBuffer.append(TEXT_5);
     stringBuffer.append(transition.toUpperCase());
-    stringBuffer.append(TEXT_10);
+    stringBuffer.append(TEXT_6);
     
 	++enumCount;
 }
-    stringBuffer.append(TEXT_11);
+    stringBuffer.append(TEXT_9);
     
 for(State state: instance.getState()) {
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(state.getName());
+    stringBuffer.append(TEXT_11);
+     for(Transition transition : state.getDest()) { 
     stringBuffer.append(TEXT_12);
-    stringBuffer.append(state.getName());
+    stringBuffer.append(transition.getName().toUpperCase());
+     }
     stringBuffer.append(TEXT_13);
-     for(Transition transition : state.getDest()) { 
+    stringBuffer.append(state.getName());
     stringBuffer.append(TEXT_14);
-    stringBuffer.append(transition.getName().toUpperCase());
-     }
-    stringBuffer.append(TEXT_15);
-    stringBuffer.append(state.getName());
-    stringBuffer.append(TEXT_16);
     }
-    stringBuffer.append(TEXT_17);
+    stringBuffer.append(TEXT_15);
     for(State state: instance.getState()) {
+    stringBuffer.append(TEXT_16);
+    stringBuffer.append(state.getName());
+    stringBuffer.append(TEXT_17);
+    stringBuffer.append(state.getName());
     stringBuffer.append(TEXT_18);
-    stringBuffer.append(state.getName());
-    stringBuffer.append(TEXT_19);
-    stringBuffer.append(state.getName());
-    stringBuffer.append(TEXT_20);
      for(Transition transition : state.getDest()) { 
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(transition.getName().toUpperCase());
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(transition.getName().toUpperCase());
     stringBuffer.append(TEXT_21);
-    stringBuffer.append(transition.getName().toUpperCase());
-    stringBuffer.append(TEXT_22);
-    stringBuffer.append(transition.getName().toUpperCase());
-    stringBuffer.append(TEXT_23);
     stringBuffer.append(transition.getTo().getName().toUpperCase());
-    stringBuffer.append(TEXT_24);
+    stringBuffer.append(TEXT_22);
      }
+    stringBuffer.append(TEXT_23);
+    stringBuffer.append(state.getName().toUpperCase());
+    stringBuffer.append(TEXT_24);
+    }
     stringBuffer.append(TEXT_25);
+    for(State state: instance.getState()) {
+    stringBuffer.append(TEXT_19);
     stringBuffer.append(state.getName().toUpperCase());
     stringBuffer.append(TEXT_26);
-    }
-    stringBuffer.append(TEXT_27);
-    for(State state: instance.getState()) {
-    stringBuffer.append(TEXT_28);
-    stringBuffer.append(state.getName().toUpperCase());
-    stringBuffer.append(TEXT_29);
     stringBuffer.append(state.getName());
-    stringBuffer.append(TEXT_30);
+    stringBuffer.append(TEXT_27);
     }
-    stringBuffer.append(TEXT_31);
-    stringBuffer.append(TEXT_32);
+    stringBuffer.append(TEXT_28);
+    stringBuffer.append(TEXT_29);
     return stringBuffer.toString();
   }
 }

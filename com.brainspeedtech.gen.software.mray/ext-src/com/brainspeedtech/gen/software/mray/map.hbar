@@ -1,6 +1,0 @@
-
-generator_map['gen_{{MasterDesign.name}}_flows.h'] =
-	{ 
-		'object' : swarm_design,
-		'template' : 'CLASSLOADER/com/brainspeedtech/gen/software/templates/flow_header_file.hbar'
-	};
