@@ -37,6 +37,29 @@ public class SwarmEditingDomainBuilder extends SwarmProjectBuilder {
 		observeChangeExtension("inst");
 		observeChangeExtension("sm");
 	}
+	
+	public SwarmEditingDomainBuilder() {
+		super(LayerFactory.eINSTANCE.createFlowAnalysisAndMerge());
+		observeAddExtension("flow");
+		observeAddExtension("struct");
+		observeAddExtension("layer");
+		observeAddExtension("master");
+		observeAddExtension("inst");
+		observeAddExtension("sm");
+		observeDeleteExtension("flow");
+		observeDeleteExtension("struct");
+		observeDeleteExtension("layer");
+		observeDeleteExtension("master");
+		observeDeleteExtension("inst");
+		observeDeleteExtension("sm");
+		observeChangeExtension("flow");
+		observeChangeExtension("struct");
+		observeChangeExtension("layer");
+		observeChangeExtension("master");
+		observeChangeExtension("inst");
+		observeChangeExtension("sm");
+	}
+
 
 	private static IProject currentProject = null;
 
@@ -53,4 +76,9 @@ public class SwarmEditingDomainBuilder extends SwarmProjectBuilder {
 
 		currentProject = null;
 	}
+	
+	protected String getBuilderID() {
+		return BUILDER_ID;
+	}
+	
 }
