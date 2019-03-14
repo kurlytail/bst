@@ -168,16 +168,19 @@ public class MasterGenerator {
 				for (Flow flow : flows) {
 					for (Tube tube : flow.getTube()) {
 						MasterTube masterTube;
-						if (tubeMap.get(tube.getName()) == null) {
+						final String tubeName = tube.getFrom().getName() + '-'
+								+ tube.getName() + '-'
+								+ tube.getTo().getName();
+						if (tubeMap.get(tubeName) == null) {
 
-							masterTube = oldTubeMap.get(tube.getName());
+							masterTube = oldTubeMap.get(tubeName);
 							if (masterTube == null)
 								masterTube = MasterFactory.eINSTANCE
 										.createMasterTube();
 
-
 							masterTube.setName(tube.getName());
-							tubeMap.put(tube.getName(), masterTube);
+							masterTube.setInternalName(tubeName);
+							tubeMap.put(tubeName, masterTube);
 							finalMasterDesign.getTube().add(masterTube);
 
 							MasterCell sourceMaster = cellMap.get(tube
@@ -188,7 +191,7 @@ public class MasterGenerator {
 							masterTube.setFrom(sourceMaster);
 							masterTube.setTo(destinMaster);
 						} else {
-							masterTube = tubeMap.get(tube.getName());
+							masterTube = tubeMap.get(tubeName);
 						}
 
 						masterTube.getDesignTubes().add(tube);

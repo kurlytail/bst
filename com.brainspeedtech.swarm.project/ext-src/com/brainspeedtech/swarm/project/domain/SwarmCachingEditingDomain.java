@@ -515,36 +515,45 @@ public class SwarmCachingEditingDomain extends TransactionalEditingDomainImpl {
 			
 			String projectPath = design.eResource().getURI().trimSegments(1).toFileString();
 			
-			// JSON Generator for the full design
-			try {
-				new GeneratorFile(projectPath + "/generate.js") {
-					
-					@Override
-					public String getFileContents() throws Exception {
-						String script = "var _ = require('lodash');";
-						script += "var swarm_design = " + gson.toJson(idMap) + ";";
-						script += readString(SwarmCachingEditingDomain.class
-								.getResourceAsStream("swarmlib.js"));
-						script += readString(SwarmCachingEditingDomain.class
-								.getResourceAsStream("nodegen.js"));
-						return script;
-					}
-				};
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+//			// JSON Generator for the full design
+//			try {
+//				new GeneratorFile(projectPath + "/generate.js") {
+//					
+//					@Override
+//					public String getFileContents() throws Exception {
+//						String script = "var _ = require('lodash');";
+//						script += "var swarm_design = " + gson.toJson(idMap) + ";";
+//						script += readString(SwarmCachingEditingDomain.class
+//								.getResourceAsStream("swarmlib.js"));
+//						script += readString(SwarmCachingEditingDomain.class
+//								.getResourceAsStream("nodegen.js"));
+//						return script;
+//					}
+//				};
+//				
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}	
 			
 			// JSON Generator for the full design
 			try {
-				new GeneratorFile(projectPath + "/design.js") {
+//				new GeneratorFile(projectPath + "/design.js") {
+//					
+//					@Override
+//					public String getFileContents() throws Exception {
+//						String script = "var _ = require('lodash');";
+//						script += "var swarm_design = " + gson.toJson(idMap) + ";";
+//						script += readString(SwarmCachingEditingDomain.class
+//								.getResourceAsStream("swarmlib.js"));
+//						return script;
+//					}
+//				};
+				
+				new GeneratorFile(projectPath + "/design.json") {
 					
 					@Override
 					public String getFileContents() throws Exception {
-						String script = "var _ = require('lodash');";
-						script += "var swarm_design = " + gson.toJson(idMap) + ";";
-						script += readString(SwarmCachingEditingDomain.class
-								.getResourceAsStream("swarmlib.js"));
+						String script = gson.toJson(idMap);
 						return script;
 					}
 				};
@@ -685,16 +694,16 @@ public class SwarmCachingEditingDomain extends TransactionalEditingDomainImpl {
 //			engine.put("sitePath", sitePath);
 //			engine.eval(new BufferedReader(new InputStreamReader(
 //					generatorClass.getResourceAsStream("swarmlib.js"))));
-		if(generatorClass != null) {
-			new GeneratorFile(outputDir + "/lib/" + sitePath + "/swarmlib.js") {
-				@Override
-				public String getFileContents() throws Exception {
-					// TODO Auto-generated method stub
-					return readString(generatorClass
-							.getResourceAsStream("swarmlib.js"));
-				}
-			};
-		}
+//		if(generatorClass != null) {
+//			new GeneratorFile(outputDir + "/lib/" + sitePath + "/swarmlib.js") {
+//				@Override
+//				public String getFileContents() throws Exception {
+//					// TODO Auto-generated method stub
+//					return readString(generatorClass
+//							.getResourceAsStream("swarmlib.js"));
+//				}
+//			};
+//		}
 		
 //		if(generatorClass != null) {
 //			new GeneratorFile(outputDir + "/map/" + sitePath + "/map._", false) {
@@ -743,16 +752,16 @@ public class SwarmCachingEditingDomain extends TransactionalEditingDomainImpl {
 //			}
 //		};
 //		
-		if(!(new File(outputDir + "/package.json").exists())) {
-			new GeneratorFile(outputDir + "/package.json") {
-				@Override
-				public String getFileContents() throws Exception {
-					// TODO Auto-generated method stub
-					return readString(SwarmCachingEditingDomain.class
-							.getResourceAsStream("package.json"));
-				}
-			};
-		}
+//		if(!(new File(outputDir + "/package.json").exists())) {
+//			new GeneratorFile(outputDir + "/package.json") {
+//				@Override
+//				public String getFileContents() throws Exception {
+//					// TODO Auto-generated method stub
+//					return readString(SwarmCachingEditingDomain.class
+//							.getResourceAsStream("package.json"));
+//				}
+//			};
+//		}
 //		
 //		
 //		out.println("Source project swarmlib.js");

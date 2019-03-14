@@ -205,8 +205,11 @@ public class ProjectUtil {
 				Iterator<File> fileIterator = FileUtils.iterateFiles(
 						file, ext,
 						true);
-				while (fileIterator.hasNext())
-					designFileList.add(fileIterator.next());
+				while (fileIterator.hasNext()) {
+					File innerFile = fileIterator.next();
+					if (innerFile.toString().contains("node_modules")) continue;
+					designFileList.add(innerFile);
+				}
 				log.println("Found seed files " + designFileList + " through directory " + arg);
 			} else {
 				throw(new ParseException("Argument " + arg + " is not a layer file or directory"));

@@ -24,14 +24,14 @@ public class NonEmptyNamesConstraint extends AbstractConstraintValidator {
 				if (name == null || ((String) name).length() == 0) {
 					return ctx.createFailureStatus(new Object[] { eObj });
 				}
-
-
-				name = name.replace('.', '_');
-				for (Byte c : ((String) name).getBytes()) {
-					if (!Character.isJavaIdentifierPart(c)) {
-						return ctx.createFailureStatus(new Object[] { eObj });
-					}
-				}
+//
+//
+//				name = name.replace('.', '_');
+//				for (Byte c : ((String) name).getBytes()) {
+//					if (!Character.isJavaIdentifierPart(c)) {
+//						return ctx.createFailureStatus(new Object[] { eObj });
+//					}
+//				}
 
 				return ctx.createSuccessStatus();
 			}

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "author": "",
-  "dependencies" : {
-	  "lodash" : "",
-	  "mkdirp" : "",
-      "fs" : "",
-      "debug" : ""
+  "dependencies": {
+    "lodash": "",
+    "mkdirp": "",
+    "fs": "",
+    "debug": "",
+    "@kurlytail/gen-lib": ""
   },
-  "scripts" : {
-    "start" : "node generate.js"
+  "scripts": {
+    "start": "node generate.js"
   }
 }

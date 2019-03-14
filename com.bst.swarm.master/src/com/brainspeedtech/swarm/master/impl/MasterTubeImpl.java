@@ -213,10 +213,10 @@ public class MasterTubeImpl extends EObjectImpl implements MasterTube {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated NOT
+	 * @generated
 	 */
 	public String getInternalName() {
-		return "master_tube_" + getName();
+		return internalName;
 	}
 
 	/**
